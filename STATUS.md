@@ -69,6 +69,12 @@ announcement timer remains, but no profiler measurement was taken.
   picker remain future work.
 - **Transparency:** translucent card plus adjustable window opacity; click-through
   is deliberately not enabled (it is optional in the plan).
+- **Languages:** v1 is English-only by decision, not by omission. The plan's
+  16-language table stays as the M2 roadmap; shipping a language needs a
+  human-authored catalog, locale-specific time grammar and a compatible
+  installed Windows voice. Locale detection is deliberately not wired up yet:
+  with only `en-GB` bundled it would always fall back to English and surface a
+  "no catalog for <locale>" status line, which is worse than plain English.
 - **First close:** one-time informational MessageBox explaining the tray.
 
 ## Known limitations

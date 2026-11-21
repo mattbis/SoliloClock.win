@@ -74,7 +74,7 @@ These are aesthetic names only: **anyone can choose any theme**. Themes do not d
 
 ## 6. Speech, language and localization
 
-**Multilingual from the first release, not an English-only UI with machine-translated labels.** Use each language's **native script and typographic conventions**, not romanized approximations. Unicode, grapheme-aware layout, font fallback, pluralization and RTL layout are essential.
+**The first public release is English-only, and says so.** M1 ships `en-GB` UI, time grammar and phrase catalog; the README and status file state that plainly rather than implying more. Multilingual is M2, and it means a human-authored catalog per language (never machine-translated jokes presented as complete), locale-specific time grammar and, for speech, a compatible installed Windows voice. When a language does ship, use its **native script and typographic conventions**, not romanized approximations. Unicode, grapheme-aware layout, font fallback, pluralization and RTL layout are essential.
 
 Initial language targets (UI and original phrase catalogs; speech depends on installed voices):
 
