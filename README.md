@@ -5,6 +5,8 @@ A small, offline Windows tray talking clock. SoliloClock announces the time on a
 `fortune`-style line. It is a native C#/WPF utility: no browser runtime, no
 account, no telemetry, no network access.
 
+![SoliloClock in the Pink theme, showing the analog clock, the time 8:28 PM, and the 15/30/45/60 interval buttons](doc/screenshot.png)
+
 The project plan lives in [`doc/plan.md`](doc/plan.md) and current progress is
 tracked in [`STATUS.md`](STATUS.md).
 
