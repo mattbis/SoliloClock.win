@@ -1,0 +1,31 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#A6101820" />
+  <SolidColorBrush x:Key="WindowBorderBrush" Color="#33FFFFFF" />
+  <SolidColorBrush x:Key="SurfaceBrush" Color="#66101820" />
+  <SolidColorBrush x:Key="AccentBrush" Color="#FF2BD6B4" />
+  <SolidColorBrush x:Key="AccentHoverBrush" Color="#FF5BE9C8" />
+  <SolidColorBrush x:Key="AccentSoftBrush" Color="#FF7C8CFF" />
+  <SolidColorBrush x:Key="AccentContrastBrush" Color="#FF04120F" />
+  <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFF2FBFF" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="#CCBFD0DD" />
+  <SolidColorBrush x:Key="CaptionBrush" Color="#CCFFFFFF" />
+  <SolidColorBrush x:Key="ClockFaceBrush" Color="#B30C141D" />
+  <SolidColorBrush x:Key="ClockRimBrush" Color="#99FFFFFF" />
+  <SolidColorBrush x:Key="TickMajorBrush" Color="#CCFFFFFF" />
+  <SolidColorBrush x:Key="TickMinorBrush" Color="#55FFFFFF" />
+  <SolidColorBrush x:Key="HourHandBrush" Color="#FFF5FAFF" />
+  <SolidColorBrush x:Key="MinuteHandBrush" Color="#FFCFE4F2" />
+  <SolidColorBrush x:Key="SecondHandBrush" Color="#FF2BD6B4" />
+  <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#66101820" />
+  <SolidColorBrush x:Key="ButtonHoverBrush" Color="#991A2633" />
+  <SolidColorBrush x:Key="ButtonCheckedBrush" Color="#FF2BD6B4" />
+  <SolidColorBrush x:Key="ButtonCheckedTextBrush" Color="#FF04120F" />
+  <SolidColorBrush x:Key="GlowBrush" Color="#FF2BD6B4" />
+
+  <Color x:Key="ShadowColor">#00000000</Color>
+  <FontFamily x:Key="UiFontFamilyResource">Segoe UI Light</FontFamily>
+  <FontFamily x:Key="ClockFontFamilyResource">Segoe UI Light</FontFamily>
+
+</ResourceDictionary>

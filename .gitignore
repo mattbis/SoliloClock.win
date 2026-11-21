@@ -1,0 +1,14 @@
+bin/
+obj/
+artifacts/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+TestResults/
+*.trx
+*.coverage
+*.nupkg
+.DS_Store
+Thumbs.db
