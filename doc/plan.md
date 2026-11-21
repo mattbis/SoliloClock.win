@@ -1,9 +1,9 @@
-# Talking Clock — Project Plan
+# SoliloClock — Project Plan
 
-**Status:** Specification / implementation handoff  
+**Status:** Specification / implementation handoff. M0 and M1 are implemented; see `STATUS.md` for verification, deviations and known limitations.  
 **Platform:** Windows 10/11  
 **Implementation:** C# / .NET / WPF  
-**Working name:** Talking Clock (renameable)  
+**Name:** SoliloClock (the working name in early drafts was "Talking Clock")  
 **Priority:** Small, delightful, offline-first, low-resource, genuinely useful.
 
 ## 1. Vision
@@ -18,7 +18,7 @@ Build a polished Windows **system-tray talking clock** that announces the time a
 - **WPF vector drawing** for animated analog clock, optional digital clock, DPI scaling, rounded window and transparency; use CompositionTarget.Rendering only while visible, otherwise lightweight timer scheduling.
 - **Windows built-in speech** behind an `ISpeechEngine` interface. Start with Windows SAPI / `System.Speech` where compatible; validate voice availability and Unicode/language support. Allow a later optional Windows modern TTS adapter, but no external service is required.
 - **NotifyIcon** via a small maintained WinForms interop or equivalent; use a single application instance and a hidden-to-tray window.
-- **JSON settings** in `%APPDATA%\TalkingClock\settings.json`; atomic saves and safe recovery from malformed settings.
+- **JSON settings** in `%APPDATA%\SoliloClock\settings.json`; atomic saves and safe recovery from malformed settings.
 - **Bundled UTF-8 JSON phrase catalogs and localized UI resources**; user-editable overrides later.
 - **No administrator privileges.** No auto-start without explicit consent. No network access required.
 - Use MVVM only where it improves clarity. Avoid frameworks and dependencies unless justified. Nullable reference types, async/cancellation where needed, small testable services.
@@ -316,15 +316,16 @@ Use stable IDs across translations. Catalogs may be partial; validate schema and
 ## 12. Suggested repository layout
 
 ```text
-TalkingClock/
-  plan.md
+SoliloClock/
+  doc/plan.md
   README.md
+  STATUS.md
   LICENSE
   .editorconfig
   .gitignore
-  TalkingClock.sln
+  SoliloClock.sln
   src/
-    TalkingClock.App/
+    SoliloClock.App/
       App.xaml
       MainWindow.xaml
       Views/
@@ -337,7 +338,7 @@ TalkingClock/
         Phrases/
         Icons/
   test/
-    TalkingClock.Tests/
+    SoliloClock.Tests/
   tools/
     build.ps1
     publish.ps1
@@ -361,20 +362,20 @@ Add a sensible `.editorconfig` for C# and XAML; consistent naming, formatting an
 
 ## 14. Delivery milestones and acceptance criteria
 
-### M0 — Skeleton
-- [ ] WPF project builds and launches with no console window.
-- [ ] Tray icon, Show/Hide/Exit and single-instance behavior work.
-- [ ] Basic settings persistence, `.editorconfig`, README and build scripts.
+### M0 — Skeleton — complete
+- [x] WPF project builds and launches with no console window.
+- [x] Tray icon, Show/Hide/Exit and single-instance behavior work.
+- [x] Basic settings persistence, `.editorconfig`, README and build scripts.
 
-### M1 — Minimum lovable product (deliver this first)
-- [ ] Attractive animated analog clock and digital readout.
-- [ ] Exactly four interval buttons: 15, 30, 45, 60.
-- [ ] Local Windows speech announces accurate time; Speak Now and Mute work.
-- [ ] Correct wall-clock scheduling, with explicit 45-minute semantics.
-- [ ] Five selectable themes, including functional transparency.
-- [ ] App runs in tray and doesn't waste CPU while hidden.
-- [ ] English phrases, 25% joke rate, no immediate repeats.
-- [ ] No Python, Electron, login, cloud service or admin requirement.
+### M1 — Minimum lovable product — complete
+- [x] Attractive animated analog clock and digital readout.
+- [x] Exactly four interval buttons: 15, 30, 45, 60.
+- [x] Local Windows speech announces accurate time; Speak Now and Mute work.
+- [x] Correct wall-clock scheduling, with explicit 45-minute semantics.
+- [x] Five selectable themes, including functional transparency.
+- [x] App runs in tray and doesn't waste CPU while hidden.
+- [x] English phrases, 25% joke rate, no immediate repeats.
+- [x] No Python, Electron, login, cloud service or admin requirement.
 
 ### M2 — Multilingual
 - [ ] Localized UI and proper time formatters for the initial locales.
@@ -391,7 +392,7 @@ Add a sensible `.editorconfig` for C# and XAML; consistent naming, formatting an
 - [ ] Installer optional; reproducible release packaging and checksums.
 - [ ] Automated tests, clean logging, documentation and accessibility pass.
 
-## 15. Instructions for the implementing agent (DeepSeek)
+## 15. Instructions for the implementing agent
 
 1. **Read this entire plan before coding.** First report any technical conflicts or ambiguities, then choose simple, defensible defaults.
 2. Build **M0 and M1 first**, end-to-end. Do not stall the project by trying to translate sixteen languages immediately.

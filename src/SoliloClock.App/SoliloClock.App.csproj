@@ -10,8 +10,8 @@
     <LangVersion>latest</LangVersion>
     <AssemblyName>SoliloClock</AssemblyName>
     <RootNamespace>SoliloClock</RootNamespace>
-    <AssemblyTitle>Talking Clock</AssemblyTitle>
-    <Product>Talking Clock</Product>
+    <AssemblyTitle>SoliloClock</AssemblyTitle>
+    <Product>SoliloClock</Product>
     <Version>0.1.0</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
