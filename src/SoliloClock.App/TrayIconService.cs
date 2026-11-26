@@ -10,9 +10,12 @@ namespace SoliloClock;
 /// <summary>
 /// System-tray presence. Owned by the UI thread; the menu is rebuilt whenever
 /// the view model reports a state change so checkmarks and labels stay true.
+/// Labels come from the active UI language, never from hardcoded literals.
 /// </summary>
 public sealed class TrayIconService : IDisposable
 {
+    private const int MaxTooltipLength = 63;
+
     private readonly MainViewModel _viewModel;
     private readonly MainWindow _window;
     private readonly NotifyIcon _notifyIcon;
@@ -28,7 +31,7 @@ public sealed class TrayIconService : IDisposable
         _notifyIcon = new NotifyIcon
         {
             Icon = _icon,
-            Text = "Talking Clock",
+            Text = TextTruncation.Truncate(_viewModel.Strings.AppName, MaxTooltipLength),
             Visible = true,
         };
 
@@ -101,9 +104,10 @@ public sealed class TrayIconService : IDisposable
             return;
         }
 
+        var text = _viewModel.Text;
         var menu = new ContextMenuStrip();
 
-        var speak = new ToolStripMenuItem("Speak time now");
+        var speak = new ToolStripMenuItem(text[LocalizationKeys.TraySpeakNow]);
         speak.Click += (_, _) => _viewModel.SpeakNow();
         menu.Items.Add(speak);
 
@@ -111,7 +115,7 @@ public sealed class TrayIconService : IDisposable
 
         foreach (var interval in AnnouncementIntervals.All)
         {
-            var item = new ToolStripMenuItem($"Every {(int)interval} minutes")
+            var item = new ToolStripMenuItem(text[IntervalKey(interval)])
             {
                 Checked = _viewModel.Interval == interval,
             };
@@ -121,20 +125,22 @@ public sealed class TrayIconService : IDisposable
 
         menu.Items.Add(new ToolStripSeparator());
 
-        var mute = new ToolStripMenuItem(_viewModel.IsMuted ? "Unmute announcements" : "Mute announcements")
+        var mute = new ToolStripMenuItem(_viewModel.IsMuted
+            ? text[LocalizationKeys.TrayUnmute]
+            : text[LocalizationKeys.TrayMute])
         {
             Checked = _viewModel.IsMuted,
         };
         mute.Click += (_, _) => _viewModel.IsMuted = !_viewModel.IsMuted;
         menu.Items.Add(mute);
 
-        var themes = new ToolStripMenuItem("Theme");
+        var themes = new ToolStripMenuItem(text[LocalizationKeys.TrayTheme]);
         foreach (var theme in ThemeCatalog.All)
         {
-            var item = new ToolStripMenuItem(theme.DisplayName)
+            var item = new ToolStripMenuItem(text[theme.NameKey])
             {
                 Checked = string.Equals(theme.Id, _viewModel.ThemeId, StringComparison.OrdinalIgnoreCase),
-                ToolTipText = theme.Description,
+                ToolTipText = text[theme.DescriptionKey],
             };
             item.Click += (_, _) => _viewModel.SetTheme(theme.Id);
             themes.DropDownItems.Add(item);
@@ -142,15 +148,17 @@ public sealed class TrayIconService : IDisposable
 
         menu.Items.Add(themes);
 
-        var options = new ToolStripMenuItem("Options");
-        var reducedMotion = new ToolStripMenuItem("Reduced motion")
+        var options = new ToolStripMenuItem(text[LocalizationKeys.TrayOptions]);
+        options.DropDownItems.Add(BuildVoiceMenu(text));
+
+        var reducedMotion = new ToolStripMenuItem(text[LocalizationKeys.TrayReducedMotion])
         {
             Checked = _viewModel.ReducedMotionSetting,
         };
         reducedMotion.Click += (_, _) => _viewModel.ReducedMotionSetting = !_viewModel.ReducedMotionSetting;
         options.DropDownItems.Add(reducedMotion);
 
-        var alwaysOnTop = new ToolStripMenuItem("Always on top")
+        var alwaysOnTop = new ToolStripMenuItem(text[LocalizationKeys.TrayAlwaysOnTop])
         {
             Checked = _viewModel.AlwaysOnTop,
         };
@@ -166,11 +174,11 @@ public sealed class TrayIconService : IDisposable
         };
         menu.Items.Add(next);
 
-        var show = new ToolStripMenuItem("Show clock");
+        var show = new ToolStripMenuItem(text[LocalizationKeys.TrayShow]);
         show.Click += (_, _) => ShowClock();
         menu.Items.Add(show);
 
-        var exit = new ToolStripMenuItem("Exit");
+        var exit = new ToolStripMenuItem(text[LocalizationKeys.TrayExit]);
         exit.Click += (_, _) =>
         {
             if (System.Windows.Application.Current is App app)
@@ -184,11 +192,75 @@ public sealed class TrayIconService : IDisposable
         _notifyIcon.ContextMenuStrip = menu;
         previous?.Dispose();
 
-        _notifyIcon.Text = Truncate(_viewModel.ShortStatus, 120);
+        _notifyIcon.Text = TextTruncation.Truncate(_viewModel.ShortStatus, MaxTooltipLength);
     }
 
+    /// <summary>
+    /// Lists only voices Windows actually reports, with the culture each one
+    /// speaks, plus Test voice. When no installed voice matches the announcement
+    /// language the menu says so instead of implying the language can speak.
+    /// </summary>
+    private ToolStripMenuItem BuildVoiceMenu(UiText text)
+    {
+        var voice = new ToolStripMenuItem(text[LocalizationKeys.TrayVoice]);
+        var voices = _viewModel.Voices;
+
+        var useDefault = new ToolStripMenuItem(text[LocalizationKeys.TrayVoiceDefault])
+        {
+            Checked = _viewModel.SelectedVoice is null,
+        };
+        useDefault.Click += (_, _) => _viewModel.SetVoice(null);
+        voice.DropDownItems.Add(useDefault);
+
+        if (voices.Count > 0)
+        {
+            voice.DropDownItems.Add(new ToolStripSeparator());
+
+            foreach (var installed in voices)
+            {
+                var label = string.IsNullOrWhiteSpace(installed.Culture)
+                    ? installed.Name
+                    : $"{installed.Name} ({installed.Culture})";
+
+                var item = new ToolStripMenuItem(label)
+                {
+                    Checked = string.Equals(
+                        installed.Name,
+                        _viewModel.SelectedVoice,
+                        StringComparison.OrdinalIgnoreCase),
+                };
+                item.Click += (_, _) => _viewModel.SetVoice(installed.Name);
+                voice.DropDownItems.Add(item);
+            }
+
+            voice.DropDownItems.Add(new ToolStripSeparator());
+
+            var test = new ToolStripMenuItem(text[LocalizationKeys.TrayTestVoice]);
+            test.Click += (_, _) => _viewModel.TestVoice();
+            voice.DropDownItems.Add(test);
+        }
+
+        if (!_viewModel.HasVoiceForLanguage)
+        {
+            voice.DropDownItems.Add(new ToolStripSeparator());
+            voice.DropDownItems.Add(new ToolStripMenuItem(
+                text.Format(LocalizationKeys.TrayNoVoiceForLanguage, _viewModel.AnnouncementLanguageName))
+            {
+                Enabled = false,
+            });
+        }
+
+        return voice;
+    }
+
+    private static string IntervalKey(AnnouncementInterval interval) => (int)interval switch
+    {
+        15 => LocalizationKeys.IntervalTooltip15,
+        30 => LocalizationKeys.IntervalTooltip30,
+        45 => LocalizationKeys.IntervalTooltip45,
+        _ => LocalizationKeys.IntervalTooltip60,
+    };
+
     private static string Truncate(string text, int maxLength) =>
-        string.IsNullOrEmpty(text) || text.Length <= maxLength
-            ? text
-            : text[..Math.Max(0, maxLength - 1)] + "…";
+        TextTruncation.Truncate(text, maxLength);
 }

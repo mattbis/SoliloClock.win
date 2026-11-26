@@ -7,13 +7,16 @@ namespace SoliloClock.Services;
 
 public sealed record SpeechOptions(int Rate, int Volume, string? VoiceName);
 
+/// <summary>An installed voice and the BCP-47 culture it speaks.</summary>
+public sealed record VoiceOption(string Name, string Culture);
+
 public interface ISpeechEngine : IDisposable
 {
     bool IsAvailable { get; }
 
     string? UnavailableReason { get; }
 
-    IReadOnlyList<string> Voices { get; }
+    IReadOnlyList<VoiceOption> Voices { get; }
 
     string? SelectedVoice { get; }
 
@@ -62,27 +65,29 @@ public sealed class SapiSpeechEngine : ISpeechEngine
 
     public event EventHandler<string>? SpeechFailed;
 
-    public IReadOnlyList<string> Voices
+    public IReadOnlyList<VoiceOption> Voices
     {
         get
         {
             if (_synthesizer is null)
             {
-                return Array.Empty<string>();
+                return Array.Empty<VoiceOption>();
             }
 
             try
             {
                 return _synthesizer.GetInstalledVoices()
                     .Where(voice => voice.Enabled)
-                    .Select(voice => voice.VoiceInfo.Name)
-                    .OrderBy(name => name, StringComparer.CurrentCulture)
+                    .Select(voice => new VoiceOption(
+                        voice.VoiceInfo.Name,
+                        voice.VoiceInfo.Culture?.Name ?? string.Empty))
+                    .OrderBy(voice => voice.Name, StringComparer.CurrentCulture)
                     .ToList();
             }
             catch (Exception ex)
             {
                 RaiseFailed(ex.Message);
-                return Array.Empty<string>();
+                return Array.Empty<VoiceOption>();
             }
         }
     }
@@ -102,7 +107,7 @@ public sealed class SapiSpeechEngine : ISpeechEngine
 
         try
         {
-            if (!Voices.Contains(voiceName, StringComparer.CurrentCultureIgnoreCase))
+            if (!Voices.Any(voice => string.Equals(voice.Name, voiceName, StringComparison.CurrentCultureIgnoreCase)))
             {
                 return false;
             }

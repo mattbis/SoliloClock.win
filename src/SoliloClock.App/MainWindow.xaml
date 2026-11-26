@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:SoliloClock.Controls"
         Style="{StaticResource ClockWindowStyle}"
-        Title="Talking Clock"
+        Title="{Binding Strings.AppName}"
+        Language="{Binding WpfLanguage}"
+        FlowDirection="{Binding FlowDirection}"
         Width="380"
         Height="660"
         MinWidth="320"
@@ -52,7 +54,7 @@
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Column="0"
-                   Text="TALKING CLOCK"
+                   Text="{Binding Strings.BrandTitle}"
                    FontSize="10"
                    FontWeight="SemiBold"
                    Foreground="{DynamicResource TextSecondaryBrush}"
@@ -61,13 +63,13 @@
           <Button Style="{StaticResource WindowButtonStyle}"
                   Content="—"
                   Click="Minimize_Click"
-                  ToolTip="Hide to tray"
-                  AutomationProperties.Name="Hide to tray" />
+                  ToolTip="{Binding Strings.HideToTray}"
+                  AutomationProperties.Name="{Binding Strings.HideToTray}" />
           <Button Style="{StaticResource WindowButtonStyle}"
                   Content="✕"
                   Click="Close_Click"
-                  ToolTip="Close to tray"
-                  AutomationProperties.Name="Close to tray" />
+                  ToolTip="{Binding Strings.CloseToTray}"
+                  AutomationProperties.Name="{Binding Strings.CloseToTray}" />
         </StackPanel>
       </Grid>
 
@@ -89,7 +91,7 @@
                             ReducedMotion="{Binding ReducedMotion}"
                             Sparkles="{Binding Sparkles}"
                             Glow="{Binding Glow}"
-                            AutomationProperties.Name="Analog clock" />
+                            AutomationProperties.Name="{Binding Strings.AnalogClockName}" />
 
       <StackPanel Grid.Row="2" Margin="0,4,0,0">
         <TextBlock Text="{Binding DigitalTime}"
@@ -106,7 +108,7 @@
       </StackPanel>
 
       <StackPanel Grid.Row="3" Margin="0,12,0,0">
-        <TextBlock Text="ANNOUNCE EVERY"
+        <TextBlock Text="{Binding Strings.IntervalHeading}"
                    FontSize="9"
                    FontWeight="SemiBold"
                    Margin="4,0,0,4"
@@ -118,32 +120,32 @@
                        IsChecked="{Binding IsInterval15, Mode=OneWay}"
                        Command="{Binding SelectIntervalCommand}"
                        CommandParameter="15"
-                       ToolTip="Every 15 minutes"
-                       AutomationProperties.Name="Announce every 15 minutes" />
+                       ToolTip="{Binding Strings.Interval15Tooltip}"
+                       AutomationProperties.Name="{Binding Strings.Interval15Tooltip}" />
           <RadioButton Style="{StaticResource IntervalRadioStyle}"
                        GroupName="Interval"
                        Content="30"
                        IsChecked="{Binding IsInterval30, Mode=OneWay}"
                        Command="{Binding SelectIntervalCommand}"
                        CommandParameter="30"
-                       ToolTip="Every 30 minutes"
-                       AutomationProperties.Name="Announce every 30 minutes" />
+                       ToolTip="{Binding Strings.Interval30Tooltip}"
+                       AutomationProperties.Name="{Binding Strings.Interval30Tooltip}" />
           <RadioButton Style="{StaticResource IntervalRadioStyle}"
                        GroupName="Interval"
                        Content="45"
                        IsChecked="{Binding IsInterval45, Mode=OneWay}"
                        Command="{Binding SelectIntervalCommand}"
                        CommandParameter="45"
-                       ToolTip="Every 45 minutes from the moment selected"
-                       AutomationProperties.Name="Announce every 45 minutes" />
+                       ToolTip="{Binding Strings.Interval45Tooltip}"
+                       AutomationProperties.Name="{Binding Strings.Interval45Tooltip}" />
           <RadioButton Style="{StaticResource IntervalRadioStyle}"
                        GroupName="Interval"
                        Content="60"
                        IsChecked="{Binding IsInterval60, Mode=OneWay}"
                        Command="{Binding SelectIntervalCommand}"
                        CommandParameter="60"
-                       ToolTip="Every 60 minutes, on the hour"
-                       AutomationProperties.Name="Announce every 60 minutes" />
+                       ToolTip="{Binding Strings.Interval60Tooltip}"
+                       AutomationProperties.Name="{Binding Strings.Interval60Tooltip}" />
         </UniformGrid>
       </StackPanel>
 
@@ -168,24 +170,24 @@
         <Button Grid.Column="1"
                 Margin="8,0"
                 Style="{StaticResource PrimaryButtonStyle}"
-                Content="Speak now"
+                Content="{Binding Strings.SpeakNow}"
                 Command="{Binding SpeakNowCommand}"
-                AutomationProperties.Name="Speak the time now" />
+                AutomationProperties.Name="{Binding Strings.SpeakNowAutomation}" />
 
         <Button Grid.Column="2"
                 Style="{StaticResource SecondaryButtonStyle}"
                 Content="{Binding ThemeDisplayName}"
                 Command="{Binding CycleThemeCommand}"
                 MaxWidth="112"
-                ToolTip="Change theme"
-                AutomationProperties.Name="Change theme" />
+                ToolTip="{Binding Strings.ChangeTheme}"
+                AutomationProperties.Name="{Binding Strings.ChangeTheme}" />
 
         <ToggleButton Grid.Column="3"
                       Margin="8,0,0,0"
                       Style="{StaticResource IconToggleStyle}"
                       IsChecked="{Binding AlwaysOnTop, Mode=TwoWay}"
-                      ToolTip="Always on top"
-                      AutomationProperties.Name="Always on top">
+                      ToolTip="{Binding Strings.AlwaysOnTop}"
+                      AutomationProperties.Name="{Binding Strings.AlwaysOnTop}">
           <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="16" Text="&#xE718;" />
         </ToggleButton>
       </Grid>
@@ -194,7 +196,7 @@
                   Margin="0,10,0,0"
                   Visibility="{Binding IsTransparentTheme, Converter={StaticResource BoolToVisibility}}">
         <Grid>
-          <TextBlock Text="Window opacity"
+          <TextBlock Text="{Binding Strings.WindowOpacity}"
                      FontSize="10"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
           <TextBlock Text="{Binding WindowOpacity, StringFormat={}{0:P0}}"
@@ -208,7 +210,7 @@
                 SmallChange="0.01"
                 LargeChange="0.05"
                 Value="{Binding WindowOpacity, Mode=TwoWay}"
-                AutomationProperties.Name="Window opacity" />
+                AutomationProperties.Name="{Binding Strings.WindowOpacity}" />
       </StackPanel>
 
       <Border Grid.Row="6"
@@ -226,7 +228,7 @@
                    Foreground="{DynamicResource CaptionBrush}"
                    VerticalAlignment="Center"
                    AutomationProperties.LiveSetting="Polite"
-                   AutomationProperties.Name="Last spoken phrase" />
+                   AutomationProperties.Name="{Binding Strings.LastSpokenName}" />
       </Border>
 
       <TextBlock Grid.Row="7"
@@ -238,7 +240,7 @@
                  Foreground="{DynamicResource TextSecondaryBrush}" />
 
       <TextBlock Grid.Row="8"
-                 Text="Closing hides to the tray · Exit from the tray menu"
+                 Text="{Binding Strings.FooterHint}"
                  FontSize="9"
                  Margin="0,6,0,0"
                  HorizontalAlignment="Center"

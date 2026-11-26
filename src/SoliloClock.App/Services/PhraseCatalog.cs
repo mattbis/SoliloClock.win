@@ -24,7 +24,8 @@ public static class PhraseCatalog
     public static string DefaultDirectory =>
         Path.Combine(AppContext.BaseDirectory, "Resources", "Phrases");
 
-    public static PhraseLoadResult LoadDefault() => Load(DefaultDirectory, "en-GB");
+    public static PhraseLoadResult LoadDefault(string? locale = null) =>
+        Load(DefaultDirectory, locale ?? FallbackLocale);
 
     public static PhraseLoadResult Load(string directory, string locale)
     {

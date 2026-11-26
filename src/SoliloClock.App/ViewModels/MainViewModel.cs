@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using SoliloClock.Models;
@@ -26,7 +27,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     private readonly IClock _clock;
     private readonly ScheduleCalculator _calculator;
     private readonly AnnouncementSchedule _schedule;
-    private readonly EnglishTimeFormatter _formatter = new();
+    private readonly UiText _text;
+    private readonly TimeFormatterSelection _formatter;
     private readonly PhraseLoadResult _catalog;
     private readonly DateTimeOffset _startedAt;
     private readonly Random _random = new();
@@ -37,10 +39,10 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
     private bool _started;
     private bool _disposed;
-    private string _caption = "Ready when you are.";
+    private string _caption = string.Empty;
     private string _status = string.Empty;
     private string _digitalTime = string.Empty;
-    private string _nextAnnouncementText = "No announcement scheduled";
+    private string _nextAnnouncementText = string.Empty;
     private string _themeId = "pink";
     private string _themeDisplayName = "Pink";
     private bool _sparkles = true;
@@ -53,7 +55,9 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         ISpeechEngine speech,
         PhraseSelector selector,
         IClock clock,
-        PhraseLoadResult catalog)
+        PhraseLoadResult catalog,
+        UiText text,
+        TimeFormatterSelection formatter)
     {
         _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -61,6 +65,11 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         _selector = selector ?? throw new ArgumentNullException(nameof(selector));
         _clock = clock ?? throw new ArgumentNullException(nameof(clock));
         _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
+        _text = text ?? throw new ArgumentNullException(nameof(text));
+        _formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
+        Strings = new UiStrings(_text);
+        _caption = _text[LocalizationKeys.CaptionReady];
+        _nextAnnouncementText = _text[LocalizationKeys.StatusNoAnnouncement];
         _calculator = new ScheduleCalculator();
         _schedule = new AnnouncementSchedule(clock, _calculator);
         _startedAt = clock.Now;
@@ -68,6 +77,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         SelectIntervalCommand = new RelayCommand(ExecuteSelectInterval);
         SpeakNowCommand = new RelayCommand(_ => SpeakNow());
         CycleThemeCommand = new RelayCommand(_ => CycleTheme());
+        TestVoiceCommand = new RelayCommand(_ => TestVoice());
 
         _speech.SpeechFailed += OnSpeechFailed;
 
@@ -88,7 +98,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
         if (_settings.SpeechVoice is not null && !_speech.TrySelectVoice(_settings.SpeechVoice))
         {
-            _status = $"The saved voice '{_settings.SpeechVoice}' is not installed; using the default Windows voice.";
+            _status = _text.Format(LocalizationKeys.StatusSavedVoiceMissing, _settings.SpeechVoice);
             _settings.SpeechVoice = null;
         }
 
@@ -102,11 +112,22 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
     public event EventHandler<Notification>? NotifyRequested;
 
+    /// <summary>Bindable English-or-localized window chrome.</summary>
+    public UiStrings Strings { get; }
+
+    public UiText Text => _text;
+
+    public FlowDirection FlowDirection => _text.FlowDirection;
+
+    public XmlLanguage WpfLanguage => _text.WpfLanguage;
+
     public ICommand SelectIntervalCommand { get; }
 
     public ICommand SpeakNowCommand { get; }
 
     public ICommand CycleThemeCommand { get; }
+
+    public ICommand TestVoiceCommand { get; }
 
     public AnnouncementInterval Interval => AnnouncementIntervals.FromMinutes(_settings.IntervalMinutes);
 
@@ -204,7 +225,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
     public string MuteGlyph => IsMuted ? "\uE74F" : "\uE767";
 
-    public string MuteTooltip => IsMuted ? "Unmute scheduled announcements" : "Mute scheduled announcements";
+    public string MuteTooltip => _text[IsMuted ? LocalizationKeys.Unmute : LocalizationKeys.Mute];
 
     public bool AlwaysOnTop
     {
@@ -265,8 +286,21 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
     public bool ShouldExplainClose => !_settings.CloseToTrayExplained;
 
+    public IReadOnlyList<VoiceOption> Voices => _speech.Voices;
+
+    public string? SelectedVoice => _settings.SpeechVoice;
+
+    /// <summary>Language used for spoken grammar and the phrase catalog.</summary>
+    public string AnnouncementLocale =>
+        string.IsNullOrWhiteSpace(_settings.SpeechLanguage) ? _settings.UiLanguage : _settings.SpeechLanguage;
+
+    public string AnnouncementLanguageName => LocaleRegistry.GetDisplayName(AnnouncementLocale);
+
+    /// <summary>True when an installed Windows voice can actually speak the announcement language.</summary>
+    public bool HasVoiceForLanguage => VoiceCatalog.SpeaksLanguage(Voices, AnnouncementLocale);
+
     public string ShortStatus =>
-        $"Talking Clock — {ThemeDisplayName} · {NextAnnouncementText}";
+        _text.Format(LocalizationKeys.StatusShort, ThemeDisplayName, NextAnnouncementText);
 
     public string? LastSpokenDisplay =>
         _settings.LastSpokenAt is { } last ? last.ToLocalTime().ToString("t") : null;
@@ -296,18 +330,36 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
             startupNotes.Add(_catalog.Diagnostics[0]);
         }
 
+        if (_text.UsedFallback)
+        {
+            startupNotes.Add(_text.Format(LocalizationKeys.StatusUiFallback, _text.RequestedLocale));
+        }
+
+        if (_formatter.UsedFallback)
+        {
+            startupNotes.Add(_text.Format(
+                LocalizationKeys.StatusGrammarFallback,
+                LocaleRegistry.GetDisplayName(_formatter.Locale)));
+        }
+
         if (!_speech.IsAvailable)
         {
-            startupNotes.Add("No Windows speech voice is available; captions still work.");
+            startupNotes.Add(_text[LocalizationKeys.StatusNoVoice]);
         }
         else if (_speech.Voices.Count == 0)
         {
-            startupNotes.Add("Windows reports no installed voices; announcements will be silent.");
+            startupNotes.Add(_text[LocalizationKeys.StatusNoVoicesInstalled]);
+        }
+        else if (!HasVoiceForLanguage)
+        {
+            startupNotes.Add(_text.Format(
+                LocalizationKeys.TrayNoVoiceForLanguage,
+                AnnouncementLanguageName));
         }
 
         if (_catalog.Phrases.Count == 0)
         {
-            startupNotes.Add("No phrases loaded; only time announcements will be spoken.");
+            startupNotes.Add(_text[LocalizationKeys.StatusNoPhrases]);
         }
 
         if (startupNotes.Count > 0)
@@ -326,8 +378,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
             NotifyRequested?.Invoke(
                 this,
                 new Notification(
-                    "Speech unavailable",
-                    "No Windows speech voice was found. The clock still works and shows captions. Install a Windows voice to hear announcements."));
+                    _text[LocalizationKeys.NotifySpeechUnavailableTitle],
+                    _text[LocalizationKeys.NotifySpeechUnavailableMessage]));
         }
     }
 
@@ -364,23 +416,62 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         ScheduleSave();
 
         Status = interval == AnnouncementInterval.Minutes45
-            ? "45-minute cadence anchored to now."
-            : $"Announcing every {(int)interval} minutes.";
+            ? _text[LocalizationKeys.StatusInterval45]
+            : _text.Format(LocalizationKeys.StatusInterval, (int)interval);
     }
 
     /// <summary>Speaks immediately, even when scheduled announcements are muted.</summary>
     public void SpeakNow()
     {
         var local = DateTime.Now;
-        var timeText = _formatter.Format(local, new TimeFormatOptions(_settings.UseNaturalTime, _settings.Use24Hour));
+        var timeText = _formatter.Formatter.Format(local, new TimeFormatOptions(_settings.UseNaturalTime, _settings.Use24Hour));
         var joke = TrySelectJoke(local);
         var utterance = joke is null ? timeText : $"{timeText} {joke}";
 
         Caption = utterance;
-        Status = _speech.IsAvailable ? "Speaking now." : "No speech voice available; showing the caption instead.";
+        Status = _text[_speech.IsAvailable
+            ? LocalizationKeys.StatusSpeakingNow
+            : LocalizationKeys.StatusNoVoiceCaption];
         _speech.Speak(utterance, CurrentSpeechOptions);
         _settings.LastSpokenAt = _clock.Now;
         ScheduleSave();
+    }
+
+    /// <summary>Selects an installed voice, or null for the Windows default.</summary>
+    public void SetVoice(string? voiceName)
+    {
+        if (string.Equals(_settings.SpeechVoice, voiceName, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        if (voiceName is not null && !_speech.TrySelectVoice(voiceName))
+        {
+            Status = _text.Format(LocalizationKeys.StatusSavedVoiceMissing, voiceName);
+            return;
+        }
+
+        if (voiceName is null)
+        {
+            _speech.TrySelectVoice(null);
+        }
+
+        _settings.SpeechVoice = voiceName;
+        OnPropertyChanged(nameof(SelectedVoice));
+        ScheduleSave();
+        RaiseStateChanged();
+    }
+
+    /// <summary>Speaks a short sample so a voice can be judged before it is trusted.</summary>
+    public void TestVoice()
+    {
+        if (!_speech.IsAvailable)
+        {
+            Status = _text[LocalizationKeys.StatusNoVoice];
+            return;
+        }
+
+        _speech.Speak(_text[LocalizationKeys.VoiceTestSample], CurrentSpeechOptions);
     }
 
     public void SetTheme(string themeId)
@@ -438,7 +529,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            Status = $"Settings could not be saved: {ex.Message}";
+            Status = _text.Format(LocalizationKeys.StatusSaveFailed, ex.Message);
         }
     }
 
@@ -491,7 +582,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         _settings.Theme = theme.Id;
 
         ThemeId = theme.Id;
-        ThemeDisplayName = theme.DisplayName;
+        ThemeDisplayName = _text[theme.NameKey];
         Sparkles = theme.Sparkles;
         Glow = theme.Glow;
         IsTransparentTheme = theme.IsTransparent;
@@ -532,7 +623,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         var next = _schedule.Next;
         if (next is null)
         {
-            NextAnnouncementText = "No announcement scheduled";
+            NextAnnouncementText = _text[LocalizationKeys.StatusNoAnnouncement];
             return;
         }
 
@@ -563,12 +654,12 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         }
 
         var local = TimeZoneInfo.ConvertTime(when, TimeZoneInfo.Local).DateTime;
-        var timeText = _formatter.Format(local, new TimeFormatOptions(_settings.UseNaturalTime, _settings.Use24Hour));
+        var timeText = _formatter.Formatter.Format(local, new TimeFormatOptions(_settings.UseNaturalTime, _settings.Use24Hour));
         var joke = TrySelectJoke(local);
         var utterance = joke is null ? timeText : $"{timeText} {joke}";
 
         Caption = utterance;
-        Status = $"Spoken at {local:HH:mm}.";
+        Status = _text.Format(LocalizationKeys.StatusSpokenAt, local.ToString("HH:mm", _text.Culture));
         _settings.LastSpokenAt = _clock.Now;
         ScheduleSave();
 
@@ -605,16 +696,19 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         var next = _schedule.Next;
         NextAnnouncementText = next is { } value
             ? BuildNextAnnouncementText(value)
-            : "No announcement scheduled";
+            : _text[LocalizationKeys.StatusNoAnnouncement];
     }
 
     private string BuildNextAnnouncementText(DateTimeOffset next)
     {
         var local = next.ToLocalTime();
-        var time = _settings.Use24Hour ? local.ToString("HH:mm") : local.ToString("h:mm tt");
+        var time = _settings.Use24Hour
+            ? local.ToString("HH:mm", _text.Culture)
+            : local.ToString("h:mm tt", _text.Culture);
         var minutes = (int)Math.Ceiling((next - _clock.Now).TotalMinutes);
-        var relative = minutes <= 0 ? "now" : $"in {minutes} min";
-        return $"Next {time} · {relative}";
+        return minutes <= 0
+            ? _text.Format(LocalizationKeys.NextNow, time)
+            : _text.Format(LocalizationKeys.NextRelative, time, minutes);
     }
 
     private string FormatDigital(DateTime now) =>
@@ -671,7 +765,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     }
 
     private void OnSpeechFailed(object? sender, string message) =>
-        Dispatch(() => Status = $"Speech error: {message}");
+        Dispatch(() => Status = _text.Format(LocalizationKeys.StatusSpeechError, message));
 
     private void RaiseStateChanged() => StateChanged?.Invoke(this, EventArgs.Empty);
 

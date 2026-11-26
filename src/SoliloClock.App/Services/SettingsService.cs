@@ -139,10 +139,10 @@ public sealed class SettingsService
         settings.SpeechRate = Math.Clamp(settings.SpeechRate, -10, 10);
         settings.SpeechVolume = Math.Clamp(settings.SpeechVolume, 0, 100);
 
-        if (string.IsNullOrWhiteSpace(settings.UiLanguage))
-        {
-            settings.UiLanguage = "en-GB";
-        }
+        settings.UiLanguage = LocaleRegistry.NormalizeTag(settings.UiLanguage);
+        settings.SpeechLanguage = string.IsNullOrWhiteSpace(settings.SpeechLanguage)
+            ? null
+            : LocaleRegistry.TryNormalizeTag(settings.SpeechLanguage);
 
         return settings;
     }

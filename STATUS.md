@@ -1,112 +1,102 @@
 # STATUS — SoliloClock
 
-**Last updated:** 2026-11-21
-**Stage:** M0 complete. M1 implemented and verified at build/test level. M2–M4 not started.
-**Name:** SoliloClock (per user request; the plan's working name was "Talking Clock").
+**Last updated:** 2026-11-26
+**Stage:** M0 and M1 complete. **M2.1 (localization foundation) implemented and verified.** M2.2–M2.6 (language stages) and M3–M4 not started.
+**Name:** SoliloClock (the plan's working name was "Talking Clock").
 
 ## Verification in this run
 
 | Check | Result |
 |---|---|
 | `dotnet build SoliloClock.sln -c Release` | 0 warnings, 0 errors |
-| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release` | **54 passed**, 0 failed, 0 skipped |
-| Release executable startup | Process stayed alive through a 7-second smoke check with the tray icon created |
-| Single instance | Second launch exited with code 0 while the first process stayed running |
-| Framework-dependent publish | `artifacts/win-x64/SoliloClock.exe` (single file, 931 KB) plus `Resources/Phrases/en-GB.json` |
-| Theme dictionary keys | All five themes expose the identical 25 resource keys; all 24 `DynamicResource` references resolve |
-| SAPI on this machine | 5 voices installed: Microsoft Hazel Desktop, Microsoft Hazel, Microsoft Susan, Microsoft George (en-GB), Microsoft Zira Desktop (en-US) |
+| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **84 passed**, 0 failed, 0 skipped |
+| Release executable startup | Process stayed alive through a 7-second smoke check; no leftover process |
+| UI catalog deployment | `Resources/Localization/en-GB.json` copied to the build output |
+| UI string completeness | Test reflects over every `LocalizationKeys` constant and fails on a missing or empty key |
+| RTL plumbing | Unit test: `ar` produces `FlowDirection.RightToLeft`; `ar-SA` keeps a Gregorian calendar |
 
-**Not verified:** audible speech output, visual inspection of all five themes,
-transparency/DPI/multi-monitor behavior, screen-reader output, live tray-menu
-clicks, a real 15-minute elapsed announcement, and hidden-state CPU/RAM
-measurement. The render loop is detached while hidden and only a single-shot
-announcement timer remains, but no profiler measurement was taken.
+**Not verified:** audible speech output (including Test voice), visual inspection of the
+window or tray menu, actual RTL/CJK rendering, screen-reader output, live tray-menu
+clicks, and a real 15-minute announcement. No profiler measurement was taken.
 
-## Completed — M0 skeleton
+## Completed — M0 skeleton and M1 minimum lovable product
 
-- [x] WPF project builds and launches with no console window.
-- [x] Tray icon with Show/Hide/Exit, interval, mute, theme, options.
-- [x] Close-to-tray with a one-time explanation and Exit in the tray menu.
-- [x] Single-instance behavior; second launch signals the existing instance to
-      reveal itself.
-- [x] Atomic JSON settings persistence and malformed-file recovery.
-- [x] `.editorconfig`, `.gitignore`, README, LICENSE, build/publish scripts, solution.
-
-## Completed — M1 minimum lovable product
-
-- [x] Animated vector analog clock with smooth sweep second hand, digital readout.
-- [x] Exactly four interval buttons: 15, 30, 45, 60, with clear active state.
-- [x] Windows SAPI speech; Speak Now and Mute work independently of the clock.
-- [x] Accurate wall-clock scheduling and explicit anchored 45-minute semantics.
-- [x] Missed announcements are skipped (90-second tolerance), never replayed.
-- [x] Five themes, including a functional Transparent theme with opacity slider
-      and always-on-top toggle.
-- [x] Tray-only operation; clock rendering stops while hidden.
+- [x] WPF tray app, single instance, close-to-tray, Show/Hide/Exit, atomic settings.
+- [x] Animated vector analog clock, digital readout, four interval buttons (15/30/45/60).
+- [x] Windows SAPI speech, Speak Now, mute, wall-clock scheduling, missed-announcement skip.
+- [x] Five themes including a functional Transparent theme.
 - [x] 100 English phrases, 25% joke rate, weighted selection, no repeat in last 20.
-- [x] Tone, family-friendly, day-part and session-age filters in the engine.
-- [x] No Python, Electron, login, cloud service, network access or admin requirement.
 - [x] xUnit coverage for scheduling, DST, settings, catalogs, selection and formatting.
+
+## Completed — M2.1 localization foundation
+
+- [x] **UI language is consumed, not just stored.** `AppSettings.UiLanguage` selects a
+  JSON catalog from `Resources/Localization/`; English is always loaded first and the
+  requested locale is layered on top, so a partial translation keeps reviewed English
+  wording instead of blanks.
+- [x] **Separate UI language, speech language and voice.** New `SpeechLanguage` setting
+  defaults to the UI language; `SpeechVoice` stays independent. Invalid tags repair to
+  `en-GB` on load.
+- [x] **Time formatter no longer hardcoded.** `TimeFormatterFactory` resolves grammar by
+  locale (`en-GB`, `en-US`, `en-AU`, neutral `en`) and falls back to English with an
+  explicit diagnostic. `MainViewModel` receives the selection instead of `new()`ing English.
+- [x] **Voice picker with real data.** Installed voices are exposed as `VoiceOption`
+  (name + BCP-47 culture); the tray `Options → Voice` menu lists only installed voices,
+  shows the culture, offers **Test voice**, and states "No installed voice speaks
+  <language>" when the language cannot be spoken.
+- [x] **Honest startup status** for a missing UI translation, missing time grammar,
+  missing voice, no voices at all, and no phrase catalog.
+- [x] **RTL and culture plumbing.** Window `FlowDirection` and `Language` follow the
+  locale; the analog clock numerals use the inherited culture and flow direction; the
+  clock forces Gregorian wall time and Western digits even for `ar-SA`.
+- [x] **Grapheme-safe truncation** (`TextTruncation`) replaces UTF-16 slicing, so tray
+  tooltips never split surrogate pairs, emoji or combining marks. NotifyIcon text is
+  capped at its real 63-character limit.
+- [x] **Product naming fixed.** Short status, tray tooltip, close-to-tray dialog, window
+  title and tray listener thread all say SoliloClock.
+- [x] **Tests added (30 new):** catalog completeness and fallback, `UiText` key behavior,
+  RTL direction, Gregorian calendar under `ar-SA`, locale registry integrity, tag
+  normalisation, formatter selection, grapheme truncation, language normalization in settings.
 
 ## Defaults and deviations chosen
 
-- **TFM:** `net10.0-windows` (LTS, supported to November 2028), built with the
-  .NET 11.0.100 SDK. The project was retargeted from `net9.0-windows` after .NET 9
-  left support in May 2026; only the TFM and the `System.Speech` package version
-  changed. See README for details.
-- **Speech:** `System.Speech` 9.0 SAPI adapter. Announcements are cancelled
-  before a new one starts, so stale/long speech cannot stack.
-- **45 minutes:** elapsed cadence anchored to the moment 45 was selected,
-  persisted as `Anchor45` across restarts. Settings/tray compute the next one.
-- **Tolerance:** a boundary may fire up to 90 seconds late; older boundaries are
-  skipped after sleep/resume/DST/clock changes.
-- **Natural time:** default English natural phrasing ("It's quarter past seven").
-  A 24-hour preference speaks exact 24-hour time ("It's 19:45").
-- **Phrases:** all 100 plan seeds are original and included. The only
-  `minActiveMinutes` gate uses app-observed elapsed session time since launch
-  (not invented computer usage).
-- **Settings UI:** M1 exposes theme cycling, pin, opacity, mute and reduced motion
-  (tray Options). A full settings page, joke-rate/tone/category UI and voice
-  picker remain future work.
-- **Transparency:** translucent card plus adjustable window opacity; click-through
-  is deliberately not enabled (it is optional in the plan).
-- **Languages:** v1 is English-only by decision, not by omission. The plan's
-  16-language table stays as the M2 roadmap; shipping a language needs a
-  human-authored catalog, locale-specific time grammar and a compatible
-  installed Windows voice. Locale detection is deliberately not wired up yet:
-  with only `en-GB` bundled it would always fall back to English and surface a
-  "no catalog for <locale>" status line, which is worse than plain English.
-- **First close:** one-time informational MessageBox explaining the tray.
+- **TFM:** `net10.0-windows` (LTS, supported to November 2028), built with the .NET 10.0.404 SDK.
+- **Speech:** `System.Speech` 9.0 SAPI adapter; announcements cancel stale speech first.
+- **45 minutes:** elapsed cadence anchored to selection, persisted as `Anchor45`.
+- **Tolerance:** a boundary may fire up to 90 seconds late; older boundaries are skipped.
+- **Localization storage:** UTF-8 JSON catalogs (`Resources/Localization/<locale>.json`,
+  phrase catalogs in `Resources/Phrases/`) rather than `.resx` satellite assemblies. This
+  keeps partial translation overlays, per-key fallback and testability simple;
+  `SatelliteResourceLanguages=en` therefore only affects NuGet assets.
+- **Clock calendar:** the culture is cloned to Gregorian plus Western digits when a locale
+  would otherwise show another calendar (for example `ar-SA` Um al-Qura). A wall clock
+  should not change eras with the UI language.
+- **Language changes apply on restart.** There is no language picker in the UI yet
+  (settings file only), and no live re-localization is attempted.
+- **Fallback is stated, never silent:** a locale without strings or grammar reports it in
+  the status line rather than mixing languages quietly.
 
 ## Known limitations
 
-- English-only UI and announcements; no localized time grammar yet (M2).
-- Speech language/voice is not selectable in the UI; default/installed voice is
-  used. Voice availability is reported honestly when absent.
-- No quiet hours, usage reminders, 20-20-20 nudges, hotkey, chimes or startup
-  automation (M3).
-- No diagnostics page or rotating log file yet; status line and tray balloon
-  carry the current error.
-- No family-friendly toggle UI though the engine supports it; bundled content
-  passes the filter.
-- High-contrast theme tuning, screen-reader QA, RTL/CJK/Hindi shaping and
-  multi-monitor testing remain unverified.
-- Transparent theme can look different over light versus dark wallpapers; the
-  opacity slider is the intended control.
-- The default self-contained win-x64 publish has been run and smoke-tested
-  (roughly 149 MB single file); the framework-dependent artifact requires the
-  .NET 10 Desktop Runtime.
+- Only `en-GB` ships. `LocaleRegistry` lists the planned locales as *not shipped*; adding
+  one requires a human-authored catalog, a locale formatter with tests, an adapted phrase
+  catalog and a voice-availability statement.
+- Settings-recovery messages from `SettingsService` remain English diagnostics (unlike
+  status-line text, which is localized).
+- The Voice menu lists every installed voice and the language warning, but there is no
+  per-language filter yet.
+- Speech language, speech rate/volume, joke rate and tone still have no settings UI.
+- RTL, CJK, Devanagari shaping, high-contrast, screen-reader output and multi-monitor
+  behavior remain visually unverified.
+- No diagnostics page or rotating log file yet.
 
 ## Next actionable steps
 
-1. Give the active `dotnet` root a .NET 10 runtime (install the .NET 10 SDK or
-   Desktop Runtime) so `dotnet test` resolves the test host directly; on the
-   scoop SDK 11 root the 54 tests pass only through the Program Files muxer.
-2. Manual QA pass: listen to Speak Now and a scheduled announcement, inspect all
-   five themes at 100/150/200% DPI, exercise the tray menu and close-to-tray.
-3. Measure hidden idle CPU/RAM over an hour and confirm no duplicate announcement
-   across a sleep/resume cycle.
-4. M2: localization infrastructure, per-locale time formatters, real translated
-   catalogs, voice picker with Test Voice and unavailable-voice states.
-5. M3: opt-in active-session reminders with the documented metric and cooldowns,
-   quiet hours, tone/category/family settings, diagnostics page.
-6. M4: portable self-contained x64/ARM64 packaging, reproducible release checksums.
+1. **M2.2 — French first** (`fr-FR`): human-authored UI catalog, `FrenchTimeFormatter`
+   with quarter/half/midnight/noon tests, adapted phrase catalog, and a voice note.
+   Promoting `fr-FR` in `LocaleRegistry` is the stage gate.
+2. Repeat M2.2 for German, Spanish, Italian, Dutch and Portuguese.
+3. Then M2.3 (Polish, Russian, Greek), M2.4 (Arabic RTL), M2.5 (Hindi), M2.6 (CJK).
+4. Small follow-ups: localize settings-recovery diagnostics, add a language picker,
+   and filter the voice list by announcement language.
+5. M3: opt-in active-session reminders, quiet hours, tone/category settings, diagnostics.

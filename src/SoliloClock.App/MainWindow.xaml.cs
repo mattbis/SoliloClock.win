@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media.Animation;
+using SoliloClock.Services;
 using SoliloClock.ViewModels;
 
 namespace SoliloClock;
@@ -87,8 +88,8 @@ public partial class MainWindow : Window
             {
                 viewModel.MarkCloseToTrayExplained();
                 MessageBox.Show(
-                    "Talking Clock keeps running in the notification area.\n\nUse the tray icon to show the clock again, or choose Exit to quit.",
-                    "Talking Clock",
+                    viewModel.Text[LocalizationKeys.CloseToTrayMessage],
+                    viewModel.Strings.AppName,
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }

@@ -126,4 +126,26 @@ public sealed class SettingsServiceTests : IDisposable
 
         Assert.Empty(Directory.GetFiles(_directory, "*.tmp"));
     }
+
+    [Fact]
+    public void Normalize_RepairsLanguageTags()
+    {
+        var broken = SettingsService.Normalize(new AppSettings
+        {
+            UiLanguage = "not a locale",
+            SpeechLanguage = "   ",
+        });
+
+        Assert.Equal("en-GB", broken.UiLanguage);
+        Assert.Null(broken.SpeechLanguage);
+
+        var valid = SettingsService.Normalize(new AppSettings
+        {
+            UiLanguage = "fr-fr",
+            SpeechLanguage = "de-DE",
+        });
+
+        Assert.Equal("fr-FR", valid.UiLanguage);
+        Assert.Equal("de-DE", valid.SpeechLanguage);
+    }
 }

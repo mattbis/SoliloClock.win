@@ -259,14 +259,15 @@ public sealed class AnalogClock : FrameworkElement
 
         var emSize = Math.Max(10, radius * 0.13);
         var typeface = new Typeface(FontFamily, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+        var culture = NumeralsCulture;
 
         for (var hour = 1; hour <= 12; hour++)
         {
-            var text = hour.ToString(CultureInfo.CurrentCulture);
+            var text = hour.ToString(culture);
             var formatted = new FormattedText(
                 text,
-                CultureInfo.CurrentCulture,
-                FlowDirection.LeftToRight,
+                culture,
+                FlowDirection,
                 typeface,
                 emSize,
                 NumeralBrush,
@@ -276,6 +277,29 @@ public sealed class AnalogClock : FrameworkElement
             drawingContext.DrawText(
                 formatted,
                 new Point(position.X - formatted.Width / 2, position.Y - formatted.Height / 2));
+        }
+    }
+
+    /// <summary>Culture inherited from the window language, so numerals and layout match the UI.</summary>
+    private CultureInfo NumeralsCulture
+    {
+        get
+        {
+            try
+            {
+                if (Language is not null)
+                {
+                    return Language.GetSpecificCulture();
+                }
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+
+            return CultureInfo.CurrentCulture;
         }
     }
 

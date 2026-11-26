@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading;
 using System.Windows;
 using SoliloClock.Services;
@@ -37,18 +38,35 @@ public partial class App : Application
         _showListener = new Thread(ShowListenerLoop)
         {
             IsBackground = true,
-            Name = "Talking Clock show listener",
+            Name = "SoliloClock show listener",
         };
         _showListener.Start();
 
         var settingsService = new SettingsService();
         var loadResult = settingsService.Load();
+
+        var uiText = LocalizationCatalog.CreateUiText(loadResult.Settings.UiLanguage);
+        ApplyCulture(uiText.Culture);
+
+        var announcementLocale = string.IsNullOrWhiteSpace(loadResult.Settings.SpeechLanguage)
+            ? loadResult.Settings.UiLanguage
+            : loadResult.Settings.SpeechLanguage;
+        var formatter = TimeFormatterFactory.Resolve(announcementLocale);
+
         var clock = new SystemClock();
         var speech = new SapiSpeechEngine();
-        var catalog = PhraseCatalog.LoadDefault();
+        var catalog = PhraseCatalog.Load(PhraseCatalog.DefaultDirectory, announcementLocale);
         var selector = new PhraseSelector(catalog.Phrases);
 
-        _viewModel = new MainViewModel(settingsService, loadResult.Settings, speech, selector, clock, catalog);
+        _viewModel = new MainViewModel(
+            settingsService,
+            loadResult.Settings,
+            speech,
+            selector,
+            clock,
+            catalog,
+            uiText,
+            formatter);
         _viewModel.NotifyRequested += OnNotifyRequested;
 
         _window = new MainWindow
@@ -147,6 +165,18 @@ public partial class App : Application
 
             Dispatcher.BeginInvoke(new Action(() => _window?.ShowFromTray()));
         }
+    }
+
+    /// <summary>
+    /// Applies the UI culture to every thread so numbers, dates and the WPF
+    /// language fallback follow the chosen language from the first frame.
+    /// </summary>
+    private static void ApplyCulture(CultureInfo culture)
+    {
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
+        Thread.CurrentThread.CurrentCulture = culture;
+        Thread.CurrentThread.CurrentUICulture = culture;
     }
 
     private static void SignalExistingInstance()

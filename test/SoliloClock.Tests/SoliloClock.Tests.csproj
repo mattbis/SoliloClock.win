@@ -24,6 +24,9 @@
     <None Include="..\..\src\SoliloClock.App\Resources\Phrases\en-GB.json"
           Link="Phrases\en-GB.json"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\SoliloClock.App\Resources\Localization\en-GB.json"
+          Link="Resources\Localization\en-GB.json"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

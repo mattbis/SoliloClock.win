@@ -38,7 +38,15 @@ public sealed class AppSettings
 
     public bool FamilyFriendly { get; set; } = true;
 
+    /// <summary>BCP-47 tag for the interface language.</summary>
     public string UiLanguage { get; set; } = "en-GB";
+
+    /// <summary>
+    /// BCP-47 tag for spoken announcements. Null follows <see cref="UiLanguage"/>,
+    /// so UI and speech can differ when a voice or grammar is only available in
+    /// another language.
+    /// </summary>
+    public string? SpeechLanguage { get; set; }
 
     /// <summary>Installed SAPI voice name; null means the system default voice.</summary>
     public string? SpeechVoice { get; set; }

@@ -26,9 +26,13 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
 - 100-line English phrase catalog at a 25% joke rate with no repeats in the last
   20 selections.
 - Settings persisted atomically to `%APPDATA%\SoliloClock\settings.json`.
+- **M2.1 localization foundation:** per-locale UI string catalogs, an independent
+  speech language, a locale-keyed time-formatter factory, an installed-voice picker
+  with **Test voice**, RTL/language plumbing, and grapheme-safe tray text.
 
-Not yet implemented: localized UI and time grammar (M2), quiet hours, usage
-reminders, tone/category settings UI, diagnostics page, installer (M3/M4).
+Not yet implemented: the M2.2–M2.6 language packs (French, German, Spanish, Italian,
+Dutch, Portuguese first, then the remaining regions), quiet hours, usage reminders,
+tone/category settings UI, diagnostics page, installer (M3/M4).
 
 ## Requirements
 
@@ -102,10 +106,21 @@ Themes only change appearance; they do not affect voice or language.
 ## Speech and languages
 
 Speech uses Windows SAPI through `System.Speech`. The voice list is whatever
-Windows actually has installed; the app never claims a language can speak
-without a compatible voice. The M1 UI and announcements are English only. The
-plan's other 15 languages are M2 work and are intentionally not stubbed with
-machine-translated jokes.
+Windows actually has installed, shown with the culture each voice speaks;
+`Options → Voice` offers **Test voice** and states outright when no installed
+voice can speak the selected language. The app never claims a language can speak
+without a compatible voice.
+
+The UI and announcements are English (`en-GB`) today. Localization is delivered
+in language stages (see `doc/plan.md` §14): the M2.1 foundation is in place, so a
+language ships only once a human-authored UI catalog, its own time grammar with
+tests, and an adapted phrase catalog exist. The other 15 languages are
+intentionally not stubbed with machine-translated jokes.
+
+UI language and announcement language are separate settings
+(`UiLanguage` / `SpeechLanguage`); both live in `settings.json` and are validated
+on load. A locale without bundled strings or grammar falls back to English and
+says so in the status line instead of mixing languages silently.
 
 If no voice is available, the app still starts, shows the last spoken text as a
 caption, and explains the situation in the status line and a tray balloon.

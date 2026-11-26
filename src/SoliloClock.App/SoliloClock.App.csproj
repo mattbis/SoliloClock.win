@@ -25,6 +25,8 @@
 
   <ItemGroup>
     <None Update="Resources\Phrases\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- UI strings are UTF-8 JSON, not satellite assemblies, so SatelliteResourceLanguages still only affects NuGet assets. -->
+    <None Update="Resources\Localization\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

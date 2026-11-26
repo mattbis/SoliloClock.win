@@ -102,6 +102,11 @@ Initial language targets (UI and original phrase catalogs; speech depends on ins
 - Voice dropdown must show only actually installed/supported voices, with **Test Voice** and a clear fallback message when a language lacks a voice. Never claim every listed language can speak without a compatible TTS voice.
 - Phrase catalogs need **human-authored translations/adaptations**, especially for humor. A joke may need a culturally equivalent replacement rather than literal translation. Missing translations fall back to a simple localized time announcement or English only if user opts in.
 - Language-specific time grammar and number handling belong in locale-specific formatter implementations, not naive concatenation.
+
+**Rollout:** M2 is delivered in language stages (see §14). The localization
+infrastructure and the English reference landed first; each later stage adds one
+region at a time, beginning in Western Europe. Nothing is marked shipped until
+its UI strings, time grammar, catalog and voice guidance are real.
 - Use Windows-compatible fonts with fallback for CJK, Arabic shaping, Devanagari and other scripts; test bidirectional mixed numbers in Arabic.
 - Phrase text must be safely treated as data, not executable code.
 
@@ -377,10 +382,64 @@ Add a sensible `.editorconfig` for C# and XAML; consistent naming, formatting an
 - [x] English phrases, 25% joke rate, no immediate repeats.
 - [x] No Python, Electron, login, cloud service or admin requirement.
 
-### M2 — Multilingual
-- [ ] Localized UI and proper time formatters for the initial locales.
-- [ ] Voice selection/test, clear unavailable-voice states, script/RTL tests.
-- [ ] Translated/adapted phrase catalogs; no placeholder machine-translated jokes presented as complete.
+### M2 — Multilingual, delivered in language stages
+
+A language ships only when its UI strings, time grammar and phrase catalog are
+all human-authored. A language without a compatible installed Windows voice
+still ships its text; the Voice menu says plainly that it cannot speak.
+
+#### M2.1 — Localization foundation — complete
+- [x] Per-locale UI catalogs at `Resources/Localization/<locale>.json`, layered
+      over the English base so a partial translation keeps reviewed wording.
+- [x] `UiLanguage` and `SpeechLanguage` are actually consumed; UI language,
+      speech language and voice are independent, and invalid tags repair to `en-GB`.
+- [x] `TimeFormatterFactory` selects grammar by locale instead of hardcoding
+      English; `en-GB` is the only registered grammar for now.
+- [x] Installed voices are listed with the culture they speak, with **Test voice**
+      and an explicit "no installed voice speaks <language>" state.
+- [x] RTL layout, WPF language and clock numeral culture follow the locale; the
+      clock keeps Gregorian wall time and Western digits under any locale.
+- [x] Grapheme-safe tray truncation (no split surrogate pairs, emoji or combining marks).
+- [x] Product naming is SoliloClock everywhere (window, tray, tooltip, messages).
+- [x] Tests for catalog completeness, fallback, RTL direction, tag repair and formatter selection.
+
+#### M2.2 — Western Europe
+`fr-FR` · `de-DE` · `es-ES` · `it-IT` · `nl-NL` · `pt-PT`
+- [ ] Human-authored UI catalog per language (partials allowed; missing keys fall
+      back to English and are listed for follow-up).
+- [ ] Locale-native time formatter with tests for quarter/half hours, midnight,
+      noon and the 12/24-hour preference; no naive concatenation.
+- [ ] Human-authored or adapted phrase catalog using the stable `en-GB` IDs.
+- [ ] Native typographic conventions respected (French spacing before `!?`, German
+      ß, Spanish inverted punctuation, documented Portuguese variant).
+- [ ] State which installed SAPI voices can speak each language; Test voice works.
+
+#### M2.3 — Central, Northern and Eastern Europe
+`pl-PL` · `ru-RU` · `el-GR`
+- [ ] Same acceptance items as M2.2.
+- [ ] Plural and case agreement exercised in formatter tests (Polish and Russian
+      number agreement, Greek hour forms).
+
+#### M2.4 — Middle East and right-to-left
+`ar`
+- [ ] Same as M2.2, plus full RTL window and tray layout verification.
+- [ ] Arabic-Indic versus Western digit policy documented; mixed-direction
+      numbers tested.
+- [ ] Formatter tests for dual and plural hour forms.
+
+#### M2.5 — South Asia
+`hi`
+- [ ] Same as M2.2, plus Devanagari shaping and font-fallback checks.
+
+#### M2.6 — East Asia
+`zh-Hans` · `zh-Hant` · `ja-JP` · `ko-KR`
+- [ ] Same as M2.2, plus CJK line breaking, font fallback and locale-native time
+      phrasing (for example `7時15分です`).
+- [ ] Simplified and Traditional catalogs stay independent, not conversions.
+
+**Stage gate:** a language is promoted out of "planned" in `LocaleRegistry` only
+when its catalog, formatter and tests exist. `STATUS.md` records what shipped and
+which languages still lack a compatible voice.
 
 ### M3 — Delight and reminders
 - [ ] Opt-in usage/break reminders, measured session activity and cooldowns.

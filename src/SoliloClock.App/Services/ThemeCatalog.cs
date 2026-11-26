@@ -6,8 +6,8 @@ namespace SoliloClock.Services;
 
 public sealed record ThemeDefinition(
     string Id,
-    string DisplayName,
-    string Description,
+    string NameKey,
+    string DescriptionKey,
     string ResourceFile,
     bool Sparkles,
     bool Glow,
@@ -21,11 +21,11 @@ public static class ThemeCatalog
 {
     public static IReadOnlyList<ThemeDefinition> All { get; } = new[]
     {
-        new ThemeDefinition("pink", "Pink", "Rose, lilac and soft sparkles.", "Themes/Pink.xaml", true, false, false),
-        new ThemeDefinition("blue", "Blue", "Energetic cobalt and sky blue.", "Themes/Blue.xaml", false, false, false),
-        new ThemeDefinition("black", "Black", "Moody graphite and steel.", "Themes/Black.xaml", false, false, false),
-        new ThemeDefinition("neon", "Neon", "Retro-futuristic cyan and magenta glow.", "Themes/Neon.xaml", false, true, false),
-        new ThemeDefinition("transparent", "Transparent", "A floating desktop clock with adjustable opacity.", "Themes/Transparent.xaml", false, false, true),
+        new ThemeDefinition("pink", LocalizationKeys.ThemePinkName, LocalizationKeys.ThemePinkDescription, "Themes/Pink.xaml", true, false, false),
+        new ThemeDefinition("blue", LocalizationKeys.ThemeBlueName, LocalizationKeys.ThemeBlueDescription, "Themes/Blue.xaml", false, false, false),
+        new ThemeDefinition("black", LocalizationKeys.ThemeBlackName, LocalizationKeys.ThemeBlackDescription, "Themes/Black.xaml", false, false, false),
+        new ThemeDefinition("neon", LocalizationKeys.ThemeNeonName, LocalizationKeys.ThemeNeonDescription, "Themes/Neon.xaml", false, true, false),
+        new ThemeDefinition("transparent", LocalizationKeys.ThemeTransparentName, LocalizationKeys.ThemeTransparentDescription, "Themes/Transparent.xaml", false, false, true),
     };
 
     public static ThemeDefinition Get(string? id)
