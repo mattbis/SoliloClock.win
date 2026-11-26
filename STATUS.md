@@ -9,7 +9,7 @@
 | Check | Result |
 |---|---|
 | `dotnet build SoliloClock.sln -c Release` | 0 warnings, 0 errors |
-| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **189 passed**, 0 failed, 0 skipped |
+| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **193 passed**, 0 failed, 0 skipped |
 | Release executable startup | Process stayed alive through a 7-second smoke check; no leftover process |
 | Catalog deployment | `en-GB`/`fr-FR`/`cy-GB` UI catalogs and all three phrase catalogs present in the build output |
 | UI string completeness | Reflected test requires every `LocalizationKeys` constant in every shipped catalog |
@@ -20,6 +20,7 @@
 | Welsh phrasing | 19 natural 12-hour cases, 6 twenty-four-hour and 3 exact-reading cases assert whole sentences; all 1,440 clock minutes produce a Welsh sentence |
 | Welsh catalogs | 100 phrases load with zero diagnostics, share the English ids and keep the reviewed metadata |
 | Provisional flag | `cy-GB` is the only provisional locale, and a Welsh Windows resolves to it automatically |
+| Live language switching | 4 view-model cases drive the real `MainViewModel` through UI and announcement language changes and assert chrome, caption, status, culture, grammar and voice follow at once |
 
 **Not verified:** audible speech in any language (including Test voice, a French SAPI
 voice, and whether the automatic voice choice sounds right), visual inspection of the
@@ -102,7 +103,9 @@ measurement was taken.
 Switching either one re-localizes immediately as far as the catalogs allow: window
 chrome, tooltips, tray menu, caption, status, next-announcement text, theme name,
 culture/flow direction, phrase catalog and formatter. A voice that cannot speak the
-new language is called out in the status line and in the Voice menu.
+new language is called out in the status line and in the Voice menu. This path is
+covered by `LiveLanguageSwitchingTests`, which switches the real view model and asserts
+what the user then sees and hears.
 
 ## Defaults and deviations chosen
 
@@ -147,7 +150,6 @@ new language is called out in the status line and in the Voice menu.
    grammar, then clear `IsProvisional` for `cy-GB`.
 2. **German (`de-DE`)**: catalog, `GermanTimeFormatter` (halb, Viertel nach/vor,
    "siebzehn Uhr fünfundvierzig"), 100 phrases, promotion in `LocaleRegistry`.
-3. Add a view-model-level test for live language switching (chrome, status, formatter).
-4. Spanish, Italian, Dutch and Portuguese to finish M2.2.
-5. Then M2.3 (Polish, Russian, Greek), M2.4 (Arabic RTL), M2.5 (Hindi), M2.6 (CJK).
-6. M3: opt-in active-session reminders, quiet hours, tone/category settings, diagnostics.
+3. Spanish, Italian, Dutch and Portuguese to finish M2.2.
+4. Then M2.3 (Polish, Russian, Greek), M2.4 (Arabic RTL), M2.5 (Hindi), M2.6 (CJK).
+5. M3: opt-in active-session reminders, quiet hours, tone/category settings, diagnostics.
