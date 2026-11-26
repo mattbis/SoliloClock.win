@@ -33,17 +33,15 @@ reminders, tone/category settings UI, diagnostics page, installer (M3/M4).
 ## Requirements
 
 - Windows 10 or Windows 11.
-- .NET 9 SDK (built and tested with 9.0.205) and the .NET 9 Desktop Runtime for a
-  framework-dependent build.
+- .NET 10 SDK or newer (built with 11.0.100) and the .NET 10 Desktop Runtime for
+  a framework-dependent build.
 - A Windows speech voice for audio. The clock still runs and shows captions when
   no voice is installed.
 
-> **Support-lifecycle note:** .NET 9 left support in May 2026, and this machine
-> only has .NET 9 SDKs installed (the .NET 10 runtime is present without an SDK).
-> The project targets `net9.0-windows` so it builds here. To move to the current
-> LTS, install the .NET 10 SDK, change the TFM in both project files to
-> `net10.0-windows`, and update the `System.Speech` package. The code has no
-> .NET 9-only dependencies.
+> **Support-lifecycle note:** the project targets `net10.0-windows`, the current
+> LTS (supported to November 2028). It was retargeted from `net9.0-windows` after
+> .NET 9 left support in May 2026; only the TFM and the `System.Speech` package
+> version changed, not the code.
 
 ## Build, run, test
 

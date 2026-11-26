@@ -49,10 +49,10 @@ announcement timer remains, but no profiler measurement was taken.
 
 ## Defaults and deviations chosen
 
-- **TFM:** `net9.0-windows` because only .NET 8/9 SDKs are installed (9.0.205 is
-  latest) and no .NET 10 SDK is present. .NET 9 is out of support as of
-  May 2026; retargeting to `net10.0-windows` after installing the .NET 10 SDK is
-  the first follow-up. See README for details.
+- **TFM:** `net10.0-windows` (LTS, supported to November 2028), built with the
+  .NET 11.0.100 SDK. The project was retargeted from `net9.0-windows` after .NET 9
+  left support in May 2026; only the TFM and the `System.Speech` package version
+  changed. See README for details.
 - **Speech:** `System.Speech` 9.0 SAPI adapter. Announcements are cancelled
   before a new one starts, so stale/long speech cannot stack.
 - **45 minutes:** elapsed cadence anchored to the moment 45 was selected,
@@ -92,13 +92,15 @@ announcement timer remains, but no profiler measurement was taken.
   multi-monitor testing remain unverified.
 - Transparent theme can look different over light versus dark wallpapers; the
   opacity slider is the intended control.
-- Publish script's default self-contained build has not been run; the
-  framework-dependent artifact requires the .NET 9 Desktop Runtime.
+- The default self-contained win-x64 publish has been run and smoke-tested
+  (roughly 149 MB single file); the framework-dependent artifact requires the
+  .NET 10 Desktop Runtime.
 
 ## Next actionable steps
 
-1. Install the .NET 10 SDK, retarget both projects to `net10.0-windows`, bump
-   `System.Speech`, rebuild and rerun the 54 tests.
+1. Give the active `dotnet` root a .NET 10 runtime (install the .NET 10 SDK or
+   Desktop Runtime) so `dotnet test` resolves the test host directly; on the
+   scoop SDK 11 root the 54 tests pass only through the Program Files muxer.
 2. Manual QA pass: listen to Speak Now and a scheduled announcement, inspect all
    five themes at 100/150/200% DPI, exercise the tray menu and close-to-tray.
 3. Measure hidden idle CPU/RAM over an hour and confirm no duplicate announcement
