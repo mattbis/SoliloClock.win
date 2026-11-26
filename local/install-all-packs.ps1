@@ -54,8 +54,8 @@ Report only: which voice speaks each shipped language and what is missing.
 
 .EXAMPLE
 pwsh local/install-all-packs.ps1 -Install
-Install and expose French, German, Spanish, Italian, Dutch, Portuguese, Polish,
-Russian and Greek.
+Install and expose the Western, Central/Eastern European, Arabic and East Asian
+packs.
 
 .EXAMPLE
 pwsh local/install-all-packs.ps1 -Install -Tag de-DE,pl-PL,ru-RU
@@ -78,7 +78,7 @@ param(
     [switch]$Install,
     [switch]$Bridge,
     [switch]$Remove,
-    [string[]]$Tag = @('fr-FR', 'de-DE', 'es-ES', 'it-IT', 'nl-NL', 'pt-PT', 'pl-PL', 'ru-RU', 'el-GR'),
+    [string[]]$Tag = @('fr-FR', 'de-DE', 'es-ES', 'it-IT', 'nl-NL', 'pt-PT', 'pl-PL', 'ru-RU', 'el-GR', 'ar-SA', 'zh-CN', 'zh-TW', 'ja-JP'),
     [string[]]$VoicePack = @()
 )
 
@@ -105,6 +105,10 @@ $shipped = [ordered]@{
     'pl-PL' = 'Polish'
     'ru-RU' = 'Russian'
     'el-GR' = 'Greek'
+    'ar' = 'Arabic'
+    'zh-Hans' = 'Chinese (Simplified)'
+    'zh-Hant' = 'Chinese (Traditional)'
+    'ja-JP' = 'Japanese'
     'cy-GB' = 'Welsh'
 }
 

@@ -63,16 +63,18 @@ public static class LocaleRegistry
         new LocaleDefinition("ru-RU", "Русский", "Russian (Russia)", LocalizationStage.CentralEasternEurope, true, true, true),
         new LocaleDefinition("el-GR", "Ελληνικά", "Greek (Greece)", LocalizationStage.CentralEasternEurope, true, true, true),
 
-        // M2.4 — Middle East (right-to-left)
-        new LocaleDefinition("ar", "العربية", "Arabic", LocalizationStage.MiddleEast, false, false, false),
+        // M2.4 — Middle East (right-to-left). Machine-drafted, so flagged until a
+        // native speaker reviews it.
+        new LocaleDefinition("ar", "العربية", "Arabic", LocalizationStage.MiddleEast, true, true, true, IsProvisional: true),
 
         // M2.5 — South Asia
         new LocaleDefinition("hi", "हिन्दी", "Hindi", LocalizationStage.SouthAsia, false, false, false),
 
-        // M2.6 — East Asia
-        new LocaleDefinition("zh-Hans", "简体中文", "Chinese (Simplified)", LocalizationStage.EastAsia, false, false, false),
-        new LocaleDefinition("zh-Hant", "繁體中文", "Chinese (Traditional)", LocalizationStage.EastAsia, false, false, false),
-        new LocaleDefinition("ja-JP", "日本語", "Japanese (Japan)", LocalizationStage.EastAsia, false, false, false),
+        // M2.6 — East Asia. Chinese ships as two independent catalogs; both are
+        // machine-drafted and provisional.
+        new LocaleDefinition("zh-Hans", "简体中文", "Chinese (Simplified)", LocalizationStage.EastAsia, true, true, true, IsProvisional: true),
+        new LocaleDefinition("zh-Hant", "繁體中文", "Chinese (Traditional)", LocalizationStage.EastAsia, true, true, true, IsProvisional: true),
+        new LocaleDefinition("ja-JP", "日本語", "Japanese (Japan)", LocalizationStage.EastAsia, true, true, true, IsProvisional: true),
         new LocaleDefinition("ko-KR", "한국어", "Korean (Korea)", LocalizationStage.EastAsia, false, false, false),
     };
 
@@ -140,6 +142,34 @@ public static class LocaleRegistry
 
     public static bool SharesLanguage(string? left, string? right) =>
         string.Equals(LanguageOf(left), LanguageOf(right), StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Chinese has two independent shipped catalogs but one language code, so a
+    /// region decides the script: Taiwan, Hong Kong and Macao use Traditional and
+    /// every other Chinese region uses Simplified.
+    /// </summary>
+    public static bool UsesTraditionalChinese(string? tag)
+    {
+        var normalized = NormalizeTag(tag);
+        if (!string.Equals(LanguageOf(normalized), "zh", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        if (normalized.StartsWith("zh-Hant", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (normalized.StartsWith("zh-Hans", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var separator = normalized.LastIndexOf('-');
+        var region = separator >= 0 ? normalized[(separator + 1)..] : string.Empty;
+        return region is "TW" or "HK" or "MO";
+    }
 
     /// <summary>Native name when the locale is on the plan's list, otherwise the OS name.</summary>
     public static string GetDisplayName(string? tag)

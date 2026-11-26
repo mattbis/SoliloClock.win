@@ -145,7 +145,7 @@ public sealed class LocalizationTests
             new[]
             {
                 "en-GB", "fr-FR", "cy-GB", "de-DE", "es-ES", "it-IT", "nl-NL", "pt-PT",
-                "pl-PL", "ru-RU", "el-GR",
+                "pl-PL", "ru-RU", "el-GR", "ar", "zh-Hans", "zh-Hant", "ja-JP",
             },
             shipped);
 

@@ -1,7 +1,7 @@
 # STATUS — SoliloClock
 
 **Last updated:** 2026-11-26
-**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 complete: French, German, Spanish, Italian, Dutch and Portuguese each ship a UI catalog, 100 phrases and their own time grammar; Welsh (`cy-GB`) ships as a provisional draft pending native review. M2.3 complete: Polish (`pl-PL`), Russian (`ru-RU`) and Greek (`el-GR`) ship the same full packs with plural and case agreement covered by tests.** M2.4–M2.6 not started; M3–M4 not started.
+**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 complete: French, German, Spanish, Italian, Dutch and Portuguese each ship a UI catalog, 100 phrases and their own time grammar; Welsh (`cy-GB`) ships as a provisional draft pending native review. M2.3 complete: Polish (`pl-PL`), Russian (`ru-RU`) and Greek (`el-GR`) ship the same full packs with plural and case agreement covered by tests. M2.4–M2.6 partially complete: Arabic (`ar`), Simplified and Traditional Chinese (`zh-Hans`, `zh-Hant`) and Japanese (`ja-JP`) ship as provisional packs with their own grammar, UI catalogs and 100 phrases each; Hindi and Korean remain unshipped.** M3–M4 not started.
 **Name:** SoliloClock.
 
 ## Verification in this run
@@ -9,9 +9,9 @@
 | Check | Result |
 |---|---|
 | `dotnet build SoliloClock.sln -c Release` | 0 warnings, 0 errors |
-| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **442 passed**, 0 failed, 0 skipped |
+| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **483 passed**, 0 failed, 0 skipped |
 | Release executable startup | Process stayed alive through a 7-second smoke check; no leftover process |
-| Catalog deployment | `en-GB`/`fr-FR`/`de-DE`/`es-ES`/`it-IT`/`nl-NL`/`pt-PT`/`pl-PL`/`ru-RU`/`el-GR`/`cy-GB` UI catalogs and all eleven phrase catalogs present in the build output |
+| Catalog deployment | `en-GB`/`fr-FR`/`de-DE`/`es-ES`/`it-IT`/`nl-NL`/`pt-PT`/`pl-PL`/`ru-RU`/`el-GR`/`ar`/`zh-Hans`/`zh-Hant`/`ja-JP`/`cy-GB` UI catalogs and all fifteen phrase catalogs present in the build output |
 | UI string completeness | Reflected test requires every `LocalizationKeys` constant in every shipped catalog |
 | French phrasing | 18 natural 12-hour cases, 7 twenty-four-hour and 4 exact-reading cases assert the whole sentence |
 | French catalogs | 100 phrases load with zero diagnostics, share the English ids, and keep the reviewed metadata |
@@ -28,11 +28,16 @@
 | Russian phrasing | 12 natural cases (genitive hours, *четверть*/*половина*/*без четверти*), 2 twenty-four-hour cases, *час/часа/часов* and *минута/минуты/минут* agreement including 21 and 22 |
 | Greek phrasing | 11 natural cases (*και τέταρτο*, *και μισή*, *παρά τέταρτο*, *παρά είκοσι*), named midnight/noon and 2 twenty-four-hour cases |
 | M2.3 minute coverage | All 1,440 clock minutes in three modes produce a digit-free sentence in Polish, Russian and Greek |
+| M2.4–M2.6 shared acceptance | Arabic, both Chinese scripts and Japanese each load a complete UI catalog, 100 metadata-identical phrases, resolve their own formatter and are registered as provisional |
+| Arabic phrasing | 10 natural cases (feminine hours, *والربع*, *والنصف*, *إلا ربعًا*, dual *دقيقتين*, plural *خمس دقائق*, genitive *عشرين* after *إلا*) and a 24-hour case |
+| Chinese phrasing | 8 Simplified natural cases (*一刻*/*半*/*差一刻*), a Traditional script check and 24-hour/exact readings; `zh-CN` and `zh-TW` pick independent catalogs |
+| Japanese phrasing | 6 natural cases (*半*, *正午*, *零時*), 24-hour and exact readings |
+| M2.4–M2.6 minute coverage | All 1,440 clock minutes in three modes produce a digit-free sentence in Arabic, both Chinese scripts and Japanese |
 | Automatic language | 13 resolver cases: shipped match, `fr-CA`→`fr-FR`, unsupported→English, unknown tag, explicit override |
 | Automatic voice | 8 catalog cases: language match, region preference, alphabetical tie-break, no matching voice, blank cultures, empty voice list, unset locale |
 | Welsh phrasing | 19 natural 12-hour cases, 6 twenty-four-hour and 3 exact-reading cases assert whole sentences; all 1,440 clock minutes produce a Welsh sentence |
 | Welsh catalogs | 100 phrases load with zero diagnostics, share the English ids and keep the reviewed metadata |
-| Provisional flag | `cy-GB` is the only provisional locale, and a Welsh Windows resolves to it automatically |
+| Provisional flag | The only provisional locales are `cy-GB`, `ar`, `zh-Hans`, `zh-Hant` and `ja-JP`, all shipped with complete packs; a Welsh Windows still resolves to `cy-GB` automatically |
 | Live language switching | 4 view-model cases drive the real `MainViewModel` through UI and announcement language changes and assert chrome, caption, status, culture, grammar and voice follow at once |
 
 **Not verified:** audible speech in any language other than English (including Test voice,
@@ -162,6 +167,29 @@ taken.
       new pack needs no csproj edit.
 - [ ] Native-speaker review of the three packs, and a voice check per language.
 
+## Completed — M2.4–M2.6 Arabic, Chinese and Japanese (provisional)
+
+- [x] `Resources/Localization/{ar,zh-Hans,zh-Hant,ja-JP}.json` cover every key and
+      `Resources/Phrases/*.json` hold 100 phrases each under the English ids,
+      categories, tones, weights, windows and active-minute gates.
+- [x] `ArabicTimeFormatter`: *الساعة التاسعة*, *والربع*, *والنصف*, *إلا ربعًا*,
+      *دقيقة واحدة*, dual *دقيقتين*, plural *خمس دقائق*, and genitive tens after
+      *إلا* (*إلا عشرين دقيقة*).
+- [x] `ChineseTimeFormatter` serves both scripts: *现在是九点*, *九点一刻*, *九点半*,
+      *差一刻十点*, *九点零五分*; Traditional swaps the characters only, and each
+      locale keeps its own catalog instead of converting.
+- [x] `JapaneseTimeFormatter`: *今は九時です*, *九時半*, *九時十五分*, *九點*/**零時**,
+      *正午*, plus 24-hour and exact readings (*今は九時零五分です*).
+- [x] Chinese regions pick their script automatically: `zh-CN`/`zh-SG` → `zh-Hans`,
+      `zh-TW`/`zh-HK`/`zh-MO` → `zh-Hant`, in both the resolver and the grammar factory.
+- [x] All four locales are `IsProvisional`, so both language menus append the draft
+      marker, and `MiddleEastAndEastAsiaTests` asserts the flag, pack parity, phrasing
+      and per-minute coverage.
+- [ ] Native-speaker review of every string, phrase and grammar, and a voice check per
+      language.
+- [ ] Hindi (`hi`) and Korean (`ko-KR`) are still unshipped, and RTL/CJK window and tray
+      layout remains visually unverified.
+
 ## Language behaviour
 
 | Setting | `null` / `auto` | explicit tag |
@@ -193,12 +221,12 @@ what the user then sees and hears.
 
 ## Known limitations
 
-- Eleven locales ship (English, French, German, Spanish, Italian, Dutch, Portuguese,
-  Polish, Russian, Greek and provisional Welsh); the other six planned locales
-  (`ar`, `hi`, `zh-Hans`, `zh-Hant`, `ja-JP`, `ko-KR`) stay unshipped.
-- Every non-English pack is a project draft: French, German, Spanish, Italian, Dutch,
-  Portuguese, Polish, Russian and Greek still need a native speaker's review, and only
-  Welsh carries the visible draft marker in the UI.
+- Fifteen locales ship (English, French, German, Spanish, Italian, Dutch, Portuguese,
+  Polish, Russian, Greek, Arabic, Simplified Chinese, Traditional Chinese, Japanese and
+  Welsh); `hi` and `ko-KR` are the only planned locales still unshipped.
+- Every non-English pack is a project draft: all fourteen still need a native speaker's
+  review, and Welsh, Arabic, both Chinese packs and Japanese carry the visible draft
+  marker in the UI.
 - Welsh content is a draft, not a translation anyone has checked: it is marked in both
   language menus and must be replaced after native review. Its time grammar is only as
   good as the draft wording, particularly mutations and the 24-hour reading.
@@ -225,8 +253,9 @@ what the user then sees and hears.
 
 1. **Native review of Welsh:** replace the draft UI strings, 100 phrases and time
    grammar, then clear `IsProvisional` for `cy-GB`.
-2. **Native review of the nine completed packs** (French, German, Spanish, Italian,
-   Dutch, Portuguese, Polish, Russian, Greek): correct wording and any grammar, then
-   decide whether they should carry the same draft marker as Welsh.
-3. M2.4 (Arabic RTL), M2.5 (Hindi), M2.6 (CJK).
+2. **Native review of the thirteen drafted packs** (French, German, Spanish, Italian,
+   Dutch, Portuguese, Polish, Russian, Greek, Arabic, both Chinese scripts and
+   Japanese): correct wording and grammar, then clear `IsProvisional` and decide which
+   packs should keep the marker.
+3. M2.5 Hindi and M2.6 Korean, then RTL and CJK window/tray layout verification.
 4. M3: opt-in active-session reminders, quiet hours, tone/category settings, diagnostics.

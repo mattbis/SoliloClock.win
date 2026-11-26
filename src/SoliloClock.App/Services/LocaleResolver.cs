@@ -121,6 +121,12 @@ public static class LocaleResolver
             }
         }
 
+        // Chinese ships two scripts under one language code, so the region decides.
+        if (string.Equals(LocaleRegistry.LanguageOf(requested), "zh", StringComparison.OrdinalIgnoreCase))
+        {
+            return LocaleRegistry.UsesTraditionalChinese(requested) ? "zh-Hant" : "zh-Hans";
+        }
+
         foreach (var locale in shipped)
         {
             if (LocaleRegistry.SharesLanguage(locale.Tag, requested))

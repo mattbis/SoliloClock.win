@@ -494,22 +494,33 @@ completed language.
       day asserted to produce a digit-free sentence in natural, exact and 24-hour modes.
 - [ ] Native-speaker review and a voice check per language.
 
-#### M2.4 — Middle East and right-to-left
+#### M2.4 — Middle East and right-to-left — Arabic shipped, provisional
 `ar`
-- [ ] Same as M2.2, plus full RTL window and tray layout verification.
-- [ ] Arabic-Indic versus Western digit policy documented; mixed-direction
-      numbers tested.
-- [ ] Formatter tests for dual and plural hour forms.
+- [x] Complete UI catalog, 100 phrases and `ArabicTimeFormatter`: feminine hour
+      ordinals, *والربع*, *والنصف*, *إلا ربعًا*, dual *دقيقتين*, plural
+      *خمس دقائق*, and the genitive tens that *إلا* governs.
+- [x] `ar-SA`, `ar-EG` and other Arabic regions inherit the grammar by language match.
+- [x] The window flows right-to-left through `UiText.FlowDirection`; the clock keeps
+      Gregorian wall time and Western digits, and the time is spoken in words.
+- [ ] Full RTL window and tray layout verification, and mixed-direction number checks.
+- [ ] Native-speaker review; the pack is provisional until then.
 
 #### M2.5 — South Asia
 `hi`
 - [ ] Same as M2.2, plus Devanagari shaping and font-fallback checks.
 
-#### M2.6 — East Asia
+#### M2.6 — East Asia — Chinese and Japanese shipped, provisional; Korean pending
 `zh-Hans` · `zh-Hant` · `ja-JP` · `ko-KR`
-- [ ] Same as M2.2, plus CJK line breaking, font fallback and locale-native time
-      phrasing (for example `7時15分です`).
-- [ ] Simplified and Traditional catalogs stay independent, not conversions.
+- [x] Simplified and Traditional Chinese each ship an independent UI catalog and 100
+      phrases, sharing `ChineseTimeFormatter` for numerals and the *一刻*/*半*/*差一刻*
+      forms; the region picks the script (`zh-CN` → Simplified, `zh-TW`/`zh-HK` →
+      Traditional).
+- [x] `JapaneseTimeFormatter`: *今は九時です*, *九時半*, *九時十五分*, *正午* and *零時*.
+- [x] Every minute of the day asserted to produce a digit-free sentence in all three
+      modes for both Chinese scripts and Japanese.
+- [ ] Korean (`ko-KR`) remains unshipped.
+- [ ] CJK line breaking, font fallback and a native-speaker review; the packs are
+      provisional until then.
 
 **Stage gate:** a language is promoted out of "planned" in `LocaleRegistry` only
 when its catalog, formatter and tests exist; it is recorded as complete only after

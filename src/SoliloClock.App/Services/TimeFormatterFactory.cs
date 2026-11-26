@@ -44,6 +44,11 @@ public static class TimeFormatterFactory
         ("ru", static () => new RussianTimeFormatter()),
         ("el-GR", static () => new GreekTimeFormatter()),
         ("el", static () => new GreekTimeFormatter()),
+        ("ar", static () => new ArabicTimeFormatter()),
+        ("zh-Hans", static () => new ChineseTimeFormatter()),
+        ("zh-Hant", static () => new ChineseTimeFormatter(traditional: true)),
+        ("ja-JP", static () => new JapaneseTimeFormatter()),
+        ("ja", static () => new JapaneseTimeFormatter()),
     };
 
     public static TimeFormatterSelection Resolve(string? locale)
@@ -54,6 +59,15 @@ public static class TimeFormatterFactory
         if (exact is { } match)
         {
             return new TimeFormatterSelection(match.Create(), requested, match.Locale, false, null);
+        }
+
+        // Chinese shares one language code across two scripts, so the region picks
+        // the catalog rather than the first Chinese locale in the list.
+        if (string.Equals(LocaleRegistry.LanguageOf(requested), "zh", StringComparison.OrdinalIgnoreCase))
+        {
+            var script = LocaleRegistry.UsesTraditionalChinese(requested) ? "zh-Hant" : "zh-Hans";
+            var chinese = Find(script)!.Value;
+            return new TimeFormatterSelection(chinese.Create(), requested, chinese.Locale, false, null);
         }
 
         // en-CA should inherit English grammar rather than fall all the way back.

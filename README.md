@@ -44,8 +44,14 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
   a UI catalog, 100 phrases and their own time grammar ("jest wpół do dziesiątej",
   "без четверти десять", "εννέα και τέταρτο"), with Polish and Russian plural and
   case agreement covered by tests.
+- **M2.4–M2.6 in progress — Arabic, Chinese and Japanese, provisional:** `ar`,
+  `zh-Hans`, `zh-Hant` and `ja-JP` ship UI catalogs, 100 phrases and their own time
+  grammar ("الساعة التاسعة والربع", "现在是九点一刻", "現在是九點半", "今は九時です").
+  The wording is machine-drafted, so all four carry the draft marker in both
+  language menus. Chinese regions pick their script automatically (`zh-CN` →
+  Simplified, `zh-TW`/`zh-HK` → Traditional).
 
-Not yet implemented: M2.4–M2.6 (Arabic, Hindi, CJK), quiet hours,
+Not yet implemented: Hindi and Korean, quiet hours,
 usage reminders, tone/category settings UI, diagnostics page, installer (M3/M4).
 Welsh is usable but explicitly a draft, not a finished translation.
 
@@ -143,14 +149,15 @@ picks.
 
 The UI and announcements ship in English (`en-GB`), French (`fr-FR`), German
 (`de-DE`), Spanish (`es-ES`), Italian (`it-IT`), Dutch (`nl-NL`), Portuguese
-(`pt-PT`), Polish (`pl-PL`), Russian (`ru-RU`), Greek (`el-GR`) and provisional
-Welsh (`cy-GB`). Localization is delivered in language
+(`pt-PT`), Polish (`pl-PL`), Russian (`ru-RU`), Greek (`el-GR`), Arabic (`ar`),
+Simplified Chinese (`zh-Hans`), Traditional Chinese (`zh-Hant`), Japanese
+(`ja-JP`) and Welsh (`cy-GB`). Localization is delivered in language
 stages (see `doc/plan.md` §14): a language ships only once its UI catalog, its own
 time grammar with tests, and an adapted phrase catalog exist, so nothing appears in
-the picker half-finished. Welsh is the one exception: its text is machine-drafted,
-so `Cymraeg` appears in both language menus with a *draft — pending native review*
-marker until a Welsh speaker has checked it. The M2.4–M2.6 languages are not stubbed
-at all.
+the picker half-finished. Welsh, Arabic, both Chinese packs and Japanese are
+machine-drafted, so each appears in both language menus with a *draft — pending
+native review* marker until a native speaker has checked it. Hindi and Korean are
+not stubbed at all.
 
 To *hear* Welsh you need a Welsh SAPI voice, which Windows does not include.
 Install [Techiaith TTS](https://techiaith.cymru/en/products/techiaith-tts/) (free,
@@ -162,8 +169,8 @@ this repository.
 Windows keeps many of its voices in a newer speech stack that SAPI 5 never lists,
 so a language Windows itself can speak can still be missing from
 **Options → Voice**. `local/install-all-packs.ps1` closes that gap for testing:
-`-Install` adds the Windows text-to-speech feature for each shipped European
-language and copies those voice tokens into the SAPI 5 tree — the same bridge
+`-Install` adds the Windows text-to-speech feature for each shipped language and
+copies those voice tokens into the SAPI 5 tree — the same bridge
 Microsoft uses for its own English voices. It needs an elevated 64-bit PowerShell
 and Windows Update access, records exactly which tokens it created, and `-Remove`
 deletes only those. Welsh still needs Techiaith TTS, which the same script can
@@ -193,11 +200,12 @@ caption, and explains the situation in the status line and a tray balloon.
 
 `src/SoliloClock.App/Resources/Phrases/` holds one catalog per shipped language:
 `en-GB.json`, `fr-FR.json`, `de-DE.json`, `es-ES.json`, `it-IT.json`, `nl-NL.json`,
-`pt-PT.json` and provisional `cy-GB.json`, each with 100 lines sharing the same ids and
-metadata (a shared test enforces the parity). English is the reference catalog; the
-French, German, Spanish, Italian, Dutch and Portuguese packs were written for this
-project and would still benefit from a native speaker's review. Welsh is the only one
-flagged as a draft in the UI. Fields per entry: `id`, `text`, `category`, `tone`,
+`pt-PT.json`, `pl-PL.json`, `ru-RU.json`, `el-GR.json`, `ar.json`, `zh-Hans.json`,
+`zh-Hant.json`, `ja-JP.json` and provisional `cy-GB.json`, each with 100 lines sharing
+the same ids and metadata (a shared test enforces the parity). English is the reference
+catalog; every other pack was written for this project and would still benefit from a
+native speaker's review. Welsh, Arabic, both Chinese packs and Japanese are flagged as
+drafts in the UI. Fields per entry: `id`, `text`, `category`, `tone`,
 `weight`, `familyFriendly`, `minActiveMinutes`, `timeWindow`.
 
 Selection:
