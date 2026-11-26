@@ -28,18 +28,30 @@ public static class LocalizationCatalog
 
     public static LocalizationLoadResult LoadDefault() => Load(DefaultDirectory, FallbackLocale);
 
-    public static UiText CreateUiText(string? locale) => CreateUiText(DefaultDirectory, locale);
+    public static UiText CreateUiText(string? locale) =>
+        CreateUiText(DefaultDirectory, locale, requestedLocale: null);
 
-    public static UiText CreateUiText(string directory, string? locale)
+    public static UiText CreateUiText(string? locale, string? requestedLocale) =>
+        CreateUiText(DefaultDirectory, locale, requestedLocale);
+
+    public static UiText CreateUiText(string directory, string? locale, string? requestedLocale = null)
     {
         var result = Load(directory, locale);
+        var requested = LocaleRegistry.NormalizeTag(requestedLocale ?? result.RequestedLocale);
         var culture = LocalizationCulture.Create(result.Locale);
+
+        // UsedFallback means "the interface is not in the language you asked
+        // for", which also covers an automatic request whose language differs
+        // from the catalog actually loaded (a German Windows, English catalog).
+        var usedFallback = result.UsedFallback
+            || !LocaleRegistry.SharesLanguage(requested, result.Locale);
+
         return new UiText(
             result.Locale,
-            result.RequestedLocale,
+            requested,
             culture,
             result.Strings,
-            result.UsedFallback,
+            usedFallback,
             result.Diagnostics);
     }
 

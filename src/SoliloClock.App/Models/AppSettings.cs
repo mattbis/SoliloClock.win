@@ -38,8 +38,12 @@ public sealed class AppSettings
 
     public bool FamilyFriendly { get; set; } = true;
 
-    /// <summary>BCP-47 tag for the interface language.</summary>
-    public string UiLanguage { get; set; } = "en-GB";
+    /// <summary>
+    /// BCP-47 tag for the interface language. Null follows the Windows display
+    /// language, so the app needs no setup; set a tag to override it for testing
+    /// or to work in another language.
+    /// </summary>
+    public string? UiLanguage { get; set; }
 
     /// <summary>
     /// BCP-47 tag for spoken announcements. Null follows <see cref="UiLanguage"/>,

@@ -11,10 +11,10 @@ public sealed record TimeFormatterSelection(
     string? Diagnostic);
 
 /// <summary>
-/// Chooses the time grammar for an announcement language. M2.1 registers only
-/// English; each language stage adds its own formatter here. A locale with no
-/// grammar is announced in English and says so, rather than mixing languages
-/// silently.
+/// Chooses the time grammar for an announcement language. Each language stage
+/// adds its own formatter here; matching falls back from an exact tag to the
+/// language, so fr-CA inherits French grammar. A locale with no grammar is
+/// announced in English and says so, rather than mixing languages silently.
 /// </summary>
 public static class TimeFormatterFactory
 {
@@ -24,6 +24,8 @@ public static class TimeFormatterFactory
         ("en-US", static () => new EnglishTimeFormatter()),
         ("en-AU", static () => new EnglishTimeFormatter()),
         ("en", static () => new EnglishTimeFormatter()),
+        ("fr-FR", static () => new FrenchTimeFormatter()),
+        ("fr", static () => new FrenchTimeFormatter()),
     };
 
     public static TimeFormatterSelection Resolve(string? locale)

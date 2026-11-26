@@ -38,12 +38,12 @@ public sealed class LocalizationTests
     [Fact]
     public void UnknownLocale_FallsBackToEnglishWithADiagnostic()
     {
-        var result = LocalizationCatalog.Load(LocalizationCatalog.DefaultDirectory, "fr-FR");
+        var result = LocalizationCatalog.Load(LocalizationCatalog.DefaultDirectory, "de-DE");
 
         Assert.True(result.UsedFallback);
         Assert.NotEmpty(result.Diagnostics);
         Assert.Equal("en-GB", result.Locale);
-        Assert.Equal("fr-FR", result.RequestedLocale);
+        Assert.Equal("de-DE", result.RequestedLocale);
         Assert.Equal("SoliloClock", result.Strings[LocalizationKeys.AppName]);
     }
 
@@ -93,6 +93,22 @@ public sealed class LocalizationTests
     }
 
     [Fact]
+    public void UiText_ReportsFallbackWhenTheRequestedLanguageDiffers()
+    {
+        var sameLanguage = LocalizationCatalog.CreateUiText("fr-FR", "fr-CA");
+
+        Assert.False(sameLanguage.UsedFallback);
+        Assert.Equal("fr-CA", sameLanguage.RequestedLocale);
+        Assert.Equal("fr-FR", sameLanguage.Locale);
+
+        var otherLanguage = LocalizationCatalog.CreateUiText("en-GB", "de-DE");
+
+        Assert.True(otherLanguage.UsedFallback);
+        Assert.Equal("de-DE", otherLanguage.RequestedLocale);
+        Assert.Equal("en-GB", otherLanguage.Locale);
+    }
+
+    [Fact]
     public void Registry_CoversThePlannedLocalesWithoutDuplicates()
     {
         var tags = LocaleRegistry.All.Select(locale => locale.Tag).ToList();
@@ -117,15 +133,36 @@ public sealed class LocalizationTests
     }
 
     [Fact]
-    public void OnlyEnglishShipsInThisStage()
+    public void EveryShippedLocale_HasACatalogCoveringEveryKey()
     {
         var shipped = LocaleRegistry.All
             .Where(locale => locale.IsShipped)
             .Select(locale => locale.Tag)
             .ToArray();
 
-        Assert.Equal(new[] { "en-GB" }, shipped);
+        Assert.Equal(new[] { "en-GB", "fr-FR" }, shipped);
+
+        foreach (var tag in shipped)
+        {
+            var result = LocalizationCatalog.Load(LocalizationCatalog.DefaultDirectory, tag);
+
+            Assert.False(result.UsedFallback);
+            Assert.Equal(tag, result.Locale);
+
+            foreach (var key in AllKeys())
+            {
+                Assert.True(result.Strings.ContainsKey(key), $"{tag} is missing {key}");
+                Assert.False(string.IsNullOrWhiteSpace(result.Strings[key]), $"{tag} has an empty {key}");
+            }
+        }
     }
+
+    private static IReadOnlyList<string> AllKeys() =>
+        typeof(LocalizationKeys)
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Where(field => field.IsLiteral && field.FieldType == typeof(string))
+            .Select(field => (string)field.GetRawConstantValue()!)
+            .ToList();
 
     [Theory]
     [InlineData("", "en-GB")]

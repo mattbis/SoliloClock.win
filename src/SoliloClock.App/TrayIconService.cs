@@ -149,6 +149,8 @@ public sealed class TrayIconService : IDisposable
         menu.Items.Add(themes);
 
         var options = new ToolStripMenuItem(text[LocalizationKeys.TrayOptions]);
+        options.DropDownItems.Add(BuildLanguageMenu(text));
+        options.DropDownItems.Add(BuildAnnounceInMenu(text));
         options.DropDownItems.Add(BuildVoiceMenu(text));
 
         var reducedMotion = new ToolStripMenuItem(text[LocalizationKeys.TrayReducedMotion])
@@ -193,6 +195,70 @@ public sealed class TrayIconService : IDisposable
         previous?.Dispose();
 
         _notifyIcon.Text = TextTruncation.Truncate(_viewModel.ShortStatus, MaxTooltipLength);
+    }
+
+    /// <summary>
+    /// Interface language: automatic (the Windows display language) by default,
+    /// with every shipped catalog as an explicit override.
+    /// </summary>
+    private ToolStripMenuItem BuildLanguageMenu(UiText text)
+    {
+        var language = new ToolStripMenuItem(text[LocalizationKeys.TrayLanguage]);
+
+        var automatic = new ToolStripMenuItem(
+            text.Format(LocalizationKeys.TrayLanguageAutomatic, _viewModel.SystemLanguageName))
+        {
+            Checked = _viewModel.FollowsSystemLanguage,
+        };
+        automatic.Click += (_, _) => _viewModel.SetUiLanguage(null);
+        language.DropDownItems.Add(automatic);
+        language.DropDownItems.Add(new ToolStripSeparator());
+
+        foreach (var locale in _viewModel.ShippedLocales)
+        {
+            var item = new ToolStripMenuItem(LocaleRegistry.GetDisplayName(locale.Tag))
+            {
+                Checked = !_viewModel.FollowsSystemLanguage
+                    && string.Equals(locale.Tag, _viewModel.Text.Locale, StringComparison.OrdinalIgnoreCase),
+            };
+            item.Click += (_, _) => _viewModel.SetUiLanguage(locale.Tag);
+            language.DropDownItems.Add(item);
+        }
+
+        return language;
+    }
+
+    /// <summary>
+    /// Announcement language, independent of the interface, so a French voice
+    /// can speak while the window stays in English (or the reverse).
+    /// </summary>
+    private ToolStripMenuItem BuildAnnounceInMenu(UiText text)
+    {
+        var announce = new ToolStripMenuItem(text[LocalizationKeys.TrayAnnounceIn]);
+
+        var sameAsUi = new ToolStripMenuItem(text[LocalizationKeys.TraySpeechSameAsUi])
+        {
+            Checked = _viewModel.SpeechFollowsUi,
+        };
+        sameAsUi.Click += (_, _) => _viewModel.SetSpeechLanguage(null);
+        announce.DropDownItems.Add(sameAsUi);
+        announce.DropDownItems.Add(new ToolStripSeparator());
+
+        foreach (var locale in _viewModel.ShippedLocales)
+        {
+            var item = new ToolStripMenuItem(LocaleRegistry.GetDisplayName(locale.Tag))
+            {
+                Checked = !_viewModel.SpeechFollowsUi
+                    && string.Equals(
+                        locale.Tag,
+                        _viewModel.AnnouncementLocale,
+                        StringComparison.OrdinalIgnoreCase),
+            };
+            item.Click += (_, _) => _viewModel.SetSpeechLanguage(locale.Tag);
+            announce.DropDownItems.Add(item);
+        }
+
+        return announce;
     }
 
     /// <summary>

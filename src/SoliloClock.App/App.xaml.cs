@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Threading;
 using System.Windows;
 using SoliloClock.Services;
@@ -45,17 +44,20 @@ public partial class App : Application
         var settingsService = new SettingsService();
         var loadResult = settingsService.Load();
 
-        var uiText = LocalizationCatalog.CreateUiText(loadResult.Settings.UiLanguage);
-        ApplyCulture(uiText.Culture);
+        // Automatic by default: the Windows display language decides, and only
+        // an explicit setting overrides it.
+        var uiChoice = LocaleResolver.ResolveUi(loadResult.Settings.UiLanguage);
+        var uiText = LocalizationCatalog.CreateUiText(uiChoice.Locale, uiChoice.RequestedLocale);
+        CultureScope.Apply(uiText.Culture);
 
-        var announcementLocale = string.IsNullOrWhiteSpace(loadResult.Settings.SpeechLanguage)
-            ? loadResult.Settings.UiLanguage
-            : loadResult.Settings.SpeechLanguage;
-        var formatter = TimeFormatterFactory.Resolve(announcementLocale);
+        var speechLocale = LocaleResolver
+            .ResolveSpeech(loadResult.Settings.SpeechLanguage, uiText.Locale)
+            .Locale;
+        var formatter = TimeFormatterFactory.Resolve(speechLocale);
 
         var clock = new SystemClock();
         var speech = new SapiSpeechEngine();
-        var catalog = PhraseCatalog.Load(PhraseCatalog.DefaultDirectory, announcementLocale);
+        var catalog = PhraseCatalog.Load(PhraseCatalog.DefaultDirectory, speechLocale);
         var selector = new PhraseSelector(catalog.Phrases);
 
         _viewModel = new MainViewModel(
@@ -80,9 +82,9 @@ public partial class App : Application
         _window.Show();
         _viewModel.Start();
 
-        if (loadResult.Recovered && loadResult.Message is not null)
+        if (loadResult.Recovered)
         {
-            _viewModel.ReportStatus(loadResult.Message);
+            _viewModel.ReportSettingsRecovery(loadResult.BackupFileName);
         }
     }
 
@@ -165,18 +167,6 @@ public partial class App : Application
 
             Dispatcher.BeginInvoke(new Action(() => _window?.ShowFromTray()));
         }
-    }
-
-    /// <summary>
-    /// Applies the UI culture to every thread so numbers, dates and the WPF
-    /// language fallback follow the chosen language from the first frame.
-    /// </summary>
-    private static void ApplyCulture(CultureInfo culture)
-    {
-        CultureInfo.DefaultThreadCurrentCulture = culture;
-        CultureInfo.DefaultThreadCurrentUICulture = culture;
-        Thread.CurrentThread.CurrentCulture = culture;
-        Thread.CurrentThread.CurrentUICulture = culture;
     }
 
     private static void SignalExistingInstance()

@@ -21,9 +21,21 @@ public sealed class TimeFormatterFactoryTests
 
     [Theory]
     [InlineData("fr-FR")]
+    [InlineData("fr-CA")]
+    public void FrenchLocales_UseFrenchGrammar(string locale)
+    {
+        var selection = TimeFormatterFactory.Resolve(locale);
+
+        Assert.IsType<FrenchTimeFormatter>(selection.Formatter);
+        Assert.False(selection.UsedFallback);
+        Assert.Null(selection.Diagnostic);
+    }
+
+    [Theory]
     [InlineData("de-DE")]
     [InlineData("ar")]
     [InlineData("ja-JP")]
+    [InlineData("pl-PL")]
     public void LocalesWithoutGrammar_FallBackToEnglishAndSaySo(string locale)
     {
         var selection = TimeFormatterFactory.Resolve(locale);

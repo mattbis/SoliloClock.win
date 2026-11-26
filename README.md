@@ -29,15 +29,23 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
 - **M2.1 localization foundation:** per-locale UI string catalogs, an independent
   speech language, a locale-keyed time-formatter factory, an installed-voice picker
   with **Test voice**, RTL/language plumbing, and grapheme-safe tray text.
+- **Automatic language** from the Windows display language, with live overrides in
+  tray **Options → Language** and **Options → Announce in**.
+- **M2.2 French (`fr-FR`):** human-authored UI catalog and 100 phrases with French
+  typography, plus a French time formatter ("il est neuf heures et quart", "dix heures
+  moins le quart", "midi et demi", 24-hour reading).
+- **Automatic language:** the interface follows the Windows display language with no
+  setup. Tray **Options → Language** and **Announce in** override it — for testing, or
+  to announce in a different language — and apply immediately.
 
-Not yet implemented: the M2.2–M2.6 language packs (French, German, Spanish, Italian,
-Dutch, Portuguese first, then the remaining regions), quiet hours, usage reminders,
-tone/category settings UI, diagnostics page, installer (M3/M4).
+Not yet implemented: the remaining M2.2 languages (German, Spanish, Italian, Dutch,
+Portuguese) and M2.3–M2.6 (Central/Eastern Europe, Arabic, Hindi, CJK), quiet hours,
+usage reminders, tone/category settings UI, diagnostics page, installer (M3/M4).
 
 ## Requirements
 
 - Windows 10 or Windows 11.
-- .NET 10 SDK or newer (built with 11.0.100) and the .NET 10 Desktop Runtime for
+- .NET 10 SDK or newer (built with 10.0.404) and the .NET 10 Desktop Runtime for
   a framework-dependent build.
 - A Windows speech voice for audio. The clock still runs and shows captions when
   no voice is installed.
@@ -111,24 +119,37 @@ Windows actually has installed, shown with the culture each voice speaks;
 voice can speak the selected language. The app never claims a language can speak
 without a compatible voice.
 
-The UI and announcements are English (`en-GB`) today. Localization is delivered
-in language stages (see `doc/plan.md` §14): the M2.1 foundation is in place, so a
-language ships only once a human-authored UI catalog, its own time grammar with
-tests, and an adapted phrase catalog exist. The other 15 languages are
-intentionally not stubbed with machine-translated jokes.
+The UI and announcements ship in English (`en-GB`) and French (`fr-FR`).
+Localization is delivered in language stages (see `doc/plan.md` §14): a language
+ships only once a human-authored UI catalog, its own time grammar with tests, and
+an adapted phrase catalog exist. The remaining planned languages are intentionally
+not stubbed with machine-translated jokes.
 
-UI language and announcement language are separate settings
-(`UiLanguage` / `SpeechLanguage`); both live in `settings.json` and are validated
-on load. A locale without bundled strings or grammar falls back to English and
-says so in the status line instead of mixing languages silently.
+Language needs no setup: `UiLanguage` is `null` by default, which means follow the
+Windows display language. Automatic resolution picks the best shipped catalog for
+that language — `fr-CA` uses `fr-FR`, and a language with no catalog uses English
+and says so in the status line rather than mixing languages silently.
+
+Both languages are overridable independently, and the tray picker applies changes
+live:
+
+```json
+// %APPDATA%\SoliloClock\settings.json
+{ "UiLanguage": null, "SpeechLanguage": null }
+```
+
+`SpeechLanguage: null` follows the interface language; set it to a tag to keep the
+window in one language and speak another. `"auto"`, `"system"` and unknown tags are
+treated as automatic.
 
 If no voice is available, the app still starts, shows the last spoken text as a
 caption, and explains the situation in the status line and a tray balloon.
 
 ## Phrase catalog
 
-`src/SoliloClock.App/Resources/Phrases/en-GB.json` contains 100 newly written
-lines. Fields per entry: `id`, `text`, `category`, `tone`, `weight`,
+`src/SoliloClock.App/Resources/Phrases/` holds one catalog per shipped language:
+`en-GB.json` and `fr-FR.json`, each with 100 human-written lines sharing the same
+ids and metadata. Fields per entry: `id`, `text`, `category`, `tone`, `weight`,
 `familyFriendly`, `minActiveMinutes`, `timeWindow`.
 
 Selection:

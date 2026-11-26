@@ -46,7 +46,7 @@ public static class LocaleRegistry
         new LocaleDefinition("en-GB", "English", "English (United Kingdom)", LocalizationStage.Foundation, true, true, true),
 
         // M2.2 — Western Europe
-        new LocaleDefinition("fr-FR", "Français", "French (France)", LocalizationStage.WesternEurope, false, false, false),
+        new LocaleDefinition("fr-FR", "Français", "French (France)", LocalizationStage.WesternEurope, true, true, true),
         new LocaleDefinition("de-DE", "Deutsch", "German (Germany)", LocalizationStage.WesternEurope, false, false, false),
         new LocaleDefinition("es-ES", "Español", "Spanish (Spain)", LocalizationStage.WesternEurope, false, false, false),
         new LocaleDefinition("it-IT", "Italiano", "Italian (Italy)", LocalizationStage.WesternEurope, false, false, false),

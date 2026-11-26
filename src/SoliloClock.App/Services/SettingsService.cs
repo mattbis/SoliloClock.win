@@ -7,7 +7,12 @@ using SoliloClock.Models;
 
 namespace SoliloClock.Services;
 
-public sealed record SettingsLoadResult(AppSettings Settings, bool Recovered, string? Message);
+/// <summary>
+/// Recovery carries the backup file name, not a finished sentence: the wording
+/// is chosen by the view model so it can be localized, and this loader runs
+/// before the UI language is known anyway.
+/// </summary>
+public sealed record SettingsLoadResult(AppSettings Settings, bool Recovered, string? BackupFileName);
 
 /// <summary>
 /// Loads and saves settings atomically. A malformed file is preserved with an
@@ -51,10 +56,10 @@ public sealed class SettingsService
             catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or NotSupportedException)
             {
                 var backup = TryBackupBrokenFile();
-                var message = backup is null
-                    ? "Settings could not be read; defaults restored. The unreadable file was left in place."
-                    : $"Settings could not be read; defaults restored. The old file was saved as {Path.GetFileName(backup)}.";
-                return new SettingsLoadResult(new AppSettings(), true, message);
+                return new SettingsLoadResult(
+                    new AppSettings(),
+                    true,
+                    backup is null ? null : Path.GetFileName(backup));
             }
         }
     }
@@ -139,11 +144,24 @@ public sealed class SettingsService
         settings.SpeechRate = Math.Clamp(settings.SpeechRate, -10, 10);
         settings.SpeechVolume = Math.Clamp(settings.SpeechVolume, 0, 100);
 
-        settings.UiLanguage = LocaleRegistry.NormalizeTag(settings.UiLanguage);
-        settings.SpeechLanguage = string.IsNullOrWhiteSpace(settings.SpeechLanguage)
-            ? null
-            : LocaleRegistry.TryNormalizeTag(settings.SpeechLanguage);
+        settings.UiLanguage = NormalizeLanguageSetting(settings.UiLanguage);
+        settings.SpeechLanguage = NormalizeLanguageSetting(settings.SpeechLanguage);
 
         return settings;
+    }
+
+    /// <summary>
+    /// Null, blank or "auto"/"system"/"os" means follow Windows. An unrecognised
+    /// tag becomes automatic too, rather than silently pinning English, so a
+    /// typo falls back to the user's own language instead of someone else's.
+    /// </summary>
+    public static string? NormalizeLanguageSetting(string? value)
+    {
+        if (LocaleResolver.IsAutomatic(value))
+        {
+            return null;
+        }
+
+        return LocaleRegistry.TryNormalizeTag(value);
     }
 }

@@ -42,6 +42,7 @@ public sealed class SettingsServiceTests : IDisposable
         Assert.Equal(25, result.Settings.JokePercent);
         Assert.Equal("pink", result.Settings.Theme);
         Assert.False(result.Settings.Muted);
+        Assert.Null(result.Settings.UiLanguage);
     }
 
     [Fact]
@@ -89,7 +90,8 @@ public sealed class SettingsServiceTests : IDisposable
         Assert.True(result.Recovered);
         Assert.Equal(15, result.Settings.IntervalMinutes);
         Assert.NotEmpty(Directory.GetFiles(_directory, "settings.invalid-*.json"));
-        Assert.NotNull(result.Message);
+        Assert.False(string.IsNullOrWhiteSpace(result.BackupFileName));
+        Assert.True(File.Exists(Path.Combine(_directory, result.BackupFileName!)));
     }
 
     [Fact]
@@ -128,7 +130,7 @@ public sealed class SettingsServiceTests : IDisposable
     }
 
     [Fact]
-    public void Normalize_RepairsLanguageTags()
+    public void Normalize_TurnsUnknownLanguageTagsIntoAutomatic()
     {
         var broken = SettingsService.Normalize(new AppSettings
         {
@@ -136,16 +138,25 @@ public sealed class SettingsServiceTests : IDisposable
             SpeechLanguage = "   ",
         });
 
-        Assert.Equal("en-GB", broken.UiLanguage);
+        Assert.Null(broken.UiLanguage);
         Assert.Null(broken.SpeechLanguage);
 
-        var valid = SettingsService.Normalize(new AppSettings
+        var automatic = SettingsService.Normalize(new AppSettings
+        {
+            UiLanguage = "AUTO",
+            SpeechLanguage = "system",
+        });
+
+        Assert.Null(automatic.UiLanguage);
+        Assert.Null(automatic.SpeechLanguage);
+
+        var pinned = SettingsService.Normalize(new AppSettings
         {
             UiLanguage = "fr-fr",
             SpeechLanguage = "de-DE",
         });
 
-        Assert.Equal("fr-FR", valid.UiLanguage);
-        Assert.Equal("de-DE", valid.SpeechLanguage);
+        Assert.Equal("fr-FR", pinned.UiLanguage);
+        Assert.Equal("de-DE", pinned.SpeechLanguage);
     }
 }

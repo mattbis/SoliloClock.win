@@ -23,13 +23,13 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     private readonly SettingsService _settingsService;
     private readonly AppSettings _settings;
     private readonly ISpeechEngine _speech;
-    private readonly PhraseSelector _selector;
+    private PhraseSelector _selector;
     private readonly IClock _clock;
     private readonly ScheduleCalculator _calculator;
     private readonly AnnouncementSchedule _schedule;
-    private readonly UiText _text;
-    private readonly TimeFormatterSelection _formatter;
-    private readonly PhraseLoadResult _catalog;
+    private UiText _text;
+    private TimeFormatterSelection _formatter;
+    private PhraseLoadResult _catalog;
     private readonly DateTimeOffset _startedAt;
     private readonly Random _random = new();
 
@@ -112,8 +112,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
     public event EventHandler<Notification>? NotifyRequested;
 
-    /// <summary>Bindable English-or-localized window chrome.</summary>
-    public UiStrings Strings { get; }
+    /// <summary>Bindable localized window chrome, replaced when the language changes.</summary>
+    public UiStrings Strings { get; private set; }
 
     public UiText Text => _text;
 
@@ -292,7 +292,24 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
 
     /// <summary>Language used for spoken grammar and the phrase catalog.</summary>
     public string AnnouncementLocale =>
-        string.IsNullOrWhiteSpace(_settings.SpeechLanguage) ? _settings.UiLanguage : _settings.SpeechLanguage;
+        LocaleResolver.ResolveSpeech(_settings.SpeechLanguage, _text.Locale).Locale;
+
+    /// <summary>The shipped interface languages, in rollout order.</summary>
+    public IReadOnlyList<LocaleDefinition> ShippedLocales { get; } =
+        LocaleRegistry.All.Where(locale => locale.IsShipped).ToList();
+
+    /// <summary>Native name of the Windows display language, shown by the picker.</summary>
+    public string SystemLanguageName => LocaleRegistry.GetDisplayName(LocaleResolver.SystemLocale);
+
+    /// <summary>True while the interface follows the Windows language.</summary>
+    public bool FollowsSystemLanguage => LocaleResolver.IsAutomatic(_settings.UiLanguage);
+
+    /// <summary>True while announcements follow the interface language.</summary>
+    public bool SpeechFollowsUi => LocaleResolver.IsAutomatic(_settings.SpeechLanguage);
+
+    public string? UiLanguageSetting => SettingsService.NormalizeLanguageSetting(_settings.UiLanguage);
+
+    public string? SpeechLanguageSetting => SettingsService.NormalizeLanguageSetting(_settings.SpeechLanguage);
 
     public string AnnouncementLanguageName => LocaleRegistry.GetDisplayName(AnnouncementLocale);
 
@@ -324,44 +341,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         ArmAnnouncementTimer();
         UpdateLiveTexts();
 
-        var startupNotes = new List<string>();
-        if (_catalog.Diagnostics.Count > 0)
-        {
-            startupNotes.Add(_catalog.Diagnostics[0]);
-        }
-
-        if (_text.UsedFallback)
-        {
-            startupNotes.Add(_text.Format(LocalizationKeys.StatusUiFallback, _text.RequestedLocale));
-        }
-
-        if (_formatter.UsedFallback)
-        {
-            startupNotes.Add(_text.Format(
-                LocalizationKeys.StatusGrammarFallback,
-                LocaleRegistry.GetDisplayName(_formatter.Locale)));
-        }
-
-        if (!_speech.IsAvailable)
-        {
-            startupNotes.Add(_text[LocalizationKeys.StatusNoVoice]);
-        }
-        else if (_speech.Voices.Count == 0)
-        {
-            startupNotes.Add(_text[LocalizationKeys.StatusNoVoicesInstalled]);
-        }
-        else if (!HasVoiceForLanguage)
-        {
-            startupNotes.Add(_text.Format(
-                LocalizationKeys.TrayNoVoiceForLanguage,
-                AnnouncementLanguageName));
-        }
-
-        if (_catalog.Phrases.Count == 0)
-        {
-            startupNotes.Add(_text[LocalizationKeys.StatusNoPhrases]);
-        }
-
+        var startupNotes = BuildLanguageNotes();
         if (startupNotes.Count > 0)
         {
             Status = string.Join(" ", startupNotes);
@@ -415,9 +395,7 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         UpdateLiveTexts();
         ScheduleSave();
 
-        Status = interval == AnnouncementInterval.Minutes45
-            ? _text[LocalizationKeys.StatusInterval45]
-            : _text.Format(LocalizationKeys.StatusInterval, (int)interval);
+        Status = IntervalStatusText();
     }
 
     /// <summary>Speaks immediately, even when scheduled announcements are muted.</summary>
@@ -474,6 +452,54 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         _speech.Speak(_text[LocalizationKeys.VoiceTestSample], CurrentSpeechOptions);
     }
 
+    /// <summary>
+    /// Switches the interface language immediately. Null follows the Windows
+    /// display language; an explicit tag overrides it.
+    /// </summary>
+    public void SetUiLanguage(string? languageTag)
+    {
+        var normalized = SettingsService.NormalizeLanguageSetting(languageTag);
+        if (string.Equals(_settings.UiLanguage, normalized, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        _settings.UiLanguage = normalized;
+        ApplyUiLanguage();
+
+        if (SpeechFollowsUi)
+        {
+            ApplySpeechLanguage();
+        }
+
+        Status = CurrentLanguageStatus();
+        ScheduleSave();
+        RaiseStateChanged();
+    }
+
+    /// <summary>
+    /// Chooses the announcement language independently of the interface. Null
+    /// follows the interface, which is the default.
+    /// </summary>
+    public void SetSpeechLanguage(string? languageTag)
+    {
+        var normalized = SettingsService.NormalizeLanguageSetting(languageTag);
+        var stored = string.Equals(normalized, _text.Locale, StringComparison.OrdinalIgnoreCase)
+            ? null
+            : normalized;
+
+        if (string.Equals(_settings.SpeechLanguage, stored, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        _settings.SpeechLanguage = stored;
+        ApplySpeechLanguage();
+        Status = CurrentLanguageStatus();
+        ScheduleSave();
+        RaiseStateChanged();
+    }
+
     public void SetTheme(string themeId)
     {
         var theme = ThemeCatalog.Get(themeId);
@@ -509,6 +535,17 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         _settings.CloseToTrayExplained = true;
         SaveNow();
     }
+
+    /// <summary>
+    /// Reports that the settings file could not be read. The wording belongs to
+    /// the view model rather than the loader: the loader runs before any catalog
+    /// is available, and the language setting is usually the data that was lost,
+    /// so the recovered defaults select the English catalog.
+    /// </summary>
+    public void ReportSettingsRecovery(string? backupFileName) =>
+        ReportStatus(backupFileName is null
+            ? _text[LocalizationKeys.StatusSettingsRecoveredNoBackup]
+            : _text.Format(LocalizationKeys.StatusSettingsRecovered, backupFileName));
 
     public void ReportStatus(string message)
     {
@@ -558,6 +595,108 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     }
 
     public void Dispose() => Shutdown();
+
+    private void ApplyUiLanguage()
+    {
+        var oldReady = _text[LocalizationKeys.CaptionReady];
+        var choice = LocaleResolver.ResolveUi(_settings.UiLanguage);
+
+        _text = LocalizationCatalog.CreateUiText(choice.Locale, choice.RequestedLocale);
+        CultureScope.Apply(_text.Culture);
+
+        Strings = new UiStrings(_text);
+        OnPropertyChanged(nameof(Strings));
+        OnPropertyChanged(nameof(Text));
+        OnPropertyChanged(nameof(FlowDirection));
+        OnPropertyChanged(nameof(WpfLanguage));
+        OnPropertyChanged(nameof(MuteTooltip));
+        OnPropertyChanged(nameof(UiLanguageSetting));
+        OnPropertyChanged(nameof(FollowsSystemLanguage));
+        OnPropertyChanged(nameof(SystemLanguageName));
+
+        ThemeDisplayName = _text[ThemeCatalog.Get(ThemeId).NameKey];
+
+        if (string.Equals(_caption, oldReady, StringComparison.Ordinal))
+        {
+            Caption = _text[LocalizationKeys.CaptionReady];
+        }
+
+        UpdateLiveTexts();
+    }
+
+    private void ApplySpeechLanguage()
+    {
+        var choice = LocaleResolver.ResolveSpeech(_settings.SpeechLanguage, _text.Locale);
+
+        _formatter = TimeFormatterFactory.Resolve(choice.Locale);
+        _catalog = PhraseCatalog.Load(PhraseCatalog.DefaultDirectory, choice.Locale);
+        _selector = new PhraseSelector(_catalog.Phrases);
+
+        OnPropertyChanged(nameof(AnnouncementLocale));
+        OnPropertyChanged(nameof(AnnouncementLanguageName));
+        OnPropertyChanged(nameof(HasVoiceForLanguage));
+        OnPropertyChanged(nameof(SpeechLanguageSetting));
+        OnPropertyChanged(nameof(SpeechFollowsUi));
+    }
+
+    /// <summary>
+    /// Language and speech notes shown in the status line: a missing UI
+    /// translation, missing time grammar, no installed voice for the language,
+    /// or an empty phrase catalog. Used at startup and after a language change.
+    /// </summary>
+    private List<string> BuildLanguageNotes()
+    {
+        var notes = new List<string>();
+
+        if (_catalog.Diagnostics.Count > 0)
+        {
+            notes.Add(_catalog.Diagnostics[0]);
+        }
+
+        if (_text.UsedFallback)
+        {
+            notes.Add(_text.Format(LocalizationKeys.StatusUiFallback, _text.RequestedLocale));
+        }
+
+        if (_formatter.UsedFallback)
+        {
+            notes.Add(_text.Format(
+                LocalizationKeys.StatusGrammarFallback,
+                LocaleRegistry.GetDisplayName(_formatter.Locale)));
+        }
+
+        if (!_speech.IsAvailable)
+        {
+            notes.Add(_text[LocalizationKeys.StatusNoVoice]);
+        }
+        else if (_speech.Voices.Count == 0)
+        {
+            notes.Add(_text[LocalizationKeys.StatusNoVoicesInstalled]);
+        }
+        else if (!HasVoiceForLanguage)
+        {
+            notes.Add(_text.Format(
+                LocalizationKeys.TrayNoVoiceForLanguage,
+                AnnouncementLanguageName));
+        }
+
+        if (_catalog.Phrases.Count == 0)
+        {
+            notes.Add(_text[LocalizationKeys.StatusNoPhrases]);
+        }
+
+        return notes;
+    }
+
+    private string CurrentLanguageStatus()
+    {
+        var notes = BuildLanguageNotes();
+        return notes.Count > 0 ? string.Join(" ", notes) : IntervalStatusText();
+    }
+
+    private string IntervalStatusText() => Interval == AnnouncementInterval.Minutes45
+        ? _text[LocalizationKeys.StatusInterval45]
+        : _text.Format(LocalizationKeys.StatusInterval, (int)Interval);
 
     private SpeechOptions CurrentSpeechOptions =>
         new(_settings.SpeechRate, _settings.SpeechVolume, _settings.SpeechVoice);

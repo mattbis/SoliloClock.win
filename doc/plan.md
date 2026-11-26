@@ -392,9 +392,14 @@ still ships its text; the Voice menu says plainly that it cannot speak.
 - [x] Per-locale UI catalogs at `Resources/Localization/<locale>.json`, layered
       over the English base so a partial translation keeps reviewed wording.
 - [x] `UiLanguage` and `SpeechLanguage` are actually consumed; UI language,
-      speech language and voice are independent, and invalid tags repair to `en-GB`.
+      speech language and voice are independent, and invalid tags fall back to automatic.
+- [x] **Language is automatic by default.** The Windows display language selects the
+      best shipped catalog (`fr-CA` → `fr-FR`; a language with no catalog → English,
+      stated in the status line). Tray **Options → Language** and **Announce in**
+      override it and apply immediately, for testing or for announcing in another
+      language.
 - [x] `TimeFormatterFactory` selects grammar by locale instead of hardcoding
-      English; `en-GB` is the only registered grammar for now.
+      English; `en-GB` was the only grammar during M2.1, and M2.2 adds French.
 - [x] Installed voices are listed with the culture they speak, with **Test voice**
       and an explicit "no installed voice speaks <language>" state.
 - [x] RTL layout, WPF language and clock numeral culture follow the locale; the
@@ -405,13 +410,23 @@ still ships its text; the Voice menu says plainly that it cannot speak.
 
 #### M2.2 — Western Europe
 `fr-FR` · `de-DE` · `es-ES` · `it-IT` · `nl-NL` · `pt-PT`
-- [ ] Human-authored UI catalog per language (partials allowed; missing keys fall
-      back to English and are listed for follow-up).
-- [ ] Locale-native time formatter with tests for quarter/half hours, midnight,
-      noon and the 12/24-hour preference; no naive concatenation.
-- [ ] Human-authored or adapted phrase catalog using the stable `en-GB` IDs.
-- [ ] Native typographic conventions respected (French spacing before `!?`, German
-      ß, Spanish inverted punctuation, documented Portuguese variant).
+
+**French (`fr-FR`) — complete**
+- [x] Human-authored UI catalog (`Resources/Localization/fr-FR.json`) covering every
+      key (asserted by test), with French punctuation (non-breaking space before `: ; ? !`, guillemets
+      with inner spacing) and typographic apostrophes.
+- [x] `FrenchTimeFormatter` with tests for the hour, quarter, half, *moins le quart*,
+      minute-to forms, midnight, noon, day-part suffixes and 24-hour reading.
+- [x] 100 human-authored phrases under the same stable ids and metadata as `en-GB`.
+- [x] `fr-FR` promoted in `LocaleRegistry`; `fr-CA` and other French locales inherit
+      the French grammar through the language match.
+- [ ] Voice check on a machine with an installed French voice (or confirm the
+      "no installed voice speaks Français" state) — not verified in this environment.
+
+**German, Spanish, Italian, Dutch, Portuguese — not started**
+- [ ] Same acceptance items as French.
+- [ ] Native typographic conventions respected (German ß, Spanish inverted
+      punctuation, documented Portuguese variant).
 - [ ] State which installed SAPI voices can speak each language; Test voice works.
 
 #### M2.3 — Central, Northern and Eastern Europe

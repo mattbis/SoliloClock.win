@@ -51,6 +51,8 @@ public static class LocalizationKeys
     public const string StatusSpeechError = "status.speechError";
     public const string StatusUiFallback = "status.uiFallback";
     public const string StatusGrammarFallback = "status.grammarFallback";
+    public const string StatusSettingsRecovered = "status.settingsRecovered";
+    public const string StatusSettingsRecoveredNoBackup = "status.settingsRecoveredNoBackup";
 
     public const string NotifySpeechUnavailableTitle = "notify.speechUnavailable.title";
     public const string NotifySpeechUnavailableMessage = "notify.speechUnavailable.message";
@@ -68,6 +70,10 @@ public static class LocalizationKeys
     public const string TrayNoVoiceForLanguage = "tray.noVoiceForLanguage";
     public const string TrayShow = "tray.show";
     public const string TrayExit = "tray.exit";
+    public const string TrayLanguage = "tray.language";
+    public const string TrayLanguageAutomatic = "tray.languageAutomatic";
+    public const string TrayAnnounceIn = "tray.announceIn";
+    public const string TraySpeechSameAsUi = "tray.speechSameAsUi";
 
     public const string CloseToTrayMessage = "closeToTray.message";
     public const string VoiceTestSample = "voice.testSample";
