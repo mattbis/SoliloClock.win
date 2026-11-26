@@ -505,11 +505,16 @@ completed language.
 - [ ] Full RTL window and tray layout verification, and mixed-direction number checks.
 - [ ] Native-speaker review; the pack is provisional until then.
 
-#### M2.5 — South Asia
+#### M2.5 — South Asia — Hindi shipped, provisional
 `hi`
-- [ ] Same as M2.2, plus Devanagari shaping and font-fallback checks.
+- [x] Complete UI catalog, 100 phrases and `HindiTimeFormatter`: *अभी नौ बजे हैं*,
+      *सवा नौ*, *साढ़े नौ*, *पौने दस*, *नौ बजकर पाँच मिनट*, *दस बजने में दस मिनट*,
+      with the numbers spoken as Hindi words.
+- [x] `hi-IN` and other Hindi regions inherit the grammar by language match.
+- [ ] Devanagari shaping and font-fallback checks.
+- [ ] Native-speaker review; the pack is provisional until then.
 
-#### M2.6 — East Asia — Chinese and Japanese shipped, provisional; Korean pending
+#### M2.6 — East Asia — complete, provisional
 `zh-Hans` · `zh-Hant` · `ja-JP` · `ko-KR`
 - [x] Simplified and Traditional Chinese each ship an independent UI catalog and 100
       phrases, sharing `ChineseTimeFormatter` for numerals and the *一刻*/*半*/*差一刻*
@@ -518,7 +523,8 @@ completed language.
 - [x] `JapaneseTimeFormatter`: *今は九時です*, *九時半*, *九時十五分*, *正午* and *零時*.
 - [x] Every minute of the day asserted to produce a digit-free sentence in all three
       modes for both Chinese scripts and Japanese.
-- [ ] Korean (`ko-KR`) remains unshipped.
+- [x] `KoreanTimeFormatter`: native hours (*한 시*, *두 시*, *아홉 시*), Sino-Korean
+      minutes (*십오 분*), *반* for the half hour, *정오* and *자정*.
 - [ ] CJK line breaking, font fallback and a native-speaker review; the packs are
       provisional until then.
 

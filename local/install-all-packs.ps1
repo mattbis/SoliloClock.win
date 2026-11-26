@@ -78,7 +78,7 @@ param(
     [switch]$Install,
     [switch]$Bridge,
     [switch]$Remove,
-    [string[]]$Tag = @('fr-FR', 'de-DE', 'es-ES', 'it-IT', 'nl-NL', 'pt-PT', 'pl-PL', 'ru-RU', 'el-GR', 'ar-SA', 'zh-CN', 'zh-TW', 'ja-JP'),
+    [string[]]$Tag = @('fr-FR', 'de-DE', 'es-ES', 'it-IT', 'nl-NL', 'pt-PT', 'pl-PL', 'ru-RU', 'el-GR', 'ar-SA', 'hi-IN', 'zh-CN', 'zh-TW', 'ja-JP', 'ko-KR'),
     [string[]]$VoicePack = @()
 )
 
@@ -109,7 +109,18 @@ $shipped = [ordered]@{
     'zh-Hans' = 'Chinese (Simplified)'
     'zh-Hant' = 'Chinese (Traditional)'
     'ja-JP' = 'Japanese'
+    'hi' = 'Hindi'
+    'ko-KR' = 'Korean'
     'cy-GB' = 'Welsh'
+}
+
+# Registry tags that are neutral or script-based (ar, hi, zh-Hans) need a Windows
+# region tag before Windows will offer a text-to-speech capability for them.
+$windowsTags = @{
+    'ar' = 'ar-SA'
+    'hi' = 'hi-IN'
+    'zh-Hans' = 'zh-CN'
+    'zh-Hant' = 'zh-TW'
 }
 
 function Test-IsElevated {
@@ -405,8 +416,20 @@ function Write-Report {
     Write-Host 'SoliloClock shipped languages:'
     foreach ($culture in $shipped.Keys) {
         $language = $shipped[$culture]
-        $exact = @($sapiVoices | Where-Object { $_.Culture -ieq $culture })
-        $related = @($sapiVoices | Where-Object { $_.Culture -and $_.Culture.Split('-')[0] -eq $culture.Split('-')[0] })
+        $windowsTag = if ($windowsTags.ContainsKey($culture)) { $windowsTags[$culture] } else { $culture }
+
+        $exact = @($sapiVoices | Where-Object {
+            $_.Culture -ieq $culture -or $_.Culture -ieq $windowsTag
+        })
+
+        # Chinese scripts share one language code, so match the region rather than
+        # claiming a Traditional voice can speak a Simplified catalog.
+        $related = @($sapiVoices | Where-Object {
+            if (-not $_.Culture) { $false }
+            elseif ($culture -eq 'zh-Hans') { $_.Culture -in @('zh-CN', 'zh-SG', 'zh-Hans') }
+            elseif ($culture -eq 'zh-Hant') { $_.Culture -in @('zh-TW', 'zh-HK', 'zh-MO', 'zh-Hant') }
+            else { $_.Culture.Split('-')[0] -eq $culture.Split('-')[0] }
+        })
 
         if ($exact.Count -gt 0) {
             Write-Host ("  {0,-6} {1,-11} ok: {2}" -f $culture, $language, ($exact.Name -join ', '))
@@ -418,7 +441,7 @@ function Write-Report {
             continue
         }
 
-        $state = if ($Capabilities.ContainsKey($culture)) { $Capabilities[$culture] } else { $null }
+        $state = if ($Capabilities.ContainsKey($windowsTag)) { $Capabilities[$windowsTag] } else { $null }
         $hint = if ($culture -eq 'cy-GB') {
             'install Techiaith TTS with -VoicePack <installer>'
         }
@@ -426,7 +449,7 @@ function Write-Report {
             'installed in Windows but not bridged: run -Bridge'
         }
         elseif ($null -ne $state) {
-            "install with -Install -Tag $culture"
+            "install with -Install -Tag $windowsTag"
         }
         else {
             'no Windows voice is offered for this language'

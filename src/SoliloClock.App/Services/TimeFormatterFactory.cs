@@ -49,6 +49,10 @@ public static class TimeFormatterFactory
         ("zh-Hant", static () => new ChineseTimeFormatter(traditional: true)),
         ("ja-JP", static () => new JapaneseTimeFormatter()),
         ("ja", static () => new JapaneseTimeFormatter()),
+        ("hi-IN", static () => new HindiTimeFormatter()),
+        ("hi", static () => new HindiTimeFormatter()),
+        ("ko-KR", static () => new KoreanTimeFormatter()),
+        ("ko", static () => new KoreanTimeFormatter()),
     };
 
     public static TimeFormatterSelection Resolve(string? locale)

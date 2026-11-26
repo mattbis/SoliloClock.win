@@ -67,15 +67,16 @@ public static class LocaleRegistry
         // native speaker reviews it.
         new LocaleDefinition("ar", "العربية", "Arabic", LocalizationStage.MiddleEast, true, true, true, IsProvisional: true),
 
-        // M2.5 — South Asia
-        new LocaleDefinition("hi", "हिन्दी", "Hindi", LocalizationStage.SouthAsia, false, false, false),
+        // M2.5 — South Asia. Machine-drafted, so flagged until a native speaker
+        // reviews it.
+        new LocaleDefinition("hi", "हिन्दी", "Hindi", LocalizationStage.SouthAsia, true, true, true, IsProvisional: true),
 
         // M2.6 — East Asia. Chinese ships as two independent catalogs; both are
         // machine-drafted and provisional.
         new LocaleDefinition("zh-Hans", "简体中文", "Chinese (Simplified)", LocalizationStage.EastAsia, true, true, true, IsProvisional: true),
         new LocaleDefinition("zh-Hant", "繁體中文", "Chinese (Traditional)", LocalizationStage.EastAsia, true, true, true, IsProvisional: true),
         new LocaleDefinition("ja-JP", "日本語", "Japanese (Japan)", LocalizationStage.EastAsia, true, true, true, IsProvisional: true),
-        new LocaleDefinition("ko-KR", "한국어", "Korean (Korea)", LocalizationStage.EastAsia, false, false, false),
+        new LocaleDefinition("ko-KR", "한국어", "Korean (Korea)", LocalizationStage.EastAsia, true, true, true, IsProvisional: true),
     };
 
     public static LocaleDefinition? Find(string? tag)

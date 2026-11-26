@@ -105,7 +105,12 @@ public sealed class TrayIconService : IDisposable
         }
 
         var text = _viewModel.Text;
-        var menu = new ContextMenuStrip();
+        // A WinForms menu is not a WPF visual, so the window's FlowDirection never
+        // reaches it. Mirror it explicitly for right-to-left languages.
+        var menu = new ContextMenuStrip
+        {
+            RightToLeft = text.IsRightToLeft ? RightToLeft.Yes : RightToLeft.No,
+        };
 
         var speak = new ToolStripMenuItem(text[LocalizationKeys.TraySpeakNow]);
         speak.Click += (_, _) => _viewModel.SpeakNow();

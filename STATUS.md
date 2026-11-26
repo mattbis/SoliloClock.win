@@ -1,7 +1,7 @@
 # STATUS — SoliloClock
 
 **Last updated:** 2026-11-26
-**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 complete: French, German, Spanish, Italian, Dutch and Portuguese each ship a UI catalog, 100 phrases and their own time grammar; Welsh (`cy-GB`) ships as a provisional draft pending native review. M2.3 complete: Polish (`pl-PL`), Russian (`ru-RU`) and Greek (`el-GR`) ship the same full packs with plural and case agreement covered by tests. M2.4–M2.6 partially complete: Arabic (`ar`), Simplified and Traditional Chinese (`zh-Hans`, `zh-Hant`) and Japanese (`ja-JP`) ship as provisional packs with their own grammar, UI catalogs and 100 phrases each; Hindi and Korean remain unshipped.** M3–M4 not started.
+**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 complete: French, German, Spanish, Italian, Dutch and Portuguese each ship a UI catalog, 100 phrases and their own time grammar; Welsh (`cy-GB`) ships as a provisional draft pending native review. M2.3 complete: Polish (`pl-PL`), Russian (`ru-RU`) and Greek (`el-GR`) ship the same full packs with plural and case agreement covered by tests. M2 complete: all seventeen locales ship — Arabic (`ar`), Hindi (`hi`), Simplified and Traditional Chinese (`zh-Hans`, `zh-Hant`), Japanese (`ja-JP`) and Korean (`ko-KR`) finish M2.4–M2.6 as provisional packs with their own grammar, UI catalogs and 100 phrases each. Seven machine-drafted packs carry the draft marker, and the tray menu and close-to-tray dialog mirror for right-to-left Arabic.** M3–M4 not started.
 **Name:** SoliloClock.
 
 ## Verification in this run
@@ -9,9 +9,9 @@
 | Check | Result |
 |---|---|
 | `dotnet build SoliloClock.sln -c Release` | 0 warnings, 0 errors |
-| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **483 passed**, 0 failed, 0 skipped |
+| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **508 passed**, 0 failed, 0 skipped |
 | Release executable startup | Process stayed alive through a 7-second smoke check; no leftover process |
-| Catalog deployment | `en-GB`/`fr-FR`/`de-DE`/`es-ES`/`it-IT`/`nl-NL`/`pt-PT`/`pl-PL`/`ru-RU`/`el-GR`/`ar`/`zh-Hans`/`zh-Hant`/`ja-JP`/`cy-GB` UI catalogs and all fifteen phrase catalogs present in the build output |
+| Catalog deployment | All seventeen UI catalogs (`en-GB`, `fr-FR`, `cy-GB`, `de-DE`, `es-ES`, `it-IT`, `nl-NL`, `pt-PT`, `pl-PL`, `ru-RU`, `el-GR`, `ar`, `hi`, `zh-Hans`, `zh-Hant`, `ja-JP`, `ko-KR`) and all seventeen phrase catalogs present in the build output |
 | UI string completeness | Reflected test requires every `LocalizationKeys` constant in every shipped catalog |
 | French phrasing | 18 natural 12-hour cases, 7 twenty-four-hour and 4 exact-reading cases assert the whole sentence |
 | French catalogs | 100 phrases load with zero diagnostics, share the English ids, and keep the reviewed metadata |
@@ -37,7 +37,10 @@
 | Automatic voice | 8 catalog cases: language match, region preference, alphabetical tie-break, no matching voice, blank cultures, empty voice list, unset locale |
 | Welsh phrasing | 19 natural 12-hour cases, 6 twenty-four-hour and 3 exact-reading cases assert whole sentences; all 1,440 clock minutes produce a Welsh sentence |
 | Welsh catalogs | 100 phrases load with zero diagnostics, share the English ids and keep the reviewed metadata |
-| Provisional flag | The only provisional locales are `cy-GB`, `ar`, `zh-Hans`, `zh-Hant` and `ja-JP`, all shipped with complete packs; a Welsh Windows still resolves to `cy-GB` automatically |
+| Hindi phrasing | 9 natural cases (*सवा*, *साढ़े*, *पौने*, *बजकर … मिनट*, *बजने में*), 24-hour and exact readings; all 1,440 clock minutes produce a digit-free sentence |
+| Korean phrasing | 8 natural cases (native hours 한/두/세, *반*, Sino minutes), 24-hour and exact readings; all 1,440 clock minutes produce a digit-free sentence |
+| RTL handling | Arabic mirrors the WPF window, the WinForms tray menu and the close-to-tray message box; the clock face is pinned to Western digits, asserted for `ar-SA` |
+| Provisional flag | The only provisional locales are `cy-GB`, `ar`, `hi`, `zh-Hans`, `zh-Hant`, `ja-JP` and `ko-KR`, all shipped with complete packs; a Welsh Windows still resolves to `cy-GB` automatically |
 | Live language switching | 4 view-model cases drive the real `MainViewModel` through UI and announcement language changes and assert chrome, caption, status, culture, grammar and voice follow at once |
 
 **Not verified:** audible speech in any language other than English (including Test voice,
@@ -167,7 +170,7 @@ taken.
       new pack needs no csproj edit.
 - [ ] Native-speaker review of the three packs, and a voice check per language.
 
-## Completed — M2.4–M2.6 Arabic, Chinese and Japanese (provisional)
+## Completed — M2.4–M2.6 Arabic, Hindi, Chinese, Japanese and Korean (provisional)
 
 - [x] `Resources/Localization/{ar,zh-Hans,zh-Hant,ja-JP}.json` cover every key and
       `Resources/Phrases/*.json` hold 100 phrases each under the English ids,
@@ -185,10 +188,19 @@ taken.
 - [x] All four locales are `IsProvisional`, so both language menus append the draft
       marker, and `MiddleEastAndEastAsiaTests` asserts the flag, pack parity, phrasing
       and per-minute coverage.
+- [x] `HindiTimeFormatter`: *अभी नौ बजे हैं*, *सवा नौ*, *साढ़े नौ*, *पौने दस*,
+      *नौ बजकर पाँच मिनट* and *दस बजने में दस मिनट*, with Hindi numerals spoken in words.
+- [x] `KoreanTimeFormatter`: native hours (*한 시*, *두 시*, *아홉 시*), Sino-Korean
+      minutes (*십오 분*, *사십오 분*), *반* for the half hour, *정오* and *자정*.
+- [x] `SouthAsiaAndKoreaTests` asserts pack parity, phrasing, resolution (`hi-IN` →
+      `hi`, `ko-KR` → `ko-KR`) and digit-free output for every minute of the day.
+- [x] **Arabic RTL fixed where it was actually missing:** the WinForms tray menu now
+      sets `RightToLeft`, the close-to-tray message box passes `RtlReading`/
+      `RightAlign`, and the analog clock numerals use `LocalizationCulture` so the dial
+      keeps Western digits instead of switching to ١٢٣.
 - [ ] Native-speaker review of every string, phrase and grammar, and a voice check per
       language.
-- [ ] Hindi (`hi`) and Korean (`ko-KR`) are still unshipped, and RTL/CJK window and tray
-      layout remains visually unverified.
+- [ ] RTL and CJK window/tray layout remains visually unverified (no screenshot pass).
 
 ## Language behaviour
 
@@ -221,12 +233,10 @@ what the user then sees and hears.
 
 ## Known limitations
 
-- Fifteen locales ship (English, French, German, Spanish, Italian, Dutch, Portuguese,
-  Polish, Russian, Greek, Arabic, Simplified Chinese, Traditional Chinese, Japanese and
-  Welsh); `hi` and `ko-KR` are the only planned locales still unshipped.
-- Every non-English pack is a project draft: all fourteen still need a native speaker's
-  review, and Welsh, Arabic, both Chinese packs and Japanese carry the visible draft
-  marker in the UI.
+- All seventeen planned locales ship; none is left unshipped.
+- Every non-English pack is a project draft: all sixteen still need a native speaker's
+  review, and the seven machine-drafted ones (Welsh, Arabic, Hindi, both Chinese packs,
+  Japanese and Korean) carry the visible draft marker in the UI.
 - Welsh content is a draft, not a translation anyone has checked: it is marked in both
   language menus and must be replaced after native review. Its time grammar is only as
   good as the draft wording, particularly mutations and the 24-hour reading.
@@ -253,9 +263,8 @@ what the user then sees and hears.
 
 1. **Native review of Welsh:** replace the draft UI strings, 100 phrases and time
    grammar, then clear `IsProvisional` for `cy-GB`.
-2. **Native review of the thirteen drafted packs** (French, German, Spanish, Italian,
-   Dutch, Portuguese, Polish, Russian, Greek, Arabic, both Chinese scripts and
-   Japanese): correct wording and grammar, then clear `IsProvisional` and decide which
-   packs should keep the marker.
-3. M2.5 Hindi and M2.6 Korean, then RTL and CJK window/tray layout verification.
+2. **Native review of the sixteen drafted packs:** correct wording and grammar, then
+   clear `IsProvisional` and decide which packs should keep the marker.
+3. **Visual verification** of the Arabic RTL window/tray and CJK line breaking and font
+   fallback, plus one audible announcement per language on a machine with the voice.
 4. M3: opt-in active-session reminders, quiet hours, tone/category settings, diagnostics.

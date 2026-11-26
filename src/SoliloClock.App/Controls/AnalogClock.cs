@@ -289,7 +289,9 @@ public sealed class AnalogClock : FrameworkElement
             {
                 if (Language is not null)
                 {
-                    return Language.GetSpecificCulture();
+                    // Same policy as the rest of the UI: Gregorian time and Western
+                    // digits, so an Arabic window does not swap the dial to ١٢٣.
+                    return SoliloClock.Services.LocalizationCulture.Create(Language.IetfLanguageTag);
                 }
             }
             catch (InvalidOperationException)

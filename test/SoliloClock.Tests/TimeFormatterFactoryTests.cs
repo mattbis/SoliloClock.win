@@ -140,8 +140,8 @@ public sealed class TimeFormatterFactoryTests
     }
 
     [Theory]
-    [InlineData("hi")]
-    [InlineData("ko-KR")]
+    [InlineData("th-TH")]
+    [InlineData("vi-VN")]
     [InlineData("tr-TR")]
     public void LocalesWithoutGrammar_FallBackToEnglishAndSaySo(string locale)
     {

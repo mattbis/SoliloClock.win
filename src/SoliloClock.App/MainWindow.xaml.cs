@@ -87,11 +87,18 @@ public partial class MainWindow : Window
             if (viewModel is { ShouldExplainClose: true })
             {
                 viewModel.MarkCloseToTrayExplained();
+                // The native dialog does not inherit the window's FlowDirection.
+                var options = viewModel.Text.IsRightToLeft
+                    ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign
+                    : MessageBoxOptions.None;
+
                 MessageBox.Show(
                     viewModel.Text[LocalizationKeys.CloseToTrayMessage],
                     viewModel.Strings.AppName,
                     MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                    MessageBoxImage.Information,
+                    MessageBoxResult.OK,
+                    options);
             }
 
             return;

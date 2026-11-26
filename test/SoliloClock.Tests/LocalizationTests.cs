@@ -90,6 +90,8 @@ public sealed class LocalizationTests
 
         Assert.IsType<GregorianCalendar>(culture.DateTimeFormat.Calendar);
         Assert.Equal("2026-11-26", stamp.ToString("yyyy-MM-dd", culture));
+        // Talked clock policy: the interface and clock face keep Western digits.
+        Assert.Equal(DigitShapes.None, culture.NumberFormat.DigitSubstitution);
     }
 
     [Fact]
@@ -145,7 +147,8 @@ public sealed class LocalizationTests
             new[]
             {
                 "en-GB", "fr-FR", "cy-GB", "de-DE", "es-ES", "it-IT", "nl-NL", "pt-PT",
-                "pl-PL", "ru-RU", "el-GR", "ar", "zh-Hans", "zh-Hant", "ja-JP",
+                "pl-PL", "ru-RU", "el-GR", "ar", "hi", "zh-Hans", "zh-Hant", "ja-JP",
+                "ko-KR",
             },
             shipped);
 
