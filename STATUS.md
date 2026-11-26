@@ -176,7 +176,9 @@ what the user then sees and hears.
 - Only English speech was audible in this environment; French, German, Spanish, Italian,
   Dutch, Portuguese and Welsh announcements, and their "no installed voice speaks …"
   paths, are unit-tested only. German (Microsoft Hedda) and Spanish voices ship with some
-  Windows installs, but none is installed here.
+  Windows installs, but none is installed here. `local/install-all-packs.ps1` exists to
+  install and expose them (`-Install`, `-Bridge`, `-Remove`); its report path runs here,
+  but the elevated install and bridge paths could not be exercised in this environment.
 - The tray language/voice menus are rebuilt from view-model state but were not clicked
   through; the picker's behaviour is covered by resolver, settings and catalog tests,
   not by UI automation.

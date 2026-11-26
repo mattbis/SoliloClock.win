@@ -74,6 +74,13 @@ pwsh tools/publish.ps1        # self-contained win-x64 single file in artifacts/
 pwsh tools/publish.ps1 -FrameworkDependent
 ```
 
+To hear the other languages on a test machine:
+
+```powershell
+pwsh local/install-all-packs.ps1            # report which voice can speak each language
+pwsh local/install-all-packs.ps1 -Install   # add and expose Windows voices (elevated)
+```
+
 The publish script produces `artifacts/<runtime>/SoliloClock.exe`. A
 self-contained build needs the matching runtime pack to be downloadable the
 first time.
@@ -146,6 +153,16 @@ offline, from Bangor University's Language Technologies Unit); it registers as a
 SAPI 5 voice and then appears in **Options → Voice** as `cy-GB`. Voices are a
 machine-level install: they are never bundled with SoliloClock or committed to
 this repository.
+
+Windows keeps many of its voices in a newer speech stack that SAPI 5 never lists,
+so a language Windows itself can speak can still be missing from
+**Options → Voice**. `local/install-all-packs.ps1` closes that gap for testing:
+`-Install` adds the Windows text-to-speech feature for each shipped European
+language and copies those voice tokens into the SAPI 5 tree — the same bridge
+Microsoft uses for its own English voices. It needs an elevated 64-bit PowerShell
+and Windows Update access, records exactly which tokens it created, and `-Remove`
+deletes only those. Welsh still needs Techiaith TTS, which the same script can
+install with `-VoicePack`.
 
 Language needs no setup: `UiLanguage` is `null` by default, which means follow the
 Windows display language. Automatic resolution picks the best shipped catalog for
