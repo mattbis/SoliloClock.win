@@ -31,22 +31,17 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
   with **Test voice**, RTL/language plumbing, and grapheme-safe tray text.
 - **Automatic language** from the Windows display language, with live overrides in
   tray **Options → Language** and **Options → Announce in**.
-- **M2.2 French (`fr-FR`):** human-authored UI catalog and 100 phrases with French
-  typography, plus a French time formatter ("il est neuf heures et quart", "dix heures
-  moins le quart", "midi et demi", 24-hour reading).
-- **German (`de-DE`):** human-authored UI catalog and 100 phrases, plus a German time
-  formatter ("es ist neun Uhr", "Viertel nach neun", "halb zehn", "Viertel vor zehn",
-  "neunzehn Uhr fünfundvierzig").
+- **M2.2 complete — six Western European languages:** French (`fr-FR`), German
+  (`de-DE`), Spanish (`es-ES`), Italian (`it-IT`), Dutch (`nl-NL`) and Portuguese
+  (`pt-PT`) each ship a UI catalog, 100 phrases and their own time grammar
+  ("il est neuf heures et quart", "halb zehn", "son las nueve y cuarto", "sono le nove
+  e mezza", "het is half tien", "são nove horas e um quarto").
 - **Welsh (`cy-GB`), provisional:** UI catalog, 100 phrases and a Welsh time formatter
   ("mae'n dri o'r gloch", "chwarter wedi naw", "hanner awr wedi naw", "chwarter i
   ddeg"). The wording is machine-drafted, so both language menus label it *draft —
   pending native review* until a Welsh speaker has reviewed it.
-- **Automatic language:** the interface follows the Windows display language with no
-  setup. Tray **Options → Language** and **Announce in** override it — for testing, or
-  to announce in a different language — and apply immediately.
 
-Not yet implemented: the remaining M2.2 languages (Spanish, Italian, Dutch,
-Portuguese) and M2.3–M2.6 (Central/Eastern Europe, Arabic, Hindi, CJK), quiet hours,
+Not yet implemented: M2.3–M2.6 (Central/Eastern Europe, Arabic, Hindi, CJK), quiet hours,
 usage reminders, tone/category settings UI, diagnostics page, installer (M3/M4).
 Welsh is usable but explicitly a draft, not a finished translation.
 
@@ -136,13 +131,14 @@ voice later needs no restart, and *Automatic* in the voice menu names what it
 picks.
 
 The UI and announcements ship in English (`en-GB`), French (`fr-FR`), German
-(`de-DE`) and provisional Welsh (`cy-GB`). Localization is delivered in language stages (see
-`doc/plan.md` §14): a language ships only once its UI catalog, its own time grammar
-with tests, and an adapted phrase catalog exist, and it counts as complete only
-when a human has authored them. Welsh is the deliberate exception and says so —
-its text is machine-drafted, so `Cymraeg` appears in both language menus with a
-*draft — pending native review* marker until a Welsh speaker has checked it. The
-remaining planned languages are not stubbed at all.
+(`de-DE`), Spanish (`es-ES`), Italian (`it-IT`), Dutch (`nl-NL`), Portuguese
+(`pt-PT`) and provisional Welsh (`cy-GB`). Localization is delivered in language
+stages (see `doc/plan.md` §14): a language ships only once its UI catalog, its own
+time grammar with tests, and an adapted phrase catalog exist, so nothing appears in
+the picker half-finished. Welsh is the one exception: its text is machine-drafted,
+so `Cymraeg` appears in both language menus with a *draft — pending native review*
+marker until a Welsh speaker has checked it. The M2.3–M2.6 languages are not stubbed
+at all.
 
 To *hear* Welsh you need a Welsh SAPI voice, which Windows does not include.
 Install [Techiaith TTS](https://techiaith.cymru/en/products/techiaith-tts/) (free,
@@ -174,11 +170,13 @@ caption, and explains the situation in the status line and a tray balloon.
 ## Phrase catalog
 
 `src/SoliloClock.App/Resources/Phrases/` holds one catalog per shipped language:
-`en-GB.json`, `fr-FR.json`, `de-DE.json` and provisional `cy-GB.json`, each with 100
-lines sharing the same ids and metadata. The Welsh lines are machine-drafted
-(`"provisional": true` in the file) and await native review; English, French and
-German are human-authored. Fields per entry: `id`, `text`, `category`, `tone`, `weight`,
-`familyFriendly`, `minActiveMinutes`, `timeWindow`.
+`en-GB.json`, `fr-FR.json`, `de-DE.json`, `es-ES.json`, `it-IT.json`, `nl-NL.json`,
+`pt-PT.json` and provisional `cy-GB.json`, each with 100 lines sharing the same ids and
+metadata (a shared test enforces the parity). English is the reference catalog; the
+French, German, Spanish, Italian, Dutch and Portuguese packs were written for this
+project and would still benefit from a native speaker's review. Welsh is the only one
+flagged as a draft in the UI. Fields per entry: `id`, `text`, `category`, `tone`,
+`weight`, `familyFriendly`, `minActiveMinutes`, `timeWindow`.
 
 Selection:
 

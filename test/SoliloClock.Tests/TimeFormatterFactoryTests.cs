@@ -56,6 +56,54 @@ public sealed class TimeFormatterFactoryTests
     }
 
     [Theory]
+    [InlineData("es-ES")]
+    [InlineData("es-MX")]
+    public void SpanishLocales_UseSpanishGrammar(string locale)
+    {
+        var selection = TimeFormatterFactory.Resolve(locale);
+
+        Assert.IsType<SpanishTimeFormatter>(selection.Formatter);
+        Assert.False(selection.UsedFallback);
+        Assert.Null(selection.Diagnostic);
+    }
+
+    [Theory]
+    [InlineData("it-IT")]
+    [InlineData("it-CH")]
+    public void ItalianLocales_UseItalianGrammar(string locale)
+    {
+        var selection = TimeFormatterFactory.Resolve(locale);
+
+        Assert.IsType<ItalianTimeFormatter>(selection.Formatter);
+        Assert.False(selection.UsedFallback);
+        Assert.Null(selection.Diagnostic);
+    }
+
+    [Theory]
+    [InlineData("nl-NL")]
+    [InlineData("nl-BE")]
+    public void DutchLocales_UseDutchGrammar(string locale)
+    {
+        var selection = TimeFormatterFactory.Resolve(locale);
+
+        Assert.IsType<DutchTimeFormatter>(selection.Formatter);
+        Assert.False(selection.UsedFallback);
+        Assert.Null(selection.Diagnostic);
+    }
+
+    [Theory]
+    [InlineData("pt-PT")]
+    [InlineData("pt-BR")]
+    public void PortugueseLocales_UsePortugueseGrammar(string locale)
+    {
+        var selection = TimeFormatterFactory.Resolve(locale);
+
+        Assert.IsType<PortugueseTimeFormatter>(selection.Formatter);
+        Assert.False(selection.UsedFallback);
+        Assert.Null(selection.Diagnostic);
+    }
+
+    [Theory]
     [InlineData("ar")]
     [InlineData("ja-JP")]
     [InlineData("pl-PL")]

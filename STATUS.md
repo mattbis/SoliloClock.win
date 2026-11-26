@@ -1,7 +1,7 @@
 # STATUS — SoliloClock
 
 **Last updated:** 2026-11-26
-**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 French (`fr-FR`) and German (`de-DE`) complete; Welsh (`cy-GB`) ships as a provisional draft pending native review.** Spanish, Italian, Dutch, Portuguese and M2.3–M2.6 not started; M3–M4 not started.
+**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 complete: French, German, Spanish, Italian, Dutch and Portuguese each ship a UI catalog, 100 phrases and their own time grammar; Welsh (`cy-GB`) ships as a provisional draft pending native review.** M2.3–M2.6 not started; M3–M4 not started.
 **Name:** SoliloClock.
 
 ## Verification in this run
@@ -9,9 +9,9 @@
 | Check | Result |
 |---|---|
 | `dotnet build SoliloClock.sln -c Release` | 0 warnings, 0 errors |
-| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **238 passed**, 0 failed, 0 skipped |
+| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **382 passed**, 0 failed, 0 skipped |
 | Release executable startup | Process stayed alive through a 7-second smoke check; no leftover process |
-| Catalog deployment | `en-GB`/`fr-FR`/`de-DE`/`cy-GB` UI catalogs and all four phrase catalogs present in the build output |
+| Catalog deployment | `en-GB`/`fr-FR`/`de-DE`/`es-ES`/`it-IT`/`nl-NL`/`pt-PT`/`cy-GB` UI catalogs and all eight phrase catalogs present in the build output |
 | UI string completeness | Reflected test requires every `LocalizationKeys` constant in every shipped catalog |
 | French phrasing | 18 natural 12-hour cases, 7 twenty-four-hour and 4 exact-reading cases assert the whole sentence |
 | French catalogs | 100 phrases load with zero diagnostics, share the English ids, and keep the reviewed metadata |
@@ -20,6 +20,9 @@
 | German grammar edge | "ein Uhr" but "halb eins"/"Viertel vor eins"; compounds use the linking "ein-" ("einundzwanzig") |
 | German catalogs | 100 phrases load with zero diagnostics, share the English ids and keep the reviewed metadata; „…“ quotes, no straight apostrophes or double spaces |
 | German selection | `de-DE` is shipped and not provisional; `de-AT` inherits the grammar and a German Windows resolves to `de-DE` automatically |
+| Spanish/Italian phrasing | 18 Spanish and 18 Italian natural cases plus 24-hour and exact readings; every minute in three modes produces a sentence in each language |
+| Dutch/Portuguese phrasing | 18 Dutch and 18 Portuguese natural cases plus 24-hour and exact readings; every minute in three modes produces a sentence in each language |
+| M2.2 shared acceptance | All six non-English packs load 100 metadata-identical phrases, resolve their own formatter, and are chosen automatically for regional variants (`es-MX`, `it-CH`, `nl-BE`, `pt-BR`) |
 | Automatic language | 13 resolver cases: shipped match, `fr-CA`→`fr-FR`, unsupported→English, unknown tag, explicit override |
 | Automatic voice | 8 catalog cases: language match, region preference, alphabetical tie-break, no matching voice, blank cultures, empty voice list, unset locale |
 | Welsh phrasing | 19 natural 12-hour cases, 6 twenty-four-hour and 3 exact-reading cases assert whole sentences; all 1,440 clock minutes produce a Welsh sentence |
@@ -27,11 +30,11 @@
 | Provisional flag | `cy-GB` is the only provisional locale, and a Welsh Windows resolves to it automatically |
 | Live language switching | 4 view-model cases drive the real `MainViewModel` through UI and announcement language changes and assert chrome, caption, status, culture, grammar and voice follow at once |
 
-**Not verified:** audible speech in any language (including Test voice, a French SAPI
-voice, and whether the automatic voice choice sounds right), visual inspection of the
-window or tray menu, actual tray-menu clicks, RTL/CJK rendering, screen-reader output,
-and a real timed announcement. No profiler
-measurement was taken.
+**Not verified:** audible speech in any language other than English (including Test voice,
+the six non-English announcement languages, and whether the automatic voice choice sounds
+right), visual inspection of the window or tray menu, actual tray-menu clicks, RTL/CJK
+rendering, screen-reader output, and a real timed announcement. No profiler measurement was
+taken.
 
 ## Completed — M0 skeleton and M1 minimum lovable product
 
@@ -114,6 +117,23 @@ measurement was taken.
 - [ ] **Outstanding:** voice check on a machine with an installed German voice — the
       German text path is unit-tested only in this environment.
 
+## Completed — M2.2 Spanish, Italian, Dutch and Portuguese
+
+- [x] `Resources/Localization/{es-ES,it-IT,nl-NL,pt-PT}.json` cover every key, with Spanish
+      inverted punctuation and European Portuguese spelling.
+- [x] `SpanishTimeFormatter` (*son las nueve y cuarto*, *diez menos cuarto*, *es la una*,
+      *mediodía*/*medianoche*, feminine *veintiuna*), `ItalianTimeFormatter` (*e un quarto*,
+      *e mezza*, *meno un quarto*, *è l'una*, *ventuno*/*ventotto*/*ventitré*),
+      `DutchTimeFormatter` (*kwart over*, *half tien*, *kwart voor*, *één uur*,
+      *tweeëntwintig*) and `PortugueseTimeFormatter` (*e um quarto*, *e meia*,
+      *menos um quarto*, *é uma hora*, *vinte e uma horas*, *meio-dia*/*meia-noite*).
+- [x] 100 phrases per language under the English ids, categories, tones, weights, windows
+      and active-minute gates; `WesternEuropeCatalogTests` asserts the parity and that each
+      pack has its own formatter and is chosen for regional variants.
+- [x] `es-MX`, `it-CH`, `nl-BE` and `pt-BR` inherit the grammar through the language match.
+- [ ] **Outstanding:** native-speaker review of every string and phrase, and a voice check
+      per language — none of these languages was audible in this environment.
+
 ## Language behaviour
 
 | Setting | `null` / `auto` | explicit tag |
@@ -145,15 +165,18 @@ what the user then sees and hears.
 
 ## Known limitations
 
-- `en-GB`, `fr-FR`, `de-DE` and provisional `cy-GB` ship; the other thirteen planned
-  locales stay unshipped.
+- Eight locales ship (English, French, German, Spanish, Italian, Dutch, Portuguese and
+  provisional Welsh); the other nine planned locales stay unshipped.
+- Every non-English pack is a project draft: French, German, Spanish, Italian, Dutch and
+  Portuguese still need a native speaker's review, and only Welsh carries the visible
+  draft marker in the UI.
 - Welsh content is a draft, not a translation anyone has checked: it is marked in both
   language menus and must be replaced after native review. Its time grammar is only as
   good as the draft wording, particularly mutations and the 24-hour reading.
-- Neither French nor German speech was audible in this environment, so pronunciation
-  and both "no installed voice speaks …" paths are unit-tested only. German SAPI voices
-  (for example Microsoft Hedda) ship with some Windows installs, but none is installed
-  here.
+- Only English speech was audible in this environment; French, German, Spanish, Italian,
+  Dutch, Portuguese and Welsh announcements, and their "no installed voice speaks …"
+  paths, are unit-tested only. German (Microsoft Hedda) and Spanish voices ship with some
+  Windows installs, but none is installed here.
 - The tray language/voice menus are rebuilt from view-model state but were not clicked
   through; the picker's behaviour is covered by resolver, settings and catalog tests,
   not by UI automation.
@@ -171,8 +194,9 @@ what the user then sees and hears.
 
 1. **Native review of Welsh:** replace the draft UI strings, 100 phrases and time
    grammar, then clear `IsProvisional` for `cy-GB`.
-2. **Spanish (`es-ES`)**: catalog, `SpanishTimeFormatter` ("son las nueve y cuarto",
-   "menos cuarto", inverted punctuation in questions), 100 phrases, promotion.
-3. Italian, Dutch and Portuguese to finish M2.2.
-4. Then M2.3 (Polish, Russian, Greek), M2.4 (Arabic RTL), M2.5 (Hindi), M2.6 (CJK).
+2. **Native review of the six completed packs** (French, German, Spanish, Italian, Dutch,
+   Portuguese): correct wording and any grammar, then decide whether they should carry the
+   same draft marker as Welsh.
+3. M2.3: Polish, Russian and Greek, with plural and case agreement tests.
+4. M2.4 (Arabic RTL), M2.5 (Hindi), M2.6 (CJK).
 5. M3: opt-in active-session reminders, quiet hours, tone/category settings, diagnostics.

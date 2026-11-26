@@ -141,7 +141,9 @@ public sealed class LocalizationTests
             .Select(locale => locale.Tag)
             .ToArray();
 
-        Assert.Equal(new[] { "en-GB", "fr-FR", "cy-GB", "de-DE" }, shipped);
+        Assert.Equal(
+            new[] { "en-GB", "fr-FR", "cy-GB", "de-DE", "es-ES", "it-IT", "nl-NL", "pt-PT" },
+            shipped);
 
         foreach (var tag in shipped)
         {

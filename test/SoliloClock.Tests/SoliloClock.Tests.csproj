@@ -45,6 +45,30 @@
     <None Include="..\..\src\SoliloClock.App\Resources\Localization\de-DE.json"
           Link="Resources\Localization\de-DE.json"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\SoliloClock.App\Resources\Phrases\es-ES.json"
+          Link="Phrases\es-ES.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\SoliloClock.App\Resources\Localization\es-ES.json"
+          Link="Resources\Localization\es-ES.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\SoliloClock.App\Resources\Phrases\it-IT.json"
+          Link="Phrases\it-IT.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\SoliloClock.App\Resources\Localization\it-IT.json"
+          Link="Resources\Localization\it-IT.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\SoliloClock.App\Resources\Phrases\nl-NL.json"
+          Link="Phrases\nl-NL.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\SoliloClock.App\Resources\Localization\nl-NL.json"
+          Link="Resources\Localization\nl-NL.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\SoliloClock.App\Resources\Phrases\pt-PT.json"
+          Link="Phrases\pt-PT.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\SoliloClock.App\Resources\Localization\pt-PT.json"
+          Link="Resources\Localization\pt-PT.json"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

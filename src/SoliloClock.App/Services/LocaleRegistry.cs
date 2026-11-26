@@ -53,10 +53,10 @@ public static class LocaleRegistry
         // a draft until a Welsh speaker has reviewed it.
         new LocaleDefinition("cy-GB", "Cymraeg", "Welsh (United Kingdom)", LocalizationStage.WesternEurope, true, true, true, IsProvisional: true),
         new LocaleDefinition("de-DE", "Deutsch", "German (Germany)", LocalizationStage.WesternEurope, true, true, true),
-        new LocaleDefinition("es-ES", "Español", "Spanish (Spain)", LocalizationStage.WesternEurope, false, false, false),
-        new LocaleDefinition("it-IT", "Italiano", "Italian (Italy)", LocalizationStage.WesternEurope, false, false, false),
-        new LocaleDefinition("nl-NL", "Nederlands", "Dutch (Netherlands)", LocalizationStage.WesternEurope, false, false, false),
-        new LocaleDefinition("pt-PT", "Português", "Portuguese (Portugal)", LocalizationStage.WesternEurope, false, false, false),
+        new LocaleDefinition("es-ES", "Español", "Spanish (Spain)", LocalizationStage.WesternEurope, true, true, true),
+        new LocaleDefinition("it-IT", "Italiano", "Italian (Italy)", LocalizationStage.WesternEurope, true, true, true),
+        new LocaleDefinition("nl-NL", "Nederlands", "Dutch (Netherlands)", LocalizationStage.WesternEurope, true, true, true),
+        new LocaleDefinition("pt-PT", "Português", "Portuguese (Portugal)", LocalizationStage.WesternEurope, true, true, true),
 
         // M2.3 — Central, Northern and Eastern Europe
         new LocaleDefinition("pl-PL", "Polski", "Polish (Poland)", LocalizationStage.CentralEasternEurope, false, false, false),

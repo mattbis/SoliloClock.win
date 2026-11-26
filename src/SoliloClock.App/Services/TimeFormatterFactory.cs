@@ -30,6 +30,14 @@ public static class TimeFormatterFactory
         ("cy", static () => new WelshTimeFormatter()),
         ("de-DE", static () => new GermanTimeFormatter()),
         ("de", static () => new GermanTimeFormatter()),
+        ("es-ES", static () => new SpanishTimeFormatter()),
+        ("es", static () => new SpanishTimeFormatter()),
+        ("it-IT", static () => new ItalianTimeFormatter()),
+        ("it", static () => new ItalianTimeFormatter()),
+        ("nl-NL", static () => new DutchTimeFormatter()),
+        ("nl", static () => new DutchTimeFormatter()),
+        ("pt-PT", static () => new PortugueseTimeFormatter()),
+        ("pt", static () => new PortugueseTimeFormatter()),
     };
 
     public static TimeFormatterSelection Resolve(string? locale)

@@ -460,10 +460,20 @@ completed language.
       the grammar through the language match.
 - [ ] Voice check on a machine with an installed German voice — not verified here.
 
-**Spanish, Italian, Dutch, Portuguese — not started**
-- [ ] Same acceptance items as French.
-- [ ] Native typographic conventions respected (Spanish inverted punctuation,
-      documented Portuguese variant).
+**Spanish (`es-ES`), Italian (`it-IT`), Dutch (`nl-NL`) and Portuguese (`pt-PT`) — complete**
+- [x] UI catalogs covering every key, 100 phrases each with the English ids and metadata,
+      and a dedicated formatter per language: *son las nueve y cuarto / menos cuarto*,
+      *sono le nove e mezza*, *het is half tien*, *são nove horas e um quarto*.
+- [x] Language-specific grammar: singular *es la una* / *è l'una* / *é uma hora*, feminine
+      hour agreement (*veintiuna*, *ventiuna*, *vinte e uma horas*), Dutch *één* versus
+      *een*, and Italian elisions (*ventuno*, *ventotto*, *ventitré*).
+- [x] Spanish inverted `¿`/`¡` and European Portuguese spelling (*dezanove*, *catorze*)
+      used consistently in the catalogs.
+- [x] `de-AT`, `es-MX`, `it-CH`, `nl-BE` and `pt-BR` inherit their grammar by language match.
+- [x] Shared acceptance test: complete UI catalog, 100 metadata-identical phrases, its own
+      formatter and automatic resolution for each of the six non-English packs.
+- [ ] Native-speaker review of every string and phrase (only Welsh is flagged in the UI).
+- [ ] Voice check per language on a machine with the matching SAPI voices.
 - [ ] State which installed SAPI voices can speak each language; Test voice works.
 
 #### M2.3 — Central, Northern and Eastern Europe
