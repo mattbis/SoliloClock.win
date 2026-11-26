@@ -32,6 +32,18 @@ public sealed class TimeFormatterFactoryTests
     }
 
     [Theory]
+    [InlineData("cy-GB")]
+    [InlineData("cy")]
+    public void WelshLocales_UseWelshGrammar(string locale)
+    {
+        var selection = TimeFormatterFactory.Resolve(locale);
+
+        Assert.IsType<WelshTimeFormatter>(selection.Formatter);
+        Assert.False(selection.UsedFallback);
+        Assert.Null(selection.Diagnostic);
+    }
+
+    [Theory]
     [InlineData("de-DE")]
     [InlineData("ar")]
     [InlineData("ja-JP")]

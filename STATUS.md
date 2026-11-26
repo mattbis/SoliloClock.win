@@ -1,7 +1,7 @@
 # STATUS — SoliloClock
 
 **Last updated:** 2026-11-26
-**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 French (`fr-FR`) complete.** Other Western European languages and M2.3–M2.6 not started; M3–M4 not started.
+**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 French (`fr-FR`) complete; Welsh (`cy-GB`) ships as a provisional draft pending native review.** Other Western European languages and M2.3–M2.6 not started; M3–M4 not started.
 **Name:** SoliloClock.
 
 ## Verification in this run
@@ -9,17 +9,22 @@
 | Check | Result |
 |---|---|
 | `dotnet build SoliloClock.sln -c Release` | 0 warnings, 0 errors |
-| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **142 passed**, 0 failed, 0 skipped |
+| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **189 passed**, 0 failed, 0 skipped |
 | Release executable startup | Process stayed alive through a 7-second smoke check; no leftover process |
-| Catalog deployment | `en-GB`/`fr-FR` UI catalogs and both phrase catalogs present in the build output |
+| Catalog deployment | `en-GB`/`fr-FR`/`cy-GB` UI catalogs and all three phrase catalogs present in the build output |
 | UI string completeness | Reflected test requires every `LocalizationKeys` constant in every shipped catalog |
 | French phrasing | 18 natural 12-hour cases, 7 twenty-four-hour and 4 exact-reading cases assert the whole sentence |
 | French catalogs | 100 phrases load with zero diagnostics, share the English ids, and keep the reviewed metadata |
 | Automatic language | 13 resolver cases: shipped match, `fr-CA`→`fr-FR`, unsupported→English, unknown tag, explicit override |
+| Automatic voice | 8 catalog cases: language match, region preference, alphabetical tie-break, no matching voice, blank cultures, empty voice list, unset locale |
+| Welsh phrasing | 19 natural 12-hour cases, 6 twenty-four-hour and 3 exact-reading cases assert whole sentences; all 1,440 clock minutes produce a Welsh sentence |
+| Welsh catalogs | 100 phrases load with zero diagnostics, share the English ids and keep the reviewed metadata |
+| Provisional flag | `cy-GB` is the only provisional locale, and a Welsh Windows resolves to it automatically |
 
-**Not verified:** audible speech in any language (including Test voice and a French
-SAPI voice), visual inspection of the window or tray menu, actual tray-menu clicks,
-RTL/CJK rendering, screen-reader output, and a real timed announcement. No profiler
+**Not verified:** audible speech in any language (including Test voice, a French SAPI
+voice, and whether the automatic voice choice sounds right), visual inspection of the
+window or tray menu, actual tray-menu clicks, RTL/CJK rendering, screen-reader output,
+and a real timed announcement. No profiler
 measurement was taken.
 
 ## Completed — M0 skeleton and M1 minimum lovable product
@@ -47,6 +52,11 @@ measurement was taken.
 - [x] `TimeFormatterFactory` selects grammar by locale, exact tag first then language.
 - [x] Installed voices listed with the culture they speak, **Test voice**, and an
       explicit "no installed voice speaks <language>" state.
+- [x] With no voice pinned, announcements use an installed voice that speaks the
+      announcement language (exact region, else any voice of that language, else the
+      Windows default), re-resolved on each announcement so newly installed voices are
+      picked up. Passing the resolved name explicitly also fixes *Automatic* previously
+      keeping whichever voice SAPI had last selected.
 - [x] Window `FlowDirection`/`Language`, clock numerals and thread culture follow the
       locale; Gregorian wall time and Western digits are forced.
 - [x] Grapheme-safe tray truncation; NotifyIcon text capped at its real 63 characters.
@@ -66,6 +76,21 @@ measurement was taken.
       stable ids, categories, tones, weights, windows and active-minute gates as
       `en-GB`; a test fails if a line is still the English text.
 - [x] `fr-FR` marked shipped; `fr-CA`/`fr-BE` inherit French grammar by language match.
+
+## Completed — Welsh (`cy-GB`), provisional
+
+- [x] `Resources/Localization/cy-GB.json` covers every key; `Resources/Phrases/cy-GB.json`
+      holds 100 lines with the same ids, categories, tones, weights, windows and
+      active-minute gates as `en-GB` (asserted by test).
+- [x] `WelshTimeFormatter`: *o'r gloch*, *chwarter wedi*, *hanner awr wedi*,
+      *chwarter i*, soft mutation after *yn* and *i* ("dri o'r gloch", "bum munud",
+      "ddeng munud i ddeg"), aspirate mutation after *a*, and named *hanner dydd* /
+      *hanner nos*.
+- [x] `cy-GB` ships with `LocaleDefinition.IsProvisional`, so both language menus
+      show *Cymraeg (drafft — aros adolygiad brodorol)*; automatic resolution selects
+      it on a Welsh Windows without any setup.
+- [ ] **Outstanding:** every string, phrase and the time grammar is machine-drafted
+      and needs a Welsh speaker's review before the flag is cleared.
 
 ## Language behaviour
 
@@ -96,7 +121,11 @@ new language is called out in the status line and in the Voice menu.
 
 ## Known limitations
 
-- Only `en-GB` and `fr-FR` ship; the other fourteen planned locales stay unshipped.
+- `en-GB`, `fr-FR` and provisional `cy-GB` ship; the other fourteen planned locales
+  stay unshipped.
+- Welsh content is a draft, not a translation anyone has checked: it is marked in both
+  language menus and must be replaced after native review. Its time grammar is only as
+  good as the draft wording, particularly mutations and the 24-hour reading.
 - No French voice was audible in this environment, so pronunciation and the
   "no installed voice speaks Français" path are unit-tested only.
 - The tray language/voice menus are rebuilt from view-model state but were not clicked
@@ -104,8 +133,9 @@ new language is called out in the status line and in the Voice menu.
   not by UI automation.
 - `PhraseCatalog`/`LocalizationCatalog` diagnostics and Windows/SAPI `ex.Message` text
   remain English/OS-language by design.
-- The Voice menu lists every installed voice and the language warning; no per-language
-  filter yet.
+- The Voice menu lists every installed voice in name order, without grouping the ones
+  that speak the announcement language, and a pinned voice that cannot speak it is not
+  flagged in the menu.
 - Speech rate/volume, joke rate and tone still have no settings UI.
 - RTL, CJK, Devanagari shaping, high-contrast, screen-reader output and multi-monitor
   behavior remain visually unverified.
@@ -113,9 +143,11 @@ new language is called out in the status line and in the Voice menu.
 
 ## Next actionable steps
 
-1. **German (`de-DE`)**: catalog, `GermanTimeFormatter` (halb, Viertel nach/vor,
+1. **Native review of Welsh:** replace the draft UI strings, 100 phrases and time
+   grammar, then clear `IsProvisional` for `cy-GB`.
+2. **German (`de-DE`)**: catalog, `GermanTimeFormatter` (halb, Viertel nach/vor,
    "siebzehn Uhr fünfundvierzig"), 100 phrases, promotion in `LocaleRegistry`.
-2. Add a view-model-level test for live language switching (chrome, status, formatter).
-3. Spanish, Italian, Dutch and Portuguese to finish M2.2.
-4. Then M2.3 (Polish, Russian, Greek), M2.4 (Arabic RTL), M2.5 (Hindi), M2.6 (CJK).
-5. M3: opt-in active-session reminders, quiet hours, tone/category settings, diagnostics.
+3. Add a view-model-level test for live language switching (chrome, status, formatter).
+4. Spanish, Italian, Dutch and Portuguese to finish M2.2.
+5. Then M2.3 (Polish, Russian, Greek), M2.4 (Arabic RTL), M2.5 (Hindi), M2.6 (CJK).
+6. M3: opt-in active-session reminders, quiet hours, tone/category settings, diagnostics.

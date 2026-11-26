@@ -7,7 +7,8 @@ namespace SoliloClock.Services;
 /// <summary>
 /// Rollout order from the plan: infrastructure first, then languages grouped by
 /// region starting in Europe. A locale only ships when its UI strings, time
-/// grammar and phrase catalog are all human-authored.
+/// grammar and phrase catalog exist; a provisional locale ships but is flagged
+/// in the picker until a native speaker has reviewed the wording.
 /// </summary>
 public enum LocalizationStage
 {
@@ -26,7 +27,8 @@ public sealed record LocaleDefinition(
     LocalizationStage Stage,
     bool HasUiStrings,
     bool HasTimeGrammar,
-    bool HasPhraseCatalog)
+    bool HasPhraseCatalog,
+    bool IsProvisional = false)
 {
     public bool IsShipped => HasUiStrings && HasTimeGrammar;
 }
@@ -47,6 +49,9 @@ public static class LocaleRegistry
 
         // M2.2 — Western Europe
         new LocaleDefinition("fr-FR", "Français", "French (France)", LocalizationStage.WesternEurope, true, true, true),
+        // Provisional: the wording is machine-drafted, so the picker marks it as
+        // a draft until a Welsh speaker has reviewed it.
+        new LocaleDefinition("cy-GB", "Cymraeg", "Welsh (United Kingdom)", LocalizationStage.WesternEurope, true, true, true, IsProvisional: true),
         new LocaleDefinition("de-DE", "Deutsch", "German (Germany)", LocalizationStage.WesternEurope, false, false, false),
         new LocaleDefinition("es-ES", "Español", "Spanish (Spain)", LocalizationStage.WesternEurope, false, false, false),
         new LocaleDefinition("it-IT", "Italiano", "Italian (Italy)", LocalizationStage.WesternEurope, false, false, false),

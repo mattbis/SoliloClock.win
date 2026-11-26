@@ -65,7 +65,7 @@ public static class LocalizationKeys
     public const string TrayReducedMotion = "tray.reducedMotion";
     public const string TrayAlwaysOnTop = "tray.alwaysOnTop";
     public const string TrayVoice = "tray.voice";
-    public const string TrayVoiceDefault = "tray.voiceDefault";
+    public const string TrayVoiceAutomatic = "tray.voiceAutomatic";
     public const string TrayTestVoice = "tray.testVoice";
     public const string TrayNoVoiceForLanguage = "tray.noVoiceForLanguage";
     public const string TrayShow = "tray.show";
@@ -74,6 +74,7 @@ public static class LocalizationKeys
     public const string TrayLanguageAutomatic = "tray.languageAutomatic";
     public const string TrayAnnounceIn = "tray.announceIn";
     public const string TraySpeechSameAsUi = "tray.speechSameAsUi";
+    public const string TrayProvisionalSuffix = "tray.provisionalSuffix";
 
     public const string CloseToTrayMessage = "closeToTray.message";
     public const string VoiceTestSample = "voice.testSample";

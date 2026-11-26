@@ -316,6 +316,16 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     /// <summary>True when an installed Windows voice can actually speak the announcement language.</summary>
     public bool HasVoiceForLanguage => VoiceCatalog.SpeaksLanguage(Voices, AnnouncementLocale);
 
+    /// <summary>
+    /// The voice used while none is pinned: an installed voice that speaks the
+    /// announcement language, or null when only other languages are installed.
+    /// Read live from Windows, so a voice installed later is used without a restart.
+    /// </summary>
+    public string? AutomaticVoice => VoiceCatalog.PreferredFor(Voices, AnnouncementLocale)?.Name;
+
+    /// <summary>The pinned voice, otherwise the language-appropriate automatic one.</summary>
+    public string? EffectiveVoice => _settings.SpeechVoice ?? AutomaticVoice;
+
     public string ShortStatus =>
         _text.Format(LocalizationKeys.StatusShort, ThemeDisplayName, NextAnnouncementText);
 
@@ -429,13 +439,15 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
             return;
         }
 
-        if (voiceName is null)
-        {
-            _speech.TrySelectVoice(null);
-        }
-
         _settings.SpeechVoice = voiceName;
+
+        // Selecting the automatic option takes effect immediately rather than
+        // waiting for the next announcement to switch voices.
+        _speech.TrySelectVoice(EffectiveVoice);
+
         OnPropertyChanged(nameof(SelectedVoice));
+        OnPropertyChanged(nameof(AutomaticVoice));
+        OnPropertyChanged(nameof(EffectiveVoice));
         ScheduleSave();
         RaiseStateChanged();
     }
@@ -635,6 +647,8 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         OnPropertyChanged(nameof(AnnouncementLocale));
         OnPropertyChanged(nameof(AnnouncementLanguageName));
         OnPropertyChanged(nameof(HasVoiceForLanguage));
+        OnPropertyChanged(nameof(AutomaticVoice));
+        OnPropertyChanged(nameof(EffectiveVoice));
         OnPropertyChanged(nameof(SpeechLanguageSetting));
         OnPropertyChanged(nameof(SpeechFollowsUi));
     }
@@ -698,8 +712,13 @@ public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
         ? _text[LocalizationKeys.StatusInterval45]
         : _text.Format(LocalizationKeys.StatusInterval, (int)Interval);
 
+    /// <summary>
+    /// An automatic voice is passed explicitly rather than left null, because a
+    /// null name would keep whatever voice SAPI last used instead of resetting to
+    /// the Windows default or following the announcement language.
+    /// </summary>
     private SpeechOptions CurrentSpeechOptions =>
-        new(_settings.SpeechRate, _settings.SpeechVolume, _settings.SpeechVoice);
+        new(_settings.SpeechRate, _settings.SpeechVolume, EffectiveVoice);
 
     private Dispatcher Dispatcher => Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
 

@@ -34,6 +34,10 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
 - **M2.2 French (`fr-FR`):** human-authored UI catalog and 100 phrases with French
   typography, plus a French time formatter ("il est neuf heures et quart", "dix heures
   moins le quart", "midi et demi", 24-hour reading).
+- **Welsh (`cy-GB`), provisional:** UI catalog, 100 phrases and a Welsh time formatter
+  ("mae'n dri o'r gloch", "chwarter wedi naw", "hanner awr wedi naw", "chwarter i
+  ddeg"). The wording is machine-drafted, so both language menus label it *draft —
+  pending native review* until a Welsh speaker has reviewed it.
 - **Automatic language:** the interface follows the Windows display language with no
   setup. Tray **Options → Language** and **Announce in** override it — for testing, or
   to announce in a different language — and apply immediately.
@@ -41,6 +45,7 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
 Not yet implemented: the remaining M2.2 languages (German, Spanish, Italian, Dutch,
 Portuguese) and M2.3–M2.6 (Central/Eastern Europe, Arabic, Hindi, CJK), quiet hours,
 usage reminders, tone/category settings UI, diagnostics page, installer (M3/M4).
+Welsh is usable but explicitly a draft, not a finished translation.
 
 ## Requirements
 
@@ -117,13 +122,31 @@ Speech uses Windows SAPI through `System.Speech`. The voice list is whatever
 Windows actually has installed, shown with the culture each voice speaks;
 `Options → Voice` offers **Test voice** and states outright when no installed
 voice can speak the selected language. The app never claims a language can speak
-without a compatible voice.
+without a compatible voice, and never lets an English voice pronounce French text
+just because it happened to be the last one used.
 
-The UI and announcements ship in English (`en-GB`) and French (`fr-FR`).
-Localization is delivered in language stages (see `doc/plan.md` §14): a language
-ships only once a human-authored UI catalog, its own time grammar with tests, and
-an adapted phrase catalog exist. The remaining planned languages are intentionally
-not stubbed with machine-translated jokes.
+With no voice pinned, the app announces with an installed voice that speaks the
+announcement language — exact region first, then any voice of that language,
+otherwise the Windows default — so switching `Announce in` to French speaks with a
+French voice. The choice is re-resolved on every announcement, so installing a
+voice later needs no restart, and *Automatic* in the voice menu names what it
+picks.
+
+The UI and announcements ship in English (`en-GB`), French (`fr-FR`) and
+provisional Welsh (`cy-GB`). Localization is delivered in language stages (see
+`doc/plan.md` §14): a language ships only once its UI catalog, its own time grammar
+with tests, and an adapted phrase catalog exist, and it counts as complete only
+when a human has authored them. Welsh is the deliberate exception and says so —
+its text is machine-drafted, so `Cymraeg` appears in both language menus with a
+*draft — pending native review* marker until a Welsh speaker has checked it. The
+remaining planned languages are not stubbed at all.
+
+To *hear* Welsh you need a Welsh SAPI voice, which Windows does not include.
+Install [Techiaith TTS](https://techiaith.cymru/en/products/techiaith-tts/) (free,
+offline, from Bangor University's Language Technologies Unit); it registers as a
+SAPI 5 voice and then appears in **Options → Voice** as `cy-GB`. Voices are a
+machine-level install: they are never bundled with SoliloClock or committed to
+this repository.
 
 Language needs no setup: `UiLanguage` is `null` by default, which means follow the
 Windows display language. Automatic resolution picks the best shipped catalog for
@@ -148,8 +171,9 @@ caption, and explains the situation in the status line and a tray balloon.
 ## Phrase catalog
 
 `src/SoliloClock.App/Resources/Phrases/` holds one catalog per shipped language:
-`en-GB.json` and `fr-FR.json`, each with 100 human-written lines sharing the same
-ids and metadata. Fields per entry: `id`, `text`, `category`, `tone`, `weight`,
+`en-GB.json`, `fr-FR.json` and provisional `cy-GB.json`, each with 100 lines sharing
+the same ids and metadata. The Welsh lines are machine-drafted (`"provisional":
+true` in the file) and await native review; English and French are human-authored. Fields per entry: `id`, `text`, `category`, `tone`, `weight`,
 `familyFriendly`, `minActiveMinutes`, `timeWindow`.
 
 Selection:

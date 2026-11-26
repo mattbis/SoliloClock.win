@@ -216,7 +216,7 @@ public sealed class TrayIconService : IDisposable
 
         foreach (var locale in _viewModel.ShippedLocales)
         {
-            var item = new ToolStripMenuItem(LocaleRegistry.GetDisplayName(locale.Tag))
+            var item = new ToolStripMenuItem(LocaleLabel(locale, text))
             {
                 Checked = !_viewModel.FollowsSystemLanguage
                     && string.Equals(locale.Tag, _viewModel.Text.Locale, StringComparison.OrdinalIgnoreCase),
@@ -246,7 +246,7 @@ public sealed class TrayIconService : IDisposable
 
         foreach (var locale in _viewModel.ShippedLocales)
         {
-            var item = new ToolStripMenuItem(LocaleRegistry.GetDisplayName(locale.Tag))
+            var item = new ToolStripMenuItem(LocaleLabel(locale, text))
             {
                 Checked = !_viewModel.SpeechFollowsUi
                     && string.Equals(
@@ -271,12 +271,20 @@ public sealed class TrayIconService : IDisposable
         var voice = new ToolStripMenuItem(text[LocalizationKeys.TrayVoice]);
         var voices = _viewModel.Voices;
 
-        var useDefault = new ToolStripMenuItem(text[LocalizationKeys.TrayVoiceDefault])
+        var automatic = new ToolStripMenuItem(text.Format(
+            LocalizationKeys.TrayVoiceAutomatic,
+            _viewModel.AnnouncementLanguageName))
         {
             Checked = _viewModel.SelectedVoice is null,
         };
-        useDefault.Click += (_, _) => _viewModel.SetVoice(null);
-        voice.DropDownItems.Add(useDefault);
+
+        if (_viewModel.AutomaticVoice is { } autoVoice)
+        {
+            automatic.ToolTipText = autoVoice;
+        }
+
+        automatic.Click += (_, _) => _viewModel.SetVoice(null);
+        voice.DropDownItems.Add(automatic);
 
         if (voices.Count > 0)
         {
@@ -317,6 +325,18 @@ public sealed class TrayIconService : IDisposable
         }
 
         return voice;
+    }
+
+    /// <summary>
+    /// A language's name, plus a draft marker while the locale is provisional, so
+    /// choosing Welsh is an informed choice rather than a claim the app cannot keep.
+    /// </summary>
+    private static string LocaleLabel(LocaleDefinition locale, UiText text)
+    {
+        var name = LocaleRegistry.GetDisplayName(locale.Tag);
+        return locale.IsProvisional
+            ? name + text[LocalizationKeys.TrayProvisionalSuffix]
+            : name;
     }
 
     private static string IntervalKey(AnnouncementInterval interval) => (int)interval switch

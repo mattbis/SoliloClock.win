@@ -26,6 +26,8 @@ public static class TimeFormatterFactory
         ("en", static () => new EnglishTimeFormatter()),
         ("fr-FR", static () => new FrenchTimeFormatter()),
         ("fr", static () => new FrenchTimeFormatter()),
+        ("cy-GB", static () => new WelshTimeFormatter()),
+        ("cy", static () => new WelshTimeFormatter()),
     };
 
     public static TimeFormatterSelection Resolve(string? locale)

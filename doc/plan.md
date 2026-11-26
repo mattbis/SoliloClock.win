@@ -385,8 +385,15 @@ Add a sensible `.editorconfig` for C# and XAML; consistent naming, formatting an
 ### M2 — Multilingual, delivered in language stages
 
 A language ships only when its UI strings, time grammar and phrase catalog are
-all human-authored. A language without a compatible installed Windows voice
-still ships its text; the Voice menu says plainly that it cannot speak.
+all present, and is complete only once a human has authored them. A language
+without a compatible installed Windows voice still ships its text; the Voice menu
+says plainly that it cannot speak.
+
+**Provisional locales.** A locale whose wording is machine-drafted may ship only
+with `LocaleDefinition.IsProvisional` set, which makes both language menus append
+a draft marker. Provisional text is a placeholder awaiting a native speaker, is
+never described as reviewed, and a provisional locale is never recorded as a
+completed language.
 
 #### M2.1 — Localization foundation — complete
 - [x] Per-locale UI catalogs at `Resources/Localization/<locale>.json`, layered
@@ -402,6 +409,10 @@ still ships its text; the Voice menu says plainly that it cannot speak.
       English; `en-GB` was the only grammar during M2.1, and M2.2 adds French.
 - [x] Installed voices are listed with the culture they speak, with **Test voice**
       and an explicit "no installed voice speaks <language>" state.
+- [x] With no voice pinned, announcements use an installed voice that speaks the
+      announcement language (exact region first, else any voice of that language,
+      else the Windows default), chosen again on each announcement so a voice
+      installed later is used without a restart.
 - [x] RTL layout, WPF language and clock numeral culture follow the locale; the
       clock keeps Gregorian wall time and Western digits under any locale.
 - [x] Grapheme-safe tray truncation (no split surrogate pairs, emoji or combining marks).
@@ -422,6 +433,19 @@ still ships its text; the Voice menu says plainly that it cannot speak.
       the French grammar through the language match.
 - [ ] Voice check on a machine with an installed French voice (or confirm the
       "no installed voice speaks Français" state) — not verified in this environment.
+
+**Welsh (`cy-GB`) — provisional, native review outstanding**
+- [x] UI catalog (`Resources/Localization/cy-GB.json`) covering every key, 100 phrases
+      under the same stable ids and metadata as `en-GB`, and `WelshTimeFormatter`
+      (*o'r gloch*, *chwarter wedi*, *hanner awr wedi*, *chwarter i*, soft mutation
+      after *yn* and *i*, midnight/noon named).
+- [x] `cy-GB` ships flagged `IsProvisional`; both language menus append the draft
+      marker, and a Welsh Windows resolves to it automatically.
+- [ ] Native-speaker review of every string, phrase and the time grammar; replace the
+      draft wording and clear the flag.
+- [ ] Voice check with an installed Welsh voice — Techiaith TTS is a third-party
+      SAPI 5 install, never bundled or committed to this repository. Not verified in
+      this environment.
 
 **German, Spanish, Italian, Dutch, Portuguese — not started**
 - [ ] Same acceptance items as French.
@@ -453,8 +477,9 @@ still ships its text; the Voice menu says plainly that it cannot speak.
 - [ ] Simplified and Traditional catalogs stay independent, not conversions.
 
 **Stage gate:** a language is promoted out of "planned" in `LocaleRegistry` only
-when its catalog, formatter and tests exist. `STATUS.md` records what shipped and
-which languages still lack a compatible voice.
+when its catalog, formatter and tests exist; it is recorded as complete only after
+human authorship. `STATUS.md` records what shipped, what is still a draft, and
+which languages lack a compatible voice.
 
 ### M3 — Delight and reminders
 - [ ] Opt-in usage/break reminders, measured session activity and cooldowns.

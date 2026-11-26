@@ -119,6 +119,7 @@ public sealed class LocalizationTests
         {
             "en-GB", "fr-FR", "de-DE", "es-ES", "it-IT", "nl-NL", "pt-PT",
             "pl-PL", "ru-RU", "el-GR", "ar", "hi", "zh-Hans", "zh-Hant", "ja-JP", "ko-KR",
+            "cy-GB",
         };
 
         foreach (var tag in planned)
@@ -140,7 +141,7 @@ public sealed class LocalizationTests
             .Select(locale => locale.Tag)
             .ToArray();
 
-        Assert.Equal(new[] { "en-GB", "fr-FR" }, shipped);
+        Assert.Equal(new[] { "en-GB", "fr-FR", "cy-GB" }, shipped);
 
         foreach (var tag in shipped)
         {
