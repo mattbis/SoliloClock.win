@@ -1,7 +1,7 @@
 # STATUS — SoliloClock
 
 **Last updated:** 2026-11-26
-**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 complete: French, German, Spanish, Italian, Dutch and Portuguese each ship a UI catalog, 100 phrases and their own time grammar; Welsh (`cy-GB`) ships as a provisional draft pending native review.** M2.3–M2.6 not started; M3–M4 not started.
+**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 complete: French, German, Spanish, Italian, Dutch and Portuguese each ship a UI catalog, 100 phrases and their own time grammar; Welsh (`cy-GB`) ships as a provisional draft pending native review. M2.3 complete: Polish (`pl-PL`), Russian (`ru-RU`) and Greek (`el-GR`) ship the same full packs with plural and case agreement covered by tests.** M2.4–M2.6 not started; M3–M4 not started.
 **Name:** SoliloClock.
 
 ## Verification in this run
@@ -9,9 +9,9 @@
 | Check | Result |
 |---|---|
 | `dotnet build SoliloClock.sln -c Release` | 0 warnings, 0 errors |
-| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **382 passed**, 0 failed, 0 skipped |
+| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **442 passed**, 0 failed, 0 skipped |
 | Release executable startup | Process stayed alive through a 7-second smoke check; no leftover process |
-| Catalog deployment | `en-GB`/`fr-FR`/`de-DE`/`es-ES`/`it-IT`/`nl-NL`/`pt-PT`/`cy-GB` UI catalogs and all eight phrase catalogs present in the build output |
+| Catalog deployment | `en-GB`/`fr-FR`/`de-DE`/`es-ES`/`it-IT`/`nl-NL`/`pt-PT`/`pl-PL`/`ru-RU`/`el-GR`/`cy-GB` UI catalogs and all eleven phrase catalogs present in the build output |
 | UI string completeness | Reflected test requires every `LocalizationKeys` constant in every shipped catalog |
 | French phrasing | 18 natural 12-hour cases, 7 twenty-four-hour and 4 exact-reading cases assert the whole sentence |
 | French catalogs | 100 phrases load with zero diagnostics, share the English ids, and keep the reviewed metadata |
@@ -23,6 +23,11 @@
 | Spanish/Italian phrasing | 18 Spanish and 18 Italian natural cases plus 24-hour and exact readings; every minute in three modes produces a sentence in each language |
 | Dutch/Portuguese phrasing | 18 Dutch and 18 Portuguese natural cases plus 24-hour and exact readings; every minute in three modes produces a sentence in each language |
 | M2.2 shared acceptance | All six non-English packs load 100 metadata-identical phrases, resolve their own formatter, and are chosen automatically for regional variants (`es-MX`, `it-CH`, `nl-BE`, `pt-BR`) |
+| M2.3 shared acceptance | Polish, Russian and Greek each load a complete UI catalog, 100 metadata-identical phrases, resolve their own formatter and are chosen automatically for `pl`, `ru-BY` and `el-CY` |
+| Polish phrasing | 14 natural cases (feminine hours, *wpół do* genitive, *za kwadrans*), 3 twenty-four-hour and 1 exact-reading case; Polish plural agreement for *minuta*, *dwie minuty*, *pięć minut* and 21 |
+| Russian phrasing | 12 natural cases (genitive hours, *четверть*/*половина*/*без четверти*), 2 twenty-four-hour cases, *час/часа/часов* and *минута/минуты/минут* agreement including 21 and 22 |
+| Greek phrasing | 11 natural cases (*και τέταρτο*, *και μισή*, *παρά τέταρτο*, *παρά είκοσι*), named midnight/noon and 2 twenty-four-hour cases |
+| M2.3 minute coverage | All 1,440 clock minutes in three modes produce a digit-free sentence in Polish, Russian and Greek |
 | Automatic language | 13 resolver cases: shipped match, `fr-CA`→`fr-FR`, unsupported→English, unknown tag, explicit override |
 | Automatic voice | 8 catalog cases: language match, region preference, alphabetical tie-break, no matching voice, blank cultures, empty voice list, unset locale |
 | Welsh phrasing | 19 natural 12-hour cases, 6 twenty-four-hour and 3 exact-reading cases assert whole sentences; all 1,440 clock minutes produce a Welsh sentence |
@@ -31,7 +36,7 @@
 | Live language switching | 4 view-model cases drive the real `MainViewModel` through UI and announcement language changes and assert chrome, caption, status, culture, grammar and voice follow at once |
 
 **Not verified:** audible speech in any language other than English (including Test voice,
-the six non-English announcement languages, and whether the automatic voice choice sounds
+the nine non-English announcement languages, and whether the automatic voice choice sounds
 right), visual inspection of the window or tray menu, actual tray-menu clicks, RTL/CJK
 rendering, screen-reader output, and a real timed announcement. No profiler measurement was
 taken.
@@ -134,6 +139,29 @@ taken.
 - [ ] **Outstanding:** native-speaker review of every string and phrase, and a voice check
       per language — none of these languages was audible in this environment.
 
+## Completed — M2.3 Polish, Russian and Greek
+
+- [x] `Resources/Localization/{pl-PL,ru-RU,el-GR}.json` cover every key and
+      `Resources/Phrases/*.json` hold 100 phrases each under the English ids,
+      categories, tones, weights, windows and active-minute gates.
+- [x] `PolishTimeFormatter`: *Jest dziewiąta*, *kwadrans po dziewiątej*, *wpół do
+      dziesiątej* (genitive after *do*), *za kwadrans dziesiąta*, feminine hour
+      ordinals and Polish plural agreement (*minuta*, *dwie minuty*, *pięć minut*,
+      *dwadzieścia jeden minut*).
+- [x] `RussianTimeFormatter`: *Сейчас девять часов*, *четверть десятого*,
+      *половина десятого*, *без четверти десять*, genitive hours after the half and
+      *час/часа/часов*, *минута/минуты/минут* agreement including 21 and 22.
+- [x] `GreekTimeFormatter`: *Είναι εννέα η ώρα*, *εννέα και τέταρτο*, *εννέα και
+      μισή*, *δέκα παρά τέταρτο*, named *μεσάνυχτα*/*μεσημέρι* and a 24-hour reading
+      (*δεκαεννέα και σαράντα πέντε*).
+- [x] `CentralEasternEuropeTests` asserts the shared pack acceptance, automatic
+      resolution (`pl`→`pl-PL`, `ru-BY`→`ru-RU`, `el-CY`→`el-GR`) and that every
+      minute of the day produces a digit-free sentence in all three modes.
+- [x] `local/install-all-packs.ps1` now reports and installs voices for `pl-PL`,
+      `ru-RU` and `el-GR`; the test project copies phrase catalogs by wildcard so a
+      new pack needs no csproj edit.
+- [ ] Native-speaker review of the three packs, and a voice check per language.
+
 ## Language behaviour
 
 | Setting | `null` / `auto` | explicit tag |
@@ -165,11 +193,12 @@ what the user then sees and hears.
 
 ## Known limitations
 
-- Eight locales ship (English, French, German, Spanish, Italian, Dutch, Portuguese and
-  provisional Welsh); the other nine planned locales stay unshipped.
-- Every non-English pack is a project draft: French, German, Spanish, Italian, Dutch and
-  Portuguese still need a native speaker's review, and only Welsh carries the visible
-  draft marker in the UI.
+- Eleven locales ship (English, French, German, Spanish, Italian, Dutch, Portuguese,
+  Polish, Russian, Greek and provisional Welsh); the other six planned locales
+  (`ar`, `hi`, `zh-Hans`, `zh-Hant`, `ja-JP`, `ko-KR`) stay unshipped.
+- Every non-English pack is a project draft: French, German, Spanish, Italian, Dutch,
+  Portuguese, Polish, Russian and Greek still need a native speaker's review, and only
+  Welsh carries the visible draft marker in the UI.
 - Welsh content is a draft, not a translation anyone has checked: it is marked in both
   language menus and must be replaced after native review. Its time grammar is only as
   good as the draft wording, particularly mutations and the 24-hour reading.
@@ -196,9 +225,8 @@ what the user then sees and hears.
 
 1. **Native review of Welsh:** replace the draft UI strings, 100 phrases and time
    grammar, then clear `IsProvisional` for `cy-GB`.
-2. **Native review of the six completed packs** (French, German, Spanish, Italian, Dutch,
-   Portuguese): correct wording and any grammar, then decide whether they should carry the
-   same draft marker as Welsh.
-3. M2.3: Polish, Russian and Greek, with plural and case agreement tests.
-4. M2.4 (Arabic RTL), M2.5 (Hindi), M2.6 (CJK).
-5. M3: opt-in active-session reminders, quiet hours, tone/category settings, diagnostics.
+2. **Native review of the nine completed packs** (French, German, Spanish, Italian,
+   Dutch, Portuguese, Polish, Russian, Greek): correct wording and any grammar, then
+   decide whether they should carry the same draft marker as Welsh.
+3. M2.4 (Arabic RTL), M2.5 (Hindi), M2.6 (CJK).
+4. M3: opt-in active-session reminders, quiet hours, tone/category settings, diagnostics.

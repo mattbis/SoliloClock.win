@@ -59,9 +59,9 @@ public static class LocaleRegistry
         new LocaleDefinition("pt-PT", "Português", "Portuguese (Portugal)", LocalizationStage.WesternEurope, true, true, true),
 
         // M2.3 — Central, Northern and Eastern Europe
-        new LocaleDefinition("pl-PL", "Polski", "Polish (Poland)", LocalizationStage.CentralEasternEurope, false, false, false),
-        new LocaleDefinition("ru-RU", "Русский", "Russian (Russia)", LocalizationStage.CentralEasternEurope, false, false, false),
-        new LocaleDefinition("el-GR", "Ελληνικά", "Greek (Greece)", LocalizationStage.CentralEasternEurope, false, false, false),
+        new LocaleDefinition("pl-PL", "Polski", "Polish (Poland)", LocalizationStage.CentralEasternEurope, true, true, true),
+        new LocaleDefinition("ru-RU", "Русский", "Russian (Russia)", LocalizationStage.CentralEasternEurope, true, true, true),
+        new LocaleDefinition("el-GR", "Ελληνικά", "Greek (Greece)", LocalizationStage.CentralEasternEurope, true, true, true),
 
         // M2.4 — Middle East (right-to-left)
         new LocaleDefinition("ar", "العربية", "Arabic", LocalizationStage.MiddleEast, false, false, false),

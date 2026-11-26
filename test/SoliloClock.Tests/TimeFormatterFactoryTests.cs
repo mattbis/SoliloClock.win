@@ -104,9 +104,45 @@ public sealed class TimeFormatterFactoryTests
     }
 
     [Theory]
+    [InlineData("pl-PL")]
+    [InlineData("pl")]
+    public void PolishLocales_UsePolishGrammar(string locale)
+    {
+        var selection = TimeFormatterFactory.Resolve(locale);
+
+        Assert.IsType<PolishTimeFormatter>(selection.Formatter);
+        Assert.False(selection.UsedFallback);
+        Assert.Null(selection.Diagnostic);
+    }
+
+    [Theory]
+    [InlineData("ru-RU")]
+    [InlineData("ru")]
+    public void RussianLocales_UseRussianGrammar(string locale)
+    {
+        var selection = TimeFormatterFactory.Resolve(locale);
+
+        Assert.IsType<RussianTimeFormatter>(selection.Formatter);
+        Assert.False(selection.UsedFallback);
+        Assert.Null(selection.Diagnostic);
+    }
+
+    [Theory]
+    [InlineData("el-GR")]
+    [InlineData("el")]
+    public void GreekLocales_UseGreekGrammar(string locale)
+    {
+        var selection = TimeFormatterFactory.Resolve(locale);
+
+        Assert.IsType<GreekTimeFormatter>(selection.Formatter);
+        Assert.False(selection.UsedFallback);
+        Assert.Null(selection.Diagnostic);
+    }
+
+    [Theory]
     [InlineData("ar")]
     [InlineData("ja-JP")]
-    [InlineData("pl-PL")]
+    [InlineData("tr-TR")]
     public void LocalesWithoutGrammar_FallBackToEnglishAndSaySo(string locale)
     {
         var selection = TimeFormatterFactory.Resolve(locale);

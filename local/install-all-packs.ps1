@@ -34,7 +34,7 @@ list is read once at startup.
 Add the Windows text-to-speech feature for each tag in -Tag, then bridge.
 
 .PARAMETER Tag
-Language tags to install. Defaults to the M2.2 Western European packs.
+Language tags to install. Defaults to the shipped European packs.
 Only tags Windows advertises as Language.TextToSpeech are installable.
 
 .PARAMETER Bridge
@@ -54,7 +54,8 @@ Report only: which voice speaks each shipped language and what is missing.
 
 .EXAMPLE
 pwsh local/install-all-packs.ps1 -Install
-Install and expose French, German, Spanish, Italian, Dutch and Portuguese.
+Install and expose French, German, Spanish, Italian, Dutch, Portuguese, Polish,
+Russian and Greek.
 
 .EXAMPLE
 pwsh local/install-all-packs.ps1 -Install -Tag de-DE,pl-PL,ru-RU
@@ -77,7 +78,7 @@ param(
     [switch]$Install,
     [switch]$Bridge,
     [switch]$Remove,
-    [string[]]$Tag = @('fr-FR', 'de-DE', 'es-ES', 'it-IT', 'nl-NL', 'pt-PT'),
+    [string[]]$Tag = @('fr-FR', 'de-DE', 'es-ES', 'it-IT', 'nl-NL', 'pt-PT', 'pl-PL', 'ru-RU', 'el-GR'),
     [string[]]$VoicePack = @()
 )
 
@@ -101,6 +102,9 @@ $shipped = [ordered]@{
     'it-IT' = 'Italian'
     'nl-NL' = 'Dutch'
     'pt-PT' = 'Portuguese'
+    'pl-PL' = 'Polish'
+    'ru-RU' = 'Russian'
+    'el-GR' = 'Greek'
     'cy-GB' = 'Welsh'
 }
 

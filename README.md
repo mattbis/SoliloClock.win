@@ -40,8 +40,12 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
   ("mae'n dri o'r gloch", "chwarter wedi naw", "hanner awr wedi naw", "chwarter i
   ddeg"). The wording is machine-drafted, so both language menus label it *draft —
   pending native review* until a Welsh speaker has reviewed it.
+- **M2.3 complete — Polish, Russian and Greek:** `pl-PL`, `ru-RU` and `el-GR` each ship
+  a UI catalog, 100 phrases and their own time grammar ("jest wpół do dziesiątej",
+  "без четверти десять", "εννέα και τέταρτο"), with Polish and Russian plural and
+  case agreement covered by tests.
 
-Not yet implemented: M2.3–M2.6 (Central/Eastern Europe, Arabic, Hindi, CJK), quiet hours,
+Not yet implemented: M2.4–M2.6 (Arabic, Hindi, CJK), quiet hours,
 usage reminders, tone/category settings UI, diagnostics page, installer (M3/M4).
 Welsh is usable but explicitly a draft, not a finished translation.
 
@@ -139,12 +143,13 @@ picks.
 
 The UI and announcements ship in English (`en-GB`), French (`fr-FR`), German
 (`de-DE`), Spanish (`es-ES`), Italian (`it-IT`), Dutch (`nl-NL`), Portuguese
-(`pt-PT`) and provisional Welsh (`cy-GB`). Localization is delivered in language
+(`pt-PT`), Polish (`pl-PL`), Russian (`ru-RU`), Greek (`el-GR`) and provisional
+Welsh (`cy-GB`). Localization is delivered in language
 stages (see `doc/plan.md` §14): a language ships only once its UI catalog, its own
 time grammar with tests, and an adapted phrase catalog exist, so nothing appears in
 the picker half-finished. Welsh is the one exception: its text is machine-drafted,
 so `Cymraeg` appears in both language menus with a *draft — pending native review*
-marker until a Welsh speaker has checked it. The M2.3–M2.6 languages are not stubbed
+marker until a Welsh speaker has checked it. The M2.4–M2.6 languages are not stubbed
 at all.
 
 To *hear* Welsh you need a Welsh SAPI voice, which Windows does not include.

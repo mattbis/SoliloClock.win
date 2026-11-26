@@ -38,6 +38,12 @@ public static class TimeFormatterFactory
         ("nl", static () => new DutchTimeFormatter()),
         ("pt-PT", static () => new PortugueseTimeFormatter()),
         ("pt", static () => new PortugueseTimeFormatter()),
+        ("pl-PL", static () => new PolishTimeFormatter()),
+        ("pl", static () => new PolishTimeFormatter()),
+        ("ru-RU", static () => new RussianTimeFormatter()),
+        ("ru", static () => new RussianTimeFormatter()),
+        ("el-GR", static () => new GreekTimeFormatter()),
+        ("el", static () => new GreekTimeFormatter()),
     };
 
     public static TimeFormatterSelection Resolve(string? locale)

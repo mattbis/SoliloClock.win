@@ -476,11 +476,23 @@ completed language.
 - [ ] Voice check per language on a machine with the matching SAPI voices.
 - [ ] State which installed SAPI voices can speak each language; Test voice works.
 
-#### M2.3 — Central, Northern and Eastern Europe
+#### M2.3 — Central, Northern and Eastern Europe — complete
 `pl-PL` · `ru-RU` · `el-GR`
-- [ ] Same acceptance items as M2.2.
-- [ ] Plural and case agreement exercised in formatter tests (Polish and Russian
-      number agreement, Greek hour forms).
+- [x] Same acceptance items as M2.2: complete UI catalog, 100 metadata-identical
+      phrases and a dedicated formatter for each language.
+- [x] `PolishTimeFormatter`: *Jest dziewiąta*, *kwadrans po dziewiątej*, *wpół do
+      dziesiątej* (genitive after *do*), *za kwadrans dziesiąta*, feminine hour
+      ordinals, and plural agreement for minutes (*minuta*, *dwie minuty*, *pięć
+      minut*, *dwadzieścia jeden minut*).
+- [x] `RussianTimeFormatter`: *Сейчас девять часов*, *четверть десятого*,
+      *половина десятого*, *без четверти десять*, genitive hours after the half, and
+      *час/часа/часов* plus *минута/минуты/минут* agreement including 21 and 22.
+- [x] `GreekTimeFormatter`: *Είναι εννέα η ώρα*, *εννέα και τέταρτο*, *εννέα και
+      μισή*, *δέκα παρά τέταρτο*, named *μεσάνυχτα*/*μεσημέρι*, and a 24-hour reading
+      in words (*δεκαεννέα και σαράντα πέντε*).
+- [x] Plural and case agreement exercised in formatter tests, and every minute of the
+      day asserted to produce a digit-free sentence in natural, exact and 24-hour modes.
+- [ ] Native-speaker review and a voice check per language.
 
 #### M2.4 — Middle East and right-to-left
 `ar`
