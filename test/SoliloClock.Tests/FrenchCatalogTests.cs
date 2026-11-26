@@ -27,31 +27,64 @@ public sealed class FrenchCatalogTests
     {
         var result = LocalizationCatalog.Load(LocalizationCatalog.DefaultDirectory, "fr-FR");
 
+        Assert.NotEmpty(result.Strings);
         foreach (var pair in result.Strings)
         {
-            foreach (var mark in new[] { ':', ';', '?', '!' })
-            {
-                var index = pair.Value.IndexOf(mark);
-                while (index > 0)
-                {
-                    Assert.True(
-                        pair.Value[index - 1] == '\u00A0',
-                        $"{pair.Key}: a non-breaking space must precede '{mark}'");
-                    index = pair.Value.IndexOf(mark, index + 1);
-                }
-            }
-
-            var open = pair.Value.IndexOf('«');
-            if (open < 0)
-            {
-                continue;
-            }
-
-            var close = pair.Value.IndexOf('»', open + 1);
-            Assert.True(close > open, $"{pair.Key}: unbalanced guillemets");
-            Assert.Equal('\u00A0', pair.Value[open + 1]);
-            Assert.Equal('\u00A0', pair.Value[close - 1]);
+            AssertFrenchTypography(pair.Key, pair.Value);
         }
+    }
+
+    [Fact]
+    public void FrenchPhraseCatalog_UsesFrenchTypography()
+    {
+        var french = PhraseCatalog.Load(PhraseDirectory, "fr-FR");
+
+        Assert.False(french.UsedFallback);
+        Assert.Empty(french.Diagnostics);
+        Assert.Equal(100, french.Phrases.Count);
+
+        foreach (var phrase in french.Phrases)
+        {
+            AssertFrenchTypography(phrase.Id, phrase.Text);
+        }
+    }
+
+    /// <summary>
+    /// The French house style for every user-visible string: a non-breaking space
+    /// before <c>: ; ? !</c>, guillemets closed with non-breaking spaces, and
+    /// typographic punctuation (’ and not ' or ").
+    /// </summary>
+    private static void AssertFrenchTypography(string id, string value)
+    {
+        Assert.DoesNotContain("'", value);
+        Assert.DoesNotContain("\"", value);
+
+        foreach (var mark in new[] { ':', ';', '?', '!' })
+        {
+            var index = value.IndexOf(mark);
+            while (index > 0)
+            {
+                Assert.True(
+                    value[index - 1] == '\u00A0',
+                    $"{id}: a non-breaking space must precede '{mark}'");
+                index = value.IndexOf(mark, index + 1);
+            }
+        }
+
+        var opens = value.Count(character => character == '«');
+        var closes = value.Count(character => character == '»');
+        Assert.Equal(opens, closes);
+
+        if (opens == 0)
+        {
+            return;
+        }
+
+        var open = value.IndexOf('«');
+        var close = value.IndexOf('»', open + 1);
+        Assert.True(close > open, $"{id}: unbalanced guillemets");
+        Assert.Equal('\u00A0', value[open + 1]);
+        Assert.Equal('\u00A0', value[close - 1]);
     }
 
     [Fact]

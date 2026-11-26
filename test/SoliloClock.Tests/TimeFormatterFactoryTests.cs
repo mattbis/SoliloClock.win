@@ -45,6 +45,17 @@ public sealed class TimeFormatterFactoryTests
 
     [Theory]
     [InlineData("de-DE")]
+    [InlineData("de-AT")]
+    public void GermanLocales_UseGermanGrammar(string locale)
+    {
+        var selection = TimeFormatterFactory.Resolve(locale);
+
+        Assert.IsType<GermanTimeFormatter>(selection.Formatter);
+        Assert.False(selection.UsedFallback);
+        Assert.Null(selection.Diagnostic);
+    }
+
+    [Theory]
     [InlineData("ar")]
     [InlineData("ja-JP")]
     [InlineData("pl-PL")]

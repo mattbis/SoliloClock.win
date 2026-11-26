@@ -46,10 +46,10 @@ public sealed class LocaleResolverTests
     [Fact]
     public void Automatic_StaysEnglishForLanguagesWithoutACatalog()
     {
-        var choice = LocaleResolver.ResolveUi(null, "de-DE");
+        var choice = LocaleResolver.ResolveUi(null, "pl-PL");
 
         Assert.Equal("en-GB", choice.Locale);
-        Assert.Equal("de-DE", choice.RequestedLocale);
+        Assert.Equal("pl-PL", choice.RequestedLocale);
         Assert.True(choice.FollowsSystem);
         Assert.True(choice.LanguageDiffers);
     }
@@ -75,11 +75,11 @@ public sealed class LocaleResolverTests
     }
 
     [Fact]
-    public void ExplicitUnknownTag_IsKeptSoTheFallbackCanBeReported()
+    public void ExplicitUnsupportedTag_IsKeptSoTheFallbackCanBeReported()
     {
-        var choice = LocaleResolver.ResolveUi("de-DE", "en-GB");
+        var choice = LocaleResolver.ResolveUi("pl-PL", "en-GB");
 
-        Assert.Equal("de-DE", choice.Locale);
+        Assert.Equal("pl-PL", choice.Locale);
         Assert.False(choice.FollowsSystem);
     }
 

@@ -447,10 +447,23 @@ completed language.
       SAPI 5 install, never bundled or committed to this repository. Not verified in
       this environment.
 
-**German, Spanish, Italian, Dutch, Portuguese — not started**
+**German (`de-DE`) — complete**
+- [x] Human-authored UI catalog (`Resources/Localization/de-DE.json`) covering every
+      key, in the formal *Sie* form, with German ß and „…“ quotation marks.
+- [x] `GermanTimeFormatter`: *Es ist neun Uhr*, *Viertel nach neun*, *halb zehn*
+      (halfway to ten, not half past nine), *Viertel vor zehn*, *ein Uhr* (never
+      "eins Uhr"), named *Mittag*/*Mitternacht*, and a literal 24-hour reading
+      (*neunzehn Uhr fünfundvierzig*). Minutes outside the quarters are read as clock
+      time (*neun Uhr zwanzig*) rather than a region-specific *zwanzig nach neun*.
+- [x] 100 phrases under the same stable ids and metadata as `en-GB`.
+- [x] `de-DE` promoted in `LocaleRegistry`; `de-AT` and other German locales inherit
+      the grammar through the language match.
+- [ ] Voice check on a machine with an installed German voice — not verified here.
+
+**Spanish, Italian, Dutch, Portuguese — not started**
 - [ ] Same acceptance items as French.
-- [ ] Native typographic conventions respected (German ß, Spanish inverted
-      punctuation, documented Portuguese variant).
+- [ ] Native typographic conventions respected (Spanish inverted punctuation,
+      documented Portuguese variant).
 - [ ] State which installed SAPI voices can speak each language; Test voice works.
 
 #### M2.3 — Central, Northern and Eastern Europe

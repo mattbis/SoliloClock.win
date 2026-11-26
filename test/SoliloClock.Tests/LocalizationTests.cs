@@ -38,12 +38,12 @@ public sealed class LocalizationTests
     [Fact]
     public void UnknownLocale_FallsBackToEnglishWithADiagnostic()
     {
-        var result = LocalizationCatalog.Load(LocalizationCatalog.DefaultDirectory, "de-DE");
+        var result = LocalizationCatalog.Load(LocalizationCatalog.DefaultDirectory, "pl-PL");
 
         Assert.True(result.UsedFallback);
         Assert.NotEmpty(result.Diagnostics);
         Assert.Equal("en-GB", result.Locale);
-        Assert.Equal("de-DE", result.RequestedLocale);
+        Assert.Equal("pl-PL", result.RequestedLocale);
         Assert.Equal("SoliloClock", result.Strings[LocalizationKeys.AppName]);
     }
 
@@ -141,7 +141,7 @@ public sealed class LocalizationTests
             .Select(locale => locale.Tag)
             .ToArray();
 
-        Assert.Equal(new[] { "en-GB", "fr-FR", "cy-GB" }, shipped);
+        Assert.Equal(new[] { "en-GB", "fr-FR", "cy-GB", "de-DE" }, shipped);
 
         foreach (var tag in shipped)
         {

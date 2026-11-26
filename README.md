@@ -34,6 +34,9 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
 - **M2.2 French (`fr-FR`):** human-authored UI catalog and 100 phrases with French
   typography, plus a French time formatter ("il est neuf heures et quart", "dix heures
   moins le quart", "midi et demi", 24-hour reading).
+- **German (`de-DE`):** human-authored UI catalog and 100 phrases, plus a German time
+  formatter ("es ist neun Uhr", "Viertel nach neun", "halb zehn", "Viertel vor zehn",
+  "neunzehn Uhr fünfundvierzig").
 - **Welsh (`cy-GB`), provisional:** UI catalog, 100 phrases and a Welsh time formatter
   ("mae'n dri o'r gloch", "chwarter wedi naw", "hanner awr wedi naw", "chwarter i
   ddeg"). The wording is machine-drafted, so both language menus label it *draft —
@@ -42,7 +45,7 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
   setup. Tray **Options → Language** and **Announce in** override it — for testing, or
   to announce in a different language — and apply immediately.
 
-Not yet implemented: the remaining M2.2 languages (German, Spanish, Italian, Dutch,
+Not yet implemented: the remaining M2.2 languages (Spanish, Italian, Dutch,
 Portuguese) and M2.3–M2.6 (Central/Eastern Europe, Arabic, Hindi, CJK), quiet hours,
 usage reminders, tone/category settings UI, diagnostics page, installer (M3/M4).
 Welsh is usable but explicitly a draft, not a finished translation.
@@ -132,8 +135,8 @@ French voice. The choice is re-resolved on every announcement, so installing a
 voice later needs no restart, and *Automatic* in the voice menu names what it
 picks.
 
-The UI and announcements ship in English (`en-GB`), French (`fr-FR`) and
-provisional Welsh (`cy-GB`). Localization is delivered in language stages (see
+The UI and announcements ship in English (`en-GB`), French (`fr-FR`), German
+(`de-DE`) and provisional Welsh (`cy-GB`). Localization is delivered in language stages (see
 `doc/plan.md` §14): a language ships only once its UI catalog, its own time grammar
 with tests, and an adapted phrase catalog exist, and it counts as complete only
 when a human has authored them. Welsh is the deliberate exception and says so —
@@ -171,9 +174,10 @@ caption, and explains the situation in the status line and a tray balloon.
 ## Phrase catalog
 
 `src/SoliloClock.App/Resources/Phrases/` holds one catalog per shipped language:
-`en-GB.json`, `fr-FR.json` and provisional `cy-GB.json`, each with 100 lines sharing
-the same ids and metadata. The Welsh lines are machine-drafted (`"provisional":
-true` in the file) and await native review; English and French are human-authored. Fields per entry: `id`, `text`, `category`, `tone`, `weight`,
+`en-GB.json`, `fr-FR.json`, `de-DE.json` and provisional `cy-GB.json`, each with 100
+lines sharing the same ids and metadata. The Welsh lines are machine-drafted
+(`"provisional": true` in the file) and await native review; English, French and
+German are human-authored. Fields per entry: `id`, `text`, `category`, `tone`, `weight`,
 `familyFriendly`, `minActiveMinutes`, `timeWindow`.
 
 Selection:

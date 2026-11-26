@@ -1,7 +1,7 @@
 # STATUS — SoliloClock
 
 **Last updated:** 2026-11-26
-**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 French (`fr-FR`) complete; Welsh (`cy-GB`) ships as a provisional draft pending native review.** Other Western European languages and M2.3–M2.6 not started; M3–M4 not started.
+**Stage:** M0 and M1 complete. **M2.1 localization foundation complete, including automatic Windows-language detection and the live language picker. M2.2 French (`fr-FR`) and German (`de-DE`) complete; Welsh (`cy-GB`) ships as a provisional draft pending native review.** Spanish, Italian, Dutch, Portuguese and M2.3–M2.6 not started; M3–M4 not started.
 **Name:** SoliloClock.
 
 ## Verification in this run
@@ -9,12 +9,17 @@
 | Check | Result |
 |---|---|
 | `dotnet build SoliloClock.sln -c Release` | 0 warnings, 0 errors |
-| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **193 passed**, 0 failed, 0 skipped |
+| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **238 passed**, 0 failed, 0 skipped |
 | Release executable startup | Process stayed alive through a 7-second smoke check; no leftover process |
-| Catalog deployment | `en-GB`/`fr-FR`/`cy-GB` UI catalogs and all three phrase catalogs present in the build output |
+| Catalog deployment | `en-GB`/`fr-FR`/`de-DE`/`cy-GB` UI catalogs and all four phrase catalogs present in the build output |
 | UI string completeness | Reflected test requires every `LocalizationKeys` constant in every shipped catalog |
 | French phrasing | 18 natural 12-hour cases, 7 twenty-four-hour and 4 exact-reading cases assert the whole sentence |
 | French catalogs | 100 phrases load with zero diagnostics, share the English ids, and keep the reviewed metadata |
+| French typography | Every UI string and all 100 phrases are checked for a non-breaking space before `: ; ? !`, non-breaking spaces inside guillemets, balanced « » and typographic apostrophes |
+| German phrasing | 24 natural 12-hour cases, 7 twenty-four-hour and 5 exact-reading cases assert whole sentences; every minute in three modes produces a German sentence |
+| German grammar edge | "ein Uhr" but "halb eins"/"Viertel vor eins"; compounds use the linking "ein-" ("einundzwanzig") |
+| German catalogs | 100 phrases load with zero diagnostics, share the English ids and keep the reviewed metadata; „…“ quotes, no straight apostrophes or double spaces |
+| German selection | `de-DE` is shipped and not provisional; `de-AT` inherits the grammar and a German Windows resolves to `de-DE` automatically |
 | Automatic language | 13 resolver cases: shipped match, `fr-CA`→`fr-FR`, unsupported→English, unknown tag, explicit override |
 | Automatic voice | 8 catalog cases: language match, region preference, alphabetical tie-break, no matching voice, blank cultures, empty voice list, unset locale |
 | Welsh phrasing | 19 natural 12-hour cases, 6 twenty-four-hour and 3 exact-reading cases assert whole sentences; all 1,440 clock minutes produce a Welsh sentence |
@@ -93,6 +98,22 @@ measurement was taken.
 - [ ] **Outstanding:** every string, phrase and the time grammar is machine-drafted
       and needs a Welsh speaker's review before the flag is cleared.
 
+## Completed — M2.2 German (`de-DE`)
+
+- [x] `Resources/Localization/de-DE.json` covers every key in the formal *Sie* form,
+      with German ß and „…“ quotation marks (asserted by test).
+- [x] `GermanTimeFormatter`: *Es ist neun Uhr*, *Viertel nach neun*, *halb zehn*
+      (halfway to ten), *Viertel vor zehn*, *ein Uhr* but *halb eins*,
+      *Mittag*/*Mitternacht*, and a literal 24-hour reading
+      (*neunzehn Uhr fünfundvierzig*). Minutes between the quarters are read as clock
+      time (*neun Uhr zwanzig*), avoiding the regionally split *zwanzig nach neun*.
+- [x] `Resources/Phrases/de-DE.json`: 100 translations under the same ids, categories,
+      tones, weights, windows and active-minute gates as `en-GB`.
+- [x] `de-DE` promoted in `LocaleRegistry`; `de-AT` and other German locales inherit the
+      grammar through the language match.
+- [ ] **Outstanding:** voice check on a machine with an installed German voice — the
+      German text path is unit-tested only in this environment.
+
 ## Language behaviour
 
 | Setting | `null` / `auto` | explicit tag |
@@ -124,13 +145,15 @@ what the user then sees and hears.
 
 ## Known limitations
 
-- `en-GB`, `fr-FR` and provisional `cy-GB` ship; the other fourteen planned locales
-  stay unshipped.
+- `en-GB`, `fr-FR`, `de-DE` and provisional `cy-GB` ship; the other thirteen planned
+  locales stay unshipped.
 - Welsh content is a draft, not a translation anyone has checked: it is marked in both
   language menus and must be replaced after native review. Its time grammar is only as
   good as the draft wording, particularly mutations and the 24-hour reading.
-- No French voice was audible in this environment, so pronunciation and the
-  "no installed voice speaks Français" path are unit-tested only.
+- Neither French nor German speech was audible in this environment, so pronunciation
+  and both "no installed voice speaks …" paths are unit-tested only. German SAPI voices
+  (for example Microsoft Hedda) ship with some Windows installs, but none is installed
+  here.
 - The tray language/voice menus are rebuilt from view-model state but were not clicked
   through; the picker's behaviour is covered by resolver, settings and catalog tests,
   not by UI automation.
@@ -148,8 +171,8 @@ what the user then sees and hears.
 
 1. **Native review of Welsh:** replace the draft UI strings, 100 phrases and time
    grammar, then clear `IsProvisional` for `cy-GB`.
-2. **German (`de-DE`)**: catalog, `GermanTimeFormatter` (halb, Viertel nach/vor,
-   "siebzehn Uhr fünfundvierzig"), 100 phrases, promotion in `LocaleRegistry`.
-3. Spanish, Italian, Dutch and Portuguese to finish M2.2.
+2. **Spanish (`es-ES`)**: catalog, `SpanishTimeFormatter` ("son las nueve y cuarto",
+   "menos cuarto", inverted punctuation in questions), 100 phrases, promotion.
+3. Italian, Dutch and Portuguese to finish M2.2.
 4. Then M2.3 (Polish, Russian, Greek), M2.4 (Arabic RTL), M2.5 (Hindi), M2.6 (CJK).
 5. M3: opt-in active-session reminders, quiet hours, tone/category settings, diagnostics.

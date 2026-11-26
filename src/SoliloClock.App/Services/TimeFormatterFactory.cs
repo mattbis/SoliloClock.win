@@ -28,6 +28,8 @@ public static class TimeFormatterFactory
         ("fr", static () => new FrenchTimeFormatter()),
         ("cy-GB", static () => new WelshTimeFormatter()),
         ("cy", static () => new WelshTimeFormatter()),
+        ("de-DE", static () => new GermanTimeFormatter()),
+        ("de", static () => new GermanTimeFormatter()),
     };
 
     public static TimeFormatterSelection Resolve(string? locale)
