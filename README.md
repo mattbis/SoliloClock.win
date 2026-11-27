@@ -44,22 +44,25 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
   a UI catalog, 100 phrases and their own time grammar ("jest wpół do dziesiątej",
   "без четверти десять", "εννέα και τέταρτο"), with Polish and Russian plural and
   case agreement covered by tests.
-- **M2.7 worldwide expansion in progress — 21 locales shipped:** the original plan's
+- **M2.7 worldwide expansion in progress — 28 locales shipped:** the original plan's
   seventeen finished with Arabic (`ar`), Hindi (`hi`), both Chinese scripts, Japanese
   (`ja-JP`) and Korean (`ko-KR`); M2.7 then targets every language Windows itself can
-  speak. Danish (`da-DK`), Swedish (`sv-SE`), Norwegian Bokmål (`nb-NO`) and Czech
-  (`cs-CZ`) now ship complete packs ("Klokken er kvart over ni", "Klockan är halv
-  tio", "Klokka er kvart på ti", "Je tři čtvrtě na deset"), leaving fifteen of the
-  Windows-voice languages still to add.
+  speak. Wave 1 added Danish (`da-DK`), Swedish (`sv-SE`), Norwegian Bokmål (`nb-NO`)
+  and Czech (`cs-CZ`); wave 2 adds Turkish (`tr-TR`), Hungarian (`hu-HU`), Romanian
+  (`ro-RO`), Croatian (`hr-HR`), Bulgarian (`bg-BG`), Slovak (`sk-SK`) and Finnish
+  (`fi-FI`) — "Saat dokuzu çeyrek geçiyor", "Negyed tíz van", "Este ora nouă și un
+  sfert", "Sada je petnaest minuta do deset", "Сега е без петнадесет десет", "Je tri
+  štvrte na desať" and "Kello on puoli kymmenen". Eight Windows-voice languages
+  remain.
 - **Draft marker:** every machine-drafted pack (`cy-GB`, `ar`, `hi`, `zh-Hans`,
-  `zh-Hant`, `ja-JP`, `ko-KR`, `da-DK`, `sv-SE`, `nb-NO`, `cs-CZ`) appears in both
+  `zh-Hant`, `ja-JP`, `ko-KR`, `da-DK`, `sv-SE`, `nb-NO`, `cs-CZ`, `tr-TR`, `hu-HU`,
+  `ro-RO`, `hr-HR`, `bg-BG`, `sk-SK`, `fi-FI`) appears in both
   language menus with a *draft — pending native review* marker. Chinese regions pick
   their script automatically (`zh-CN` → Simplified, `zh-TW`/`zh-HK` → Traditional),
   and the tray menu and close-to-tray dialog mirror for Arabic.
 
-Not yet implemented: the rest of M2.7 (Turkish, Hungarian, Romanian, Croatian,
-Bulgarian, Slovak, Finnish, Slovenian, Catalan, Hebrew, Indonesian, Malay, Thai,
-Vietnamese and Tamil), quiet hours, usage reminders, tone/category settings UI,
+Not yet implemented: the rest of M2.7 (Slovenian, Catalan, Hebrew, Indonesian, Malay,
+Thai, Vietnamese and Tamil), quiet hours, usage reminders, tone/category settings UI,
 diagnostics page, installer (M3/M4). Welsh is usable but explicitly a draft, not a
 finished translation.
 
@@ -159,7 +162,9 @@ The UI and announcements ship in English (`en-GB`), French (`fr-FR`), German
 (`de-DE`), Spanish (`es-ES`), Italian (`it-IT`), Dutch (`nl-NL`), Portuguese
 (`pt-PT`), Polish (`pl-PL`), Russian (`ru-RU`), Greek (`el-GR`), Arabic (`ar`),
 Danish (`da-DK`), Swedish (`sv-SE`), Norwegian Bokmål (`nb-NO`), Czech (`cs-CZ`),
-Arabic (`ar`), Hindi (`hi`), Simplified Chinese (`zh-Hans`), Traditional Chinese
+Turkish (`tr-TR`), Hungarian (`hu-HU`), Romanian (`ro-RO`), Croatian (`hr-HR`),
+Bulgarian (`bg-BG`), Slovak (`sk-SK`), Finnish (`fi-FI`), Arabic (`ar`), Hindi (`hi`),
+Simplified Chinese (`zh-Hans`), Traditional Chinese
 (`zh-Hant`), Japanese (`ja-JP`), Korean (`ko-KR`) and Welsh (`cy-GB`). Localization is delivered in language
 stages (see `doc/plan.md` §14): a language ships only once its UI catalog, its own
 time grammar with tests, and an adapted phrase catalog exist, so nothing appears in
@@ -211,7 +216,8 @@ caption, and explains the situation in the status line and a tray balloon.
 `src/SoliloClock.App/Resources/Phrases/` holds one catalog per shipped language:
 `en-GB.json`, `fr-FR.json`, `de-DE.json`, `es-ES.json`, `it-IT.json`, `nl-NL.json`,
 `pt-PT.json`, `pl-PL.json`, `ru-RU.json`, `el-GR.json`, `da-DK.json`, `sv-SE.json`,
-`nb-NO.json`, `cs-CZ.json`, `ar.json`, `hi.json`, `zh-Hans.json`, `zh-Hant.json`,
+`nb-NO.json`, `cs-CZ.json`, `tr-TR.json`, `hu-HU.json`, `ro-RO.json`, `hr-HR.json`,
+`bg-BG.json`, `sk-SK.json`, `fi-FI.json`, `ar.json`, `hi.json`, `zh-Hans.json`, `zh-Hant.json`,
 `ja-JP.json`, `ko-KR.json` and provisional `cy-GB.json`, each with 100 lines sharing the same ids and metadata (a shared test
 enforces the parity). English is the reference catalog; every other pack was written
 for this project and would still benefit from a native speaker's review. Welsh,

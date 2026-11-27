@@ -78,7 +78,8 @@ param(
     [switch]$Install,
     [switch]$Bridge,
     [switch]$Remove,
-    [string[]]$Tag = @('fr-FR', 'de-DE', 'es-ES', 'it-IT', 'nl-NL', 'pt-PT', 'pl-PL', 'ru-RU', 'el-GR', 'ar-SA', 'hi-IN', 'zh-CN', 'zh-TW', 'ja-JP', 'ko-KR', 'da-DK', 'sv-SE', 'nb-NO', 'cs-CZ'),
+    [string[]]$Tag = @('fr-FR', 'de-DE', 'es-ES', 'it-IT', 'nl-NL', 'pt-PT', 'pl-PL', 'ru-RU', 'el-GR', 'ar-SA', 'hi-IN', 'zh-CN', 'zh-TW', 'ja-JP', 'ko-KR', 'da-DK', 'sv-SE', 'nb-NO', 'cs-CZ',
+    'tr-TR', 'hu-HU', 'ro-RO', 'hr-HR', 'bg-BG', 'sk-SK', 'fi-FI'),
     [string[]]$VoicePack = @()
 )
 
@@ -109,6 +110,13 @@ $shipped = [ordered]@{
     'sv-SE' = 'Swedish'
     'nb-NO' = 'Norwegian'
     'cs-CZ' = 'Czech'
+    'tr-TR' = 'Turkish'
+    'hu-HU' = 'Hungarian'
+    'ro-RO' = 'Romanian'
+    'hr-HR' = 'Croatian'
+    'bg-BG' = 'Bulgarian'
+    'sk-SK' = 'Slovak'
+    'fi-FI' = 'Finnish'
     'ar' = 'Arabic'
     'zh-Hans' = 'Chinese (Simplified)'
     'zh-Hant' = 'Chinese (Traditional)'

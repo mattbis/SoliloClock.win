@@ -1,7 +1,7 @@
 # STATUS — SoliloClock
 
 **Last updated:** 2026-11-26
-**Stage:** M0, M1 and the original M2 plan are complete: seventeen locales (M2.1–M2.6), each with a UI catalog, 100 phrases and its own time grammar. **M2.7 worldwide expansion is in progress: it targets every language Windows itself can speak, and wave 1 adds Danish (`da-DK`), Swedish (`sv-SE`), Norwegian Bokmål (`nb-NO`) and Czech (`cs-CZ`) as provisional packs — 21 locales shipped, 15 Windows-voice languages still to add.** Eleven machine-drafted packs carry the draft marker, the tray menu and close-to-tray dialog mirror for right-to-left Arabic, and M3–M4 have not started.
+**Stage:** M0, M1 and the original M2 plan are complete: seventeen locales (M2.1–M2.6), each with a UI catalog, 100 phrases and its own time grammar. **M2.7 worldwide expansion is in progress: it targets every language Windows itself can speak. Wave 1 added Danish (`da-DK`), Swedish (`sv-SE`), Norwegian Bokmål (`nb-NO`) and Czech (`cs-CZ`); wave 2 adds Turkish (`tr-TR`), Hungarian (`hu-HU`), Romanian (`ro-RO`), Croatian (`hr-HR`), Bulgarian (`bg-BG`), Slovak (`sk-SK`) and Finnish (`fi-FI`) — 28 locales shipped, 8 Windows-voice languages still to add.** Eighteen machine-drafted packs carry the draft marker, the tray menu and close-to-tray dialog mirror for right-to-left Arabic, and M3–M4 have not started.
 **Name:** SoliloClock.
 
 ## Verification in this run
@@ -9,10 +9,11 @@
 | Check | Result |
 |---|---|
 | `dotnet build SoliloClock.sln -c Release` | 0 warnings, 0 errors |
-| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **565 passed**, 0 failed, 0 skipped |
+| `dotnet test test/SoliloClock.Tests/SoliloClock.Tests.csproj -c Release --no-build` | **656 passed**, 0 failed, 0 skipped |
 | Release executable startup | Process stayed alive through a 7-second smoke check; no leftover process |
-| Catalog deployment | All 21 UI catalogs (`en-GB`, `fr-FR`, `cy-GB`, `de-DE`, `es-ES`, `it-IT`, `nl-NL`, `pt-PT`, `pl-PL`, `ru-RU`, `el-GR`, `da-DK`, `sv-SE`, `nb-NO`, `cs-CZ`, `ar`, `hi`, `zh-Hans`, `zh-Hant`, `ja-JP`, `ko-KR`) and all 21 phrase catalogs present in the build output |
+| Catalog deployment | All 28 UI catalogs and all 28 phrase catalogs present in the build output (the seventeen original locales plus `da-DK`, `sv-SE`, `nb-NO`, `cs-CZ`, `tr-TR`, `hu-HU`, `ro-RO`, `hr-HR`, `bg-BG`, `sk-SK` and `fi-FI`) |
 | M2.7 wave 1 | Danish, Swedish, Norwegian and Czech each ship a 71-key catalog, 100-phrase pack and grammar; phrasing cases, regional inheritance (`sv-FI`, `cs-SK`, `da`, `nb`) and all 1,440 minutes pass |
+| M2.7 wave 2 | Turkish, Hungarian, Romanian, Croatian, Bulgarian, Slovak and Finnish each ship the same three-part pack; accusative/dative hours, *negyed tíz*, *fără douăzeci de minute*, *petnaest minuta do deset*, *bez petnaest deset*, *pol desiatej* and *puoli kymmenen* are asserted, as are all 1,440 minutes |
 | UI string completeness | Reflected test requires every `LocalizationKeys` constant in every shipped catalog |
 | French phrasing | 18 natural 12-hour cases, 7 twenty-four-hour and 4 exact-reading cases assert the whole sentence |
 | French catalogs | 100 phrases load with zero diagnostics, share the English ids, and keep the reviewed metadata |
@@ -41,7 +42,7 @@
 | Hindi phrasing | 9 natural cases (*सवा*, *साढ़े*, *पौने*, *बजकर … मिनट*, *बजने में*), 24-hour and exact readings; all 1,440 clock minutes produce a digit-free sentence |
 | Korean phrasing | 8 natural cases (native hours 한/두/세, *반*, Sino minutes), 24-hour and exact readings; all 1,440 clock minutes produce a digit-free sentence |
 | RTL handling | Arabic mirrors the WPF window, the WinForms tray menu and the close-to-tray message box; the clock face is pinned to Western digits, asserted for `ar-SA` |
-| Provisional flag | The only provisional locales are `cy-GB`, `da-DK`, `sv-SE`, `nb-NO`, `cs-CZ`, `ar`, `hi`, `zh-Hans`, `zh-Hant`, `ja-JP` and `ko-KR`, all shipped with complete packs; a Welsh Windows still resolves to `cy-GB` automatically |
+| Provisional flag | The only provisional locales are `cy-GB`, `da-DK`, `sv-SE`, `nb-NO`, `cs-CZ`, `tr-TR`, `hu-HU`, `ro-RO`, `hr-HR`, `bg-BG`, `sk-SK`, `fi-FI`, `ar`, `hi`, `zh-Hans`, `zh-Hant`, `ja-JP` and `ko-KR`, all shipped with complete packs; a Welsh Windows still resolves to `cy-GB` automatically |
 | Live language switching | 4 view-model cases drive the real `MainViewModel` through UI and announcement language changes and assert chrome, caption, status, culture, grammar and voice follow at once |
 
 **Not verified:** audible speech in any language other than English (including Test voice,
@@ -206,8 +207,17 @@ taken.
       *za pět minut deset*) with the hodina/hodiny/hodin agreement.
 - [x] `WorldwideExpansionTests` covers pack parity, provisional flags, phrasing,
       regional inheritance and digit-free output for every minute of the day.
-- [ ] **M2.7 waves 2–4:** Turkish, Hungarian, Romanian, Croatian, Bulgarian, Slovak,
-      Slovenian, Catalan, Hebrew, Indonesian, Malay, Thai, Vietnamese and Tamil.
+- [x] **M2.7 wave 2:** `TurkishTimeFormatter` (*dokuzu beş geçiyor*, *ona çeyrek var*),
+      `HungarianTimeFormatter` (*negyed tíz*, *fél tíz*, *háromnegyed tíz*),
+      `RomanianTimeFormatter` (*și un sfert*, *zece fără douăzeci de minute*),
+      `CroatianTimeFormatter` (*devet sati i petnaest minuta*, *do deset*),
+      `BulgarianTimeFormatter` (*и половина*, *без петнадесет десет*),
+      `SlovakTimeFormatter` (*štvrť na desať*, *pol desiatej*, *za päť minút desať*)
+      and `FinnishTimeFormatter` (*puoli kymmenen*, *varttia vaille*).
+- [x] `WorldwideWaveTwoTests` covers pack parity, provisional flags, phrasing,
+      regional inheritance and digit-free output for every minute of the day.
+- [ ] **M2.7 waves 3–4:** Slovenian, Catalan, Hebrew, Indonesian, Malay, Thai,
+      Vietnamese and Tamil.
 - [ ] Native-speaker review of every string, phrase and grammar, and a voice check per
       language.
 - [ ] RTL and CJK window/tray layout remains visually unverified (no screenshot pass).
@@ -243,8 +253,8 @@ what the user then sees and hears.
 
 ## Known limitations
 
-- 21 locales ship. The original seventeen-locale plan is fully delivered; M2.7 adds
-  the Windows-voice languages it did not cover, 15 of which remain.
+- 28 locales ship. The original seventeen-locale plan is fully delivered; M2.7 adds
+  the Windows-voice languages it did not cover, 8 of which remain.
 - Every non-English pack is a project draft: all sixteen still need a native speaker's
   review, and the seven machine-drafted ones (Welsh, Arabic, Hindi, both Chinese packs,
   Japanese and Korean) carry the visible draft marker in the UI.
@@ -276,7 +286,7 @@ what the user then sees and hears.
    grammar, then clear `IsProvisional` for `cy-GB`.
 2. **Native review of the sixteen drafted packs:** correct wording and grammar, then
    clear `IsProvisional` and decide which packs should keep the marker.
-3. **M2.7 waves 2–4** in the order listed in the completed section, each with a
+3. **M2.7 waves 3–4** in the order listed in the completed section, each with a
    complete pack, phrasing tests and a voice-helper row.
 4. **Visual verification** of the Arabic RTL window/tray and CJK line breaking and font
    fallback, plus one audible announcement per language on a machine with the voice.

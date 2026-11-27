@@ -70,6 +70,13 @@ public static class LocaleRegistry
         new LocaleDefinition("sv-SE", "Svenska", "Swedish (Sweden)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
         new LocaleDefinition("nb-NO", "Norsk bokmål", "Norwegian Bokmål (Norway)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
         new LocaleDefinition("cs-CZ", "Čeština", "Czech (Czechia)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("tr-TR", "Türkçe", "Turkish (Türkiye)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("hu-HU", "Magyar", "Hungarian (Hungary)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("ro-RO", "Română", "Romanian (Romania)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("hr-HR", "Hrvatski", "Croatian (Croatia)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("bg-BG", "Български", "Bulgarian (Bulgaria)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("sk-SK", "Slovenčina", "Slovak (Slovakia)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("fi-FI", "Suomi", "Finnish (Finland)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
 
         // M2.4 — Middle East (right-to-left). Machine-drafted, so flagged until a
         // native speaker reviews it.

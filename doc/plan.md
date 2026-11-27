@@ -542,13 +542,13 @@ provider exists.
 | Swedish | `sv-SE` | shipped, provisional |
 | Norwegian Bokmål | `nb-NO` | shipped, provisional |
 | Czech | `cs-CZ` | shipped, provisional |
-| Turkish | `tr-TR` | planned |
-| Hungarian | `hu-HU` | planned |
-| Romanian | `ro-RO` | planned |
-| Croatian | `hr-HR` | planned |
-| Bulgarian | `bg-BG` | planned |
-| Slovak | `sk-SK` | planned |
-| Finnish | `fi-FI` | planned |
+| Turkish | `tr-TR` | shipped, provisional |
+| Hungarian | `hu-HU` | shipped, provisional |
+| Romanian | `ro-RO` | shipped, provisional |
+| Croatian | `hr-HR` | shipped, provisional |
+| Bulgarian | `bg-BG` | shipped, provisional |
+| Slovak | `sk-SK` | shipped, provisional |
+| Finnish | `fi-FI` | shipped, provisional |
 | Slovenian | `sl-SI` | planned |
 | Catalan | `ca-ES` | planned |
 | Hebrew | `he-IL` | planned |
@@ -558,14 +558,15 @@ provider exists.
 | Vietnamese | `vi-VN` | planned |
 | Tamil | `ta-IN` | planned |
 
-That is 21 shipped locales (20 Windows languages plus Welsh) of 36 targeted, with 15
-Windows languages left.
+That is 28 shipped locales of 36 targeted, with 8 Windows languages left.
 
 - [x] Wave 1 (Nordic + Czech): formatter, 71-key catalog, 100 phrases and tests each.
       Danish and Swedish count the half hour towards the coming hour (*halv ti*,
       *halv tio*); Norwegian uses *på* for minutes to the hour; Czech needs
       nominative/accusative/locative forms and *hodina/hodiny/hodin*.
-- [ ] Wave 2: Turkish, Hungarian, Romanian, Croatian, Bulgarian, Slovak, Finnish.
+- [x] Wave 2: Turkish, Hungarian, Romanian, Croatian, Bulgarian, Slovak, Finnish, each
+      with case agreement (Turkish accusative/dative hours, Croatian *sat/sata/sati*,
+      Slovak *hodina/hodiny/hodín*, Finnish genitive after *puoli*/*vaille*).
 - [ ] Wave 3: Slovenian, Catalan, Hebrew (right-to-left), Indonesian, Malay.
 - [ ] Wave 4: Thai, Vietnamese, Tamil, including script shaping and font fallback.
 - [ ] Native-speaker review of each pack; all stay provisional until then.

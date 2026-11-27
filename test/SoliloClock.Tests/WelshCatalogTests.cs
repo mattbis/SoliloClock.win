@@ -96,8 +96,9 @@ public sealed class WelshCatalogTests
         Assert.Equal(
             new[]
             {
-                "cy-GB", "da-DK", "sv-SE", "nb-NO", "cs-CZ", "ar",
-                "hi", "zh-Hans", "zh-Hant", "ja-JP", "ko-KR",
+                "cy-GB", "da-DK", "sv-SE", "nb-NO", "cs-CZ",
+                "tr-TR", "hu-HU", "ro-RO", "hr-HR", "bg-BG", "sk-SK", "fi-FI",
+                "ar", "hi", "zh-Hans", "zh-Hant", "ja-JP", "ko-KR",
             },
             provisional.Select(locale => locale.Tag));
         Assert.All(provisional, locale =>

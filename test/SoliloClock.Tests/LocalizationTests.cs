@@ -121,6 +121,7 @@ public sealed class LocalizationTests
         {
             "en-GB", "fr-FR", "de-DE", "es-ES", "it-IT", "nl-NL", "pt-PT",
             "pl-PL", "ru-RU", "el-GR", "da-DK", "sv-SE", "nb-NO", "cs-CZ",
+            "tr-TR", "hu-HU", "ro-RO", "hr-HR", "bg-BG", "sk-SK", "fi-FI",
             "ar", "hi", "zh-Hans", "zh-Hant", "ja-JP", "ko-KR",
             "cy-GB",
         };
@@ -149,6 +150,7 @@ public sealed class LocalizationTests
             {
                 "en-GB", "fr-FR", "cy-GB", "de-DE", "es-ES", "it-IT", "nl-NL", "pt-PT",
                 "pl-PL", "ru-RU", "el-GR", "da-DK", "sv-SE", "nb-NO", "cs-CZ",
+                "tr-TR", "hu-HU", "ro-RO", "hr-HR", "bg-BG", "sk-SK", "fi-FI",
                 "ar", "hi", "zh-Hans", "zh-Hant", "ja-JP", "ko-KR",
             },
             shipped);
