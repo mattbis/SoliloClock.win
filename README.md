@@ -44,18 +44,24 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
   a UI catalog, 100 phrases and their own time grammar ("jest wpół do dziesiątej",
   "без четверти десять", "εννέα και τέταρτο"), with Polish and Russian plural and
   case agreement covered by tests.
-- **M2 complete — Arabic, Hindi, Chinese, Japanese and Korean, provisional:** `ar`,
-  `hi`, `zh-Hans`, `zh-Hant`, `ja-JP` and `ko-KR` ship UI catalogs, 100 phrases and
-  their own time grammar ("الساعة التاسعة والربع", "अभी सवा नौ बजे हैं",
-  "现在是九点一刻", "現在是九點半", "今は九時です", "지금은 아홉 시 반입니다"). The
-  wording is machine-drafted, so each carries the draft marker in both language
-  menus. Chinese regions pick their script automatically (`zh-CN` → Simplified,
-  `zh-TW`/`zh-HK` → Traditional), and the tray menu and close-to-tray dialog mirror
-  for Arabic.
+- **M2.7 worldwide expansion in progress — 21 locales shipped:** the original plan's
+  seventeen finished with Arabic (`ar`), Hindi (`hi`), both Chinese scripts, Japanese
+  (`ja-JP`) and Korean (`ko-KR`); M2.7 then targets every language Windows itself can
+  speak. Danish (`da-DK`), Swedish (`sv-SE`), Norwegian Bokmål (`nb-NO`) and Czech
+  (`cs-CZ`) now ship complete packs ("Klokken er kvart over ni", "Klockan är halv
+  tio", "Klokka er kvart på ti", "Je tři čtvrtě na deset"), leaving fifteen of the
+  Windows-voice languages still to add.
+- **Draft marker:** every machine-drafted pack (`cy-GB`, `ar`, `hi`, `zh-Hans`,
+  `zh-Hant`, `ja-JP`, `ko-KR`, `da-DK`, `sv-SE`, `nb-NO`, `cs-CZ`) appears in both
+  language menus with a *draft — pending native review* marker. Chinese regions pick
+  their script automatically (`zh-CN` → Simplified, `zh-TW`/`zh-HK` → Traditional),
+  and the tray menu and close-to-tray dialog mirror for Arabic.
 
-Not yet implemented: quiet hours,
-usage reminders, tone/category settings UI, diagnostics page, installer (M3/M4).
-Welsh is usable but explicitly a draft, not a finished translation.
+Not yet implemented: the rest of M2.7 (Turkish, Hungarian, Romanian, Croatian,
+Bulgarian, Slovak, Finnish, Slovenian, Catalan, Hebrew, Indonesian, Malay, Thai,
+Vietnamese and Tamil), quiet hours, usage reminders, tone/category settings UI,
+diagnostics page, installer (M3/M4). Welsh is usable but explicitly a draft, not a
+finished translation.
 
 ## Requirements
 
@@ -152,8 +158,9 @@ picks.
 The UI and announcements ship in English (`en-GB`), French (`fr-FR`), German
 (`de-DE`), Spanish (`es-ES`), Italian (`it-IT`), Dutch (`nl-NL`), Portuguese
 (`pt-PT`), Polish (`pl-PL`), Russian (`ru-RU`), Greek (`el-GR`), Arabic (`ar`),
-Hindi (`hi`), Simplified Chinese (`zh-Hans`), Traditional Chinese (`zh-Hant`),
-Japanese (`ja-JP`), Korean (`ko-KR`) and Welsh (`cy-GB`). Localization is delivered in language
+Danish (`da-DK`), Swedish (`sv-SE`), Norwegian Bokmål (`nb-NO`), Czech (`cs-CZ`),
+Arabic (`ar`), Hindi (`hi`), Simplified Chinese (`zh-Hans`), Traditional Chinese
+(`zh-Hant`), Japanese (`ja-JP`), Korean (`ko-KR`) and Welsh (`cy-GB`). Localization is delivered in language
 stages (see `doc/plan.md` §14): a language ships only once its UI catalog, its own
 time grammar with tests, and an adapted phrase catalog exist, so nothing appears in
 the picker half-finished. Welsh, Arabic, both Chinese packs and Japanese are
@@ -203,9 +210,9 @@ caption, and explains the situation in the status line and a tray balloon.
 
 `src/SoliloClock.App/Resources/Phrases/` holds one catalog per shipped language:
 `en-GB.json`, `fr-FR.json`, `de-DE.json`, `es-ES.json`, `it-IT.json`, `nl-NL.json`,
-`pt-PT.json`, `pl-PL.json`, `ru-RU.json`, `el-GR.json`, `ar.json`, `hi.json`,
-`zh-Hans.json`, `zh-Hant.json`, `ja-JP.json`, `ko-KR.json` and provisional
-`cy-GB.json`, each with 100 lines sharing the same ids and metadata (a shared test
+`pt-PT.json`, `pl-PL.json`, `ru-RU.json`, `el-GR.json`, `da-DK.json`, `sv-SE.json`,
+`nb-NO.json`, `cs-CZ.json`, `ar.json`, `hi.json`, `zh-Hans.json`, `zh-Hant.json`,
+`ja-JP.json`, `ko-KR.json` and provisional `cy-GB.json`, each with 100 lines sharing the same ids and metadata (a shared test
 enforces the parity). English is the reference catalog; every other pack was written
 for this project and would still benefit from a native speaker's review. Welsh,
 Arabic, Hindi, both Chinese packs, Japanese and Korean are flagged as drafts in the UI. Fields per entry: `id`, `text`, `category`, `tone`,

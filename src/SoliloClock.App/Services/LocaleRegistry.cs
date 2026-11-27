@@ -15,6 +15,7 @@ public enum LocalizationStage
     Foundation,
     WesternEurope,
     CentralEasternEurope,
+    NorthernEurope,
     MiddleEast,
     SouthAsia,
     EastAsia,
@@ -62,6 +63,13 @@ public static class LocaleRegistry
         new LocaleDefinition("pl-PL", "Polski", "Polish (Poland)", LocalizationStage.CentralEasternEurope, true, true, true),
         new LocaleDefinition("ru-RU", "Русский", "Russian (Russia)", LocalizationStage.CentralEasternEurope, true, true, true),
         new LocaleDefinition("el-GR", "Ελληνικά", "Greek (Greece)", LocalizationStage.CentralEasternEurope, true, true, true),
+
+        // M2.7 — the rest of the Windows voice list. Every one of these is
+        // machine-drafted, so all are flagged until a native speaker reviews them.
+        new LocaleDefinition("da-DK", "Dansk", "Danish (Denmark)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("sv-SE", "Svenska", "Swedish (Sweden)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("nb-NO", "Norsk bokmål", "Norwegian Bokmål (Norway)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("cs-CZ", "Čeština", "Czech (Czechia)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
 
         // M2.4 — Middle East (right-to-left). Machine-drafted, so flagged until a
         // native speaker reviews it.

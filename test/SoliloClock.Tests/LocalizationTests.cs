@@ -38,12 +38,12 @@ public sealed class LocalizationTests
     [Fact]
     public void UnknownLocale_FallsBackToEnglishWithADiagnostic()
     {
-        var result = LocalizationCatalog.Load(LocalizationCatalog.DefaultDirectory, "tr-TR");
+        var result = LocalizationCatalog.Load(LocalizationCatalog.DefaultDirectory, "th-TH");
 
         Assert.True(result.UsedFallback);
         Assert.NotEmpty(result.Diagnostics);
         Assert.Equal("en-GB", result.Locale);
-        Assert.Equal("tr-TR", result.RequestedLocale);
+        Assert.Equal("th-TH", result.RequestedLocale);
         Assert.Equal("SoliloClock", result.Strings[LocalizationKeys.AppName]);
     }
 
@@ -120,7 +120,8 @@ public sealed class LocalizationTests
         var planned = new[]
         {
             "en-GB", "fr-FR", "de-DE", "es-ES", "it-IT", "nl-NL", "pt-PT",
-            "pl-PL", "ru-RU", "el-GR", "ar", "hi", "zh-Hans", "zh-Hant", "ja-JP", "ko-KR",
+            "pl-PL", "ru-RU", "el-GR", "da-DK", "sv-SE", "nb-NO", "cs-CZ",
+            "ar", "hi", "zh-Hans", "zh-Hant", "ja-JP", "ko-KR",
             "cy-GB",
         };
 
@@ -147,8 +148,8 @@ public sealed class LocalizationTests
             new[]
             {
                 "en-GB", "fr-FR", "cy-GB", "de-DE", "es-ES", "it-IT", "nl-NL", "pt-PT",
-                "pl-PL", "ru-RU", "el-GR", "ar", "hi", "zh-Hans", "zh-Hant", "ja-JP",
-                "ko-KR",
+                "pl-PL", "ru-RU", "el-GR", "da-DK", "sv-SE", "nb-NO", "cs-CZ",
+                "ar", "hi", "zh-Hans", "zh-Hant", "ja-JP", "ko-KR",
             },
             shipped);
 

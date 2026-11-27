@@ -528,6 +528,48 @@ completed language.
 - [ ] CJK line breaking, font fallback and a native-speaker review; the packs are
       provisional until then.
 
+#### M2.7 — Worldwide: every language Windows can speak (in progress)
+
+The original plan listed 17 locales, but Windows ships text-to-speech voices for many
+more. M2.7 closes that gap so the clock can be spoken in every language the operating
+system itself offers, plus Welsh (vendor voice only). Languages Windows does *not*
+speak — Ukrainian, for example — are deliberately out of scope until a SAPI 5 voice
+provider exists.
+
+| Language | Tag | Status |
+|---|---|---|
+| Danish | `da-DK` | shipped, provisional |
+| Swedish | `sv-SE` | shipped, provisional |
+| Norwegian Bokmål | `nb-NO` | shipped, provisional |
+| Czech | `cs-CZ` | shipped, provisional |
+| Turkish | `tr-TR` | planned |
+| Hungarian | `hu-HU` | planned |
+| Romanian | `ro-RO` | planned |
+| Croatian | `hr-HR` | planned |
+| Bulgarian | `bg-BG` | planned |
+| Slovak | `sk-SK` | planned |
+| Finnish | `fi-FI` | planned |
+| Slovenian | `sl-SI` | planned |
+| Catalan | `ca-ES` | planned |
+| Hebrew | `he-IL` | planned |
+| Indonesian | `id-ID` | planned |
+| Malay | `ms-MY` | planned |
+| Thai | `th-TH` | planned |
+| Vietnamese | `vi-VN` | planned |
+| Tamil | `ta-IN` | planned |
+
+That is 21 shipped locales (20 Windows languages plus Welsh) of 36 targeted, with 15
+Windows languages left.
+
+- [x] Wave 1 (Nordic + Czech): formatter, 71-key catalog, 100 phrases and tests each.
+      Danish and Swedish count the half hour towards the coming hour (*halv ti*,
+      *halv tio*); Norwegian uses *på* for minutes to the hour; Czech needs
+      nominative/accusative/locative forms and *hodina/hodiny/hodin*.
+- [ ] Wave 2: Turkish, Hungarian, Romanian, Croatian, Bulgarian, Slovak, Finnish.
+- [ ] Wave 3: Slovenian, Catalan, Hebrew (right-to-left), Indonesian, Malay.
+- [ ] Wave 4: Thai, Vietnamese, Tamil, including script shaping and font fallback.
+- [ ] Native-speaker review of each pack; all stay provisional until then.
+
 **Stage gate:** a language is promoted out of "planned" in `LocaleRegistry` only
 when its catalog, formatter and tests exist; it is recorded as complete only after
 human authorship. `STATUS.md` records what shipped, what is still a draft, and

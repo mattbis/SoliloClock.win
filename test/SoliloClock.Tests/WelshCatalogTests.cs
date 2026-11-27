@@ -94,7 +94,11 @@ public sealed class WelshCatalogTests
         var provisional = LocaleRegistry.All.Where(locale => locale.IsProvisional).ToList();
 
         Assert.Equal(
-            new[] { "cy-GB", "ar", "hi", "zh-Hans", "zh-Hant", "ja-JP", "ko-KR" },
+            new[]
+            {
+                "cy-GB", "da-DK", "sv-SE", "nb-NO", "cs-CZ", "ar",
+                "hi", "zh-Hans", "zh-Hant", "ja-JP", "ko-KR",
+            },
             provisional.Select(locale => locale.Tag));
         Assert.All(provisional, locale =>
         {
