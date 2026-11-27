@@ -140,9 +140,9 @@ public sealed class TimeFormatterFactoryTests
     }
 
     [Theory]
-    [InlineData("th-TH")]
-    [InlineData("vi-VN")]
-    [InlineData("id-ID")]
+    [InlineData("uk-UA")]
+    [InlineData("af-ZA")]
+    [InlineData("sw-KE")]
     public void LocalesWithoutGrammar_FallBackToEnglishAndSaySo(string locale)
     {
         var selection = TimeFormatterFactory.Resolve(locale);

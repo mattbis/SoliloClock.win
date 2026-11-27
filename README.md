@@ -44,27 +44,29 @@ The M0 skeleton and M1 "minimum lovable product" are implemented:
   a UI catalog, 100 phrases and their own time grammar ("jest wpół do dziesiątej",
   "без четверти десять", "εννέα και τέταρτο"), with Polish and Russian plural and
   case agreement covered by tests.
-- **M2.7 worldwide expansion in progress — 28 locales shipped:** the original plan's
+- **M2.7 worldwide expansion complete — all 36 locales shipped:** the original plan's
   seventeen finished with Arabic (`ar`), Hindi (`hi`), both Chinese scripts, Japanese
-  (`ja-JP`) and Korean (`ko-KR`); M2.7 then targets every language Windows itself can
+  (`ja-JP`) and Korean (`ko-KR`); M2.7 then added every language Windows itself can
   speak. Wave 1 added Danish (`da-DK`), Swedish (`sv-SE`), Norwegian Bokmål (`nb-NO`)
-  and Czech (`cs-CZ`); wave 2 adds Turkish (`tr-TR`), Hungarian (`hu-HU`), Romanian
+  and Czech (`cs-CZ`); wave 2 added Turkish (`tr-TR`), Hungarian (`hu-HU`), Romanian
   (`ro-RO`), Croatian (`hr-HR`), Bulgarian (`bg-BG`), Slovak (`sk-SK`) and Finnish
-  (`fi-FI`) — "Saat dokuzu çeyrek geçiyor", "Negyed tíz van", "Este ora nouă și un
-  sfert", "Sada je petnaest minuta do deset", "Сега е без петнадесет десет", "Je tri
-  štvrte na desať" and "Kello on puoli kymmenen". Eight Windows-voice languages
-  remain.
+  (`fi-FI`); waves 3–4 added Slovenian (`sl-SI`), Catalan (`ca-ES`), Hebrew (`he-IL`),
+  Indonesian (`id-ID`), Malay (`ms-MY`), Thai (`th-TH`), Vietnamese (`vi-VN`) and
+  Tamil (`ta-IN`) — "Negyed tíz van", "Són les nou i quart", "השעה תשע ורבע",
+  "Sekarang pukul sembilan suku", "ตอนนี้เก้าโมงครึ่ง", "chín giờ rưỡi" and
+  "ஒன்பது மணி பதினைந்து நிமிடம்". Every Windows-voice language in the list now has a
+  complete pack; Welsh remains the one vendor-voice locale.
 - **Draft marker:** every machine-drafted pack (`cy-GB`, `ar`, `hi`, `zh-Hans`,
   `zh-Hant`, `ja-JP`, `ko-KR`, `da-DK`, `sv-SE`, `nb-NO`, `cs-CZ`, `tr-TR`, `hu-HU`,
-  `ro-RO`, `hr-HR`, `bg-BG`, `sk-SK`, `fi-FI`) appears in both
-  language menus with a *draft — pending native review* marker. Chinese regions pick
-  their script automatically (`zh-CN` → Simplified, `zh-TW`/`zh-HK` → Traditional),
-  and the tray menu and close-to-tray dialog mirror for Arabic.
+  `ro-RO`, `hr-HR`, `bg-BG`, `sk-SK`, `fi-FI`, `sl-SI`, `ca-ES`, `he-IL`, `id-ID`,
+  `ms-MY`, `th-TH`, `vi-VN`, `ta-IN`) appears in both language menus with a *draft —
+  pending native review* marker. Chinese regions pick their script automatically
+  (`zh-CN` → Simplified, `zh-TW`/`zh-HK` → Traditional), and the tray menu and
+  close-to-tray dialog mirror for Arabic and Hebrew.
 
-Not yet implemented: the rest of M2.7 (Slovenian, Catalan, Hebrew, Indonesian, Malay,
-Thai, Vietnamese and Tamil), quiet hours, usage reminders, tone/category settings UI,
-diagnostics page, installer (M3/M4). Welsh is usable but explicitly a draft, not a
-finished translation.
+Not yet implemented: native-speaker review of the drafted packs, quiet hours, usage
+reminders, tone/category settings UI, diagnostics page, installer (M3/M4). Welsh is
+usable but explicitly a draft, not a finished translation.
 
 ## Requirements
 
@@ -163,7 +165,9 @@ The UI and announcements ship in English (`en-GB`), French (`fr-FR`), German
 (`pt-PT`), Polish (`pl-PL`), Russian (`ru-RU`), Greek (`el-GR`), Arabic (`ar`),
 Danish (`da-DK`), Swedish (`sv-SE`), Norwegian Bokmål (`nb-NO`), Czech (`cs-CZ`),
 Turkish (`tr-TR`), Hungarian (`hu-HU`), Romanian (`ro-RO`), Croatian (`hr-HR`),
-Bulgarian (`bg-BG`), Slovak (`sk-SK`), Finnish (`fi-FI`), Arabic (`ar`), Hindi (`hi`),
+Bulgarian (`bg-BG`), Slovak (`sk-SK`), Finnish (`fi-FI`), Slovenian (`sl-SI`),
+Catalan (`ca-ES`), Hebrew (`he-IL`), Indonesian (`id-ID`), Malay (`ms-MY`), Thai
+(`th-TH`), Vietnamese (`vi-VN`), Tamil (`ta-IN`), Arabic (`ar`), Hindi (`hi`),
 Simplified Chinese (`zh-Hans`), Traditional Chinese
 (`zh-Hant`), Japanese (`ja-JP`), Korean (`ko-KR`) and Welsh (`cy-GB`). Localization is delivered in language
 stages (see `doc/plan.md` §14): a language ships only once its UI catalog, its own
@@ -217,11 +221,15 @@ caption, and explains the situation in the status line and a tray balloon.
 `en-GB.json`, `fr-FR.json`, `de-DE.json`, `es-ES.json`, `it-IT.json`, `nl-NL.json`,
 `pt-PT.json`, `pl-PL.json`, `ru-RU.json`, `el-GR.json`, `da-DK.json`, `sv-SE.json`,
 `nb-NO.json`, `cs-CZ.json`, `tr-TR.json`, `hu-HU.json`, `ro-RO.json`, `hr-HR.json`,
-`bg-BG.json`, `sk-SK.json`, `fi-FI.json`, `ar.json`, `hi.json`, `zh-Hans.json`, `zh-Hant.json`,
-`ja-JP.json`, `ko-KR.json` and provisional `cy-GB.json`, each with 100 lines sharing the same ids and metadata (a shared test
+`bg-BG.json`, `sk-SK.json`, `fi-FI.json`, `sl-SI.json`, `ca-ES.json`, `he-IL.json`,
+`id-ID.json`, `ms-MY.json`, `th-TH.json`, `vi-VN.json`, `ta-IN.json`, `ar.json`,
+`hi.json`, `zh-Hans.json`, `zh-Hant.json`, `ja-JP.json`, `ko-KR.json` and provisional
+`cy-GB.json`, each with 100 lines sharing the same ids and metadata (a shared test
 enforces the parity). English is the reference catalog; every other pack was written
-for this project and would still benefit from a native speaker's review. Welsh,
-Arabic, Hindi, both Chinese packs, Japanese and Korean are flagged as drafts in the UI. Fields per entry: `id`, `text`, `category`, `tone`,
+for this project and would still benefit from a native speaker's review. The
+machine-drafted packs — Welsh, the eleven M2.7 additions, the eight later additions,
+Arabic, Hindi, both Chinese packs, Japanese and Korean — are flagged as drafts in the
+UI. Fields per entry: `id`, `text`, `category`, `tone`,
 `weight`, `familyFriendly`, `minActiveMinutes`, `timeWindow`.
 
 Selection:

@@ -528,7 +528,7 @@ completed language.
 - [ ] CJK line breaking, font fallback and a native-speaker review; the packs are
       provisional until then.
 
-#### M2.7 — Worldwide: every language Windows can speak (in progress)
+#### M2.7 — Worldwide: every language Windows can speak (complete)
 
 The original plan listed 17 locales, but Windows ships text-to-speech voices for many
 more. M2.7 closes that gap so the clock can be spoken in every language the operating
@@ -549,16 +549,17 @@ provider exists.
 | Bulgarian | `bg-BG` | shipped, provisional |
 | Slovak | `sk-SK` | shipped, provisional |
 | Finnish | `fi-FI` | shipped, provisional |
-| Slovenian | `sl-SI` | planned |
-| Catalan | `ca-ES` | planned |
-| Hebrew | `he-IL` | planned |
-| Indonesian | `id-ID` | planned |
-| Malay | `ms-MY` | planned |
-| Thai | `th-TH` | planned |
-| Vietnamese | `vi-VN` | planned |
-| Tamil | `ta-IN` | planned |
+| Slovenian | `sl-SI` | shipped, provisional |
+| Catalan | `ca-ES` | shipped, provisional |
+| Hebrew | `he-IL` | shipped, provisional |
+| Indonesian | `id-ID` | shipped, provisional |
+| Malay | `ms-MY` | shipped, provisional |
+| Thai | `th-TH` | shipped, provisional |
+| Vietnamese | `vi-VN` | shipped, provisional |
+| Tamil | `ta-IN` | shipped, provisional |
 
-That is 28 shipped locales of 36 targeted, with 8 Windows languages left.
+That is all 36 targeted locales shipped: the original seventeen, every Windows-voice
+language in Microsoft's list, and Welsh through its vendor voice.
 
 - [x] Wave 1 (Nordic + Czech): formatter, 71-key catalog, 100 phrases and tests each.
       Danish and Swedish count the half hour towards the coming hour (*halv ti*,
@@ -567,8 +568,13 @@ That is 28 shipped locales of 36 targeted, with 8 Windows languages left.
 - [x] Wave 2: Turkish, Hungarian, Romanian, Croatian, Bulgarian, Slovak, Finnish, each
       with case agreement (Turkish accusative/dative hours, Croatian *sat/sata/sati*,
       Slovak *hodina/hodiny/hodín*, Finnish genitive after *puoli*/*vaille*).
-- [ ] Wave 3: Slovenian, Catalan, Hebrew (right-to-left), Indonesian, Malay.
-- [ ] Wave 4: Thai, Vietnamese, Tamil, including script shaping and font fallback.
+- [x] Wave 3: Slovenian (*in pol*, *do deset*), Catalan (*i quart*, *menys quart*,
+      singular *És la una*), Hebrew (right-to-left, feminine hours, *פחות*), Indonesian
+      (*lebih*, *kurang*, *setengah sepuluh*) and Malay (*suku*, *setengah*, *kurang
+      suku*).
+- [x] Wave 4: Thai (*โมง*, *นาฬิกา*, no inter-word spacing), Vietnamese (*giờ*, *rưỡi*,
+      *kém* plus the *mốt*/*lăm* forms) and Tamil (*மணி*, *மணிக்கு*, fused tens), with
+      a digit-free sweep of every minute in each new language.
 - [ ] Native-speaker review of each pack; all stay provisional until then.
 
 **Stage gate:** a language is promoted out of "planned" in `LocaleRegistry` only

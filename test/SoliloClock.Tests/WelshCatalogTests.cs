@@ -98,7 +98,9 @@ public sealed class WelshCatalogTests
             {
                 "cy-GB", "da-DK", "sv-SE", "nb-NO", "cs-CZ",
                 "tr-TR", "hu-HU", "ro-RO", "hr-HR", "bg-BG", "sk-SK", "fi-FI",
-                "ar", "hi", "zh-Hans", "zh-Hant", "ja-JP", "ko-KR",
+                "sl-SI", "ca-ES", "id-ID", "ms-MY",
+                "ar", "he-IL", "hi", "ta-IN", "th-TH", "vi-VN",
+                "zh-Hans", "zh-Hant", "ja-JP", "ko-KR",
             },
             provisional.Select(locale => locale.Tag));
         Assert.All(provisional, locale =>

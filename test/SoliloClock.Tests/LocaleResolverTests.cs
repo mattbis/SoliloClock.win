@@ -46,10 +46,10 @@ public sealed class LocaleResolverTests
     [Fact]
     public void Automatic_StaysEnglishForLanguagesWithoutACatalog()
     {
-        var choice = LocaleResolver.ResolveUi(null, "th-TH");
+        var choice = LocaleResolver.ResolveUi(null, "uk-UA");
 
         Assert.Equal("en-GB", choice.Locale);
-        Assert.Equal("th-TH", choice.RequestedLocale);
+        Assert.Equal("uk-UA", choice.RequestedLocale);
         Assert.True(choice.FollowsSystem);
         Assert.True(choice.LanguageDiffers);
     }
@@ -77,9 +77,9 @@ public sealed class LocaleResolverTests
     [Fact]
     public void ExplicitUnsupportedTag_IsKeptSoTheFallbackCanBeReported()
     {
-        var choice = LocaleResolver.ResolveUi("th-TH", "en-GB");
+        var choice = LocaleResolver.ResolveUi("uk-UA", "en-GB");
 
-        Assert.Equal("th-TH", choice.Locale);
+        Assert.Equal("uk-UA", choice.Locale);
         Assert.False(choice.FollowsSystem);
     }
 

@@ -77,14 +77,22 @@ public static class LocaleRegistry
         new LocaleDefinition("bg-BG", "Български", "Bulgarian (Bulgaria)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
         new LocaleDefinition("sk-SK", "Slovenčina", "Slovak (Slovakia)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
         new LocaleDefinition("fi-FI", "Suomi", "Finnish (Finland)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("sl-SI", "Slovenščina", "Slovenian (Slovenia)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("ca-ES", "Català", "Catalan (Spain)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("id-ID", "Bahasa Indonesia", "Indonesian (Indonesia)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
+        new LocaleDefinition("ms-MY", "Bahasa Melayu", "Malay (Malaysia)", LocalizationStage.NorthernEurope, true, true, true, IsProvisional: true),
 
         // M2.4 — Middle East (right-to-left). Machine-drafted, so flagged until a
         // native speaker reviews it.
         new LocaleDefinition("ar", "العربية", "Arabic", LocalizationStage.MiddleEast, true, true, true, IsProvisional: true),
+        new LocaleDefinition("he-IL", "עברית", "Hebrew (Israel)", LocalizationStage.MiddleEast, true, true, true, IsProvisional: true),
 
         // M2.5 — South Asia. Machine-drafted, so flagged until a native speaker
         // reviews it.
         new LocaleDefinition("hi", "हिन्दी", "Hindi", LocalizationStage.SouthAsia, true, true, true, IsProvisional: true),
+        new LocaleDefinition("ta-IN", "தமிழ்", "Tamil (India)", LocalizationStage.SouthAsia, true, true, true, IsProvisional: true),
+        new LocaleDefinition("th-TH", "ไทย", "Thai (Thailand)", LocalizationStage.SouthAsia, true, true, true, IsProvisional: true),
+        new LocaleDefinition("vi-VN", "Tiếng Việt", "Vietnamese (Vietnam)", LocalizationStage.SouthAsia, true, true, true, IsProvisional: true),
 
         // M2.6 — East Asia. Chinese ships as two independent catalogs; both are
         // machine-drafted and provisional.
